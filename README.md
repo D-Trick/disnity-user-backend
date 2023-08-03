@@ -1,10 +1,17 @@
 # Disnity-Backend V3
 
 <div align="center">
-    Disnity Backend V3
+    디스코드 커뮤니티 서비스
 </div>
 
 <br/><br/>
 
 **이전 버전 Private Repository**  
-https://github.com/D-Trick/Disnity-API
+https://github.com/D-Trick/disnity-user-backend-old
+
+---
+
+### ENV File List
+
+-   .env.development
+-   .env.production
