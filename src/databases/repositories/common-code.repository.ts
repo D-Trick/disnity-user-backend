@@ -80,7 +80,7 @@ export class CommonCodeRepository extends Repository<CommonCode> {
         });
 
         // SELECT
-        qb.select([`CONCAT('${baseConfig.url}', '/servers/category/', value) as url`]);
+        qb.select([`CONCAT('${baseConfig.url}', '/servers/categorys/', value) as url`]);
 
         // WHERE
         qb.where(`code = 'category'`);
