@@ -1,7 +1,7 @@
 module.exports = {
     apps: [
         {
-            name: 'disnity-api',
+            name: 'disnity-user-backend',
             script: './dist/app.js',
 
             instances: 0,
