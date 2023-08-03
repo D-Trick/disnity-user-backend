@@ -1,4 +1,4 @@
-# Disnity-Backend V3
+# Disnity-User-Backend V3
 
 <div align="center">
     디스코드 커뮤니티 서비스
