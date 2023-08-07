@@ -179,7 +179,6 @@ export interface UpdateOptions extends SqlOptions {
     values: Partial<Guild>;
     where: {
         id?: string;
-        guild_id?: string;
         user_id?: string;
     };
 }
@@ -194,7 +193,6 @@ export interface BulkUpdateOptions extends SqlOptions {
 export interface DeleteOptions extends SqlOptions {
     where: {
         id?: string;
-        guild_id?: string;
         user_id?: string;
     };
 }

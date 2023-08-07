@@ -58,7 +58,7 @@ export class RedirectController {
                         is_bot: 1,
                     },
                     where: {
-                        guild_id: guildId,
+                        id: guildId,
                     },
                 });
 
