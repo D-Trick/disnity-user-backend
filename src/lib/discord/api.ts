@@ -1,8 +1,12 @@
-// lib
-import { HttpStatus } from '@nestjs/common';
+// @nestjs
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+// lib
 import { lastValueFrom } from 'rxjs';
+// messages
 import { DISCORD_ERROR_MESSAGES } from '@common/messages';
+
+// ----------------------------------------------------------------------
 
 interface Config {
     authType: string;
@@ -33,7 +37,8 @@ export async function get(axios: HttpService, url: string, config?: Config): Pro
 
         return { data };
     } catch (error) {
-        throw errorHandler(error, 'get', url);
+        const errorFormat = errorHandler(error, 'get', url);
+        throw new HttpException(errorFormat.customMessage, errorFormat.status);
     }
 }
 
@@ -52,7 +57,8 @@ export async function post(axios: HttpService, url: string, body: object, config
 
         return { data };
     } catch (error) {
-        throw errorHandler(error, 'post', url);
+        const errorFormat = errorHandler(error, 'post', url);
+        throw new HttpException(errorFormat.customMessage, errorFormat.status);
     }
 }
 
