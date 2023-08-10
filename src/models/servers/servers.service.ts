@@ -508,7 +508,7 @@ export class ServersService {
                         userIds.push(scheduled.creator.id);
                         creators.push({
                             id: scheduled.creator.id,
-                            name: scheduled.creator.username,
+                            username: scheduled.creator.username,
                             avatar: scheduled.creator.avatar,
                             discriminator: scheduled.creator.discriminator,
                         });
@@ -556,6 +556,7 @@ export class ServersService {
 
             return { id: discordGuild.id };
         } catch (error: any) {
+            console.log(error);
             if (queryRunner.isTransactionActive) {
                 await queryRunner.rollbackTransaction();
             }
