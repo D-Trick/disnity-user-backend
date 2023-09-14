@@ -1,9 +1,8 @@
 // types
-import type { Response as IResponse } from '@common/ts/types/express.type';
-import type { IRequest } from '@common/ts/interfaces/express.interface';
-import type { Token } from './ts/interfaces';
+import type { ExpressRequest, ExpressResponse } from '@common/types/express.type';
+import type { Token } from './types/auth.type';
 // lib
-import { Controller, Get, Request, Response, UseGuards } from '@nestjs/common';
+import { Controller, Get, Logger, Request, Response, UseGuards } from '@nestjs/common';
 import requestIp from 'request-ip';
 import dayjs from '@lib/dayjs';
 // configs
@@ -21,21 +20,29 @@ import { CacheService } from '@cache/redis/cache.service';
 
 @Controller()
 export class AuthController {
+    private readonly logger = new Logger(AuthController.name);
+
+    /**************************************************
+     * Constructor
+     **************************************************/
     constructor(
         private readonly authService: AuthService,
         private readonly usersService: UsersService,
         private readonly cacheService: CacheService,
     ) {}
 
+    /**************************************************
+     * Public Methods
+     **************************************************/
     @Get('/login')
     @UseGuards(DiscordAuthGuard)
-    loginRedirect(): string {
+    login(): string {
         return 'Discord Login Redirect...';
     }
 
     @Get('/login/callback')
     @UseGuards(DiscordAuthGuard)
-    async callback(@Request() req: IRequest, @Response() res: IResponse): Promise<void> {
+    async loginCallback(@Request() req: ExpressRequest, @Response() res: ExpressResponse): Promise<void> {
         try {
             const user = req.user;
 
@@ -44,7 +51,7 @@ export class AuthController {
             const accessToken = this.authService.createJwtToken('access', user.id);
             const refreshToken = this.authService.createJwtToken('refresh', user.id);
 
-            await this.usersService.infoSave({
+            await this.usersService.saveLoginInfo({
                 ...user,
                 ip: requestIp.getClientIp(req),
             });
@@ -54,13 +61,15 @@ export class AuthController {
             res.cookie('refreshToken', refreshToken, getCookieOptions(expires));
 
             res.redirect('/login');
-        } catch {
+        } catch (error: any) {
+            this.logger.error(error.message, error.stack);
+
             res.redirect('/auth/login');
         }
     }
 
     @Get('/logout')
-    logout(@Response() res: IResponse): void {
+    logout(@Response() res: ExpressResponse): void {
         res.clearCookie('token', getCookieOptions());
         res.clearCookie('refreshToken', getCookieOptions());
 
@@ -75,12 +84,15 @@ export class AuthController {
 
     @Get('/token/refresh')
     @UseGuards(JwtAuthGuard)
-    async refreshToken(@Request() req: IRequest, @Response({ passthrough: true }) res: IResponse): Promise<Token> {
+    async tokenRefresh(
+        @Request() req: ExpressRequest,
+        @Response({ passthrough: true }) res: ExpressResponse,
+    ): Promise<Token> {
         const user = req.user;
 
         const cacheUser = await this.cacheService.get(user.id);
         if (cacheUser) {
-            await this.cacheService.set(user.id, cacheUser, refreshTokenTTL);
+            await this.cacheService.set(`discord-user-${user.id}`, cacheUser, refreshTokenTTL);
         }
 
         const expires = dayjs().add(1, 'day').toDate();

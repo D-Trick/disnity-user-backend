@@ -7,10 +7,16 @@ import { SitemapService } from './sitemap.service';
 
 @Controller()
 export class SitemapController {
+    /**************************************************
+     * Constructor
+     **************************************************/
     constructor(private sitemapService: SitemapService) {}
 
+    /**************************************************
+     * Public Methods
+     **************************************************/
     @Get('/disnity')
-    async sitemap(): Promise<string[]> {
+    async disnity(): Promise<string[]> {
         const dynamicUrls = await this.sitemapService.getDynamicUrl();
 
         return dynamicUrls;

@@ -1,34 +1,58 @@
 // lib
 import { Injectable } from '@nestjs/common';
-// repositorys
-import { TagRepository } from '@databases/repositories/tag.repository';
-import { CommonCodeRepository } from '@databases/repositories/common-code.repository';
-import { GuildRepository } from '@databases/repositories/guild.repository';
+// repositories
+import { TagRepository } from '@databases/repositories/tag';
+import { CommonCodeRepository } from '@databases/repositories/common-code';
+import { GuildRepository } from '@databases/repositories/guild';
 
 // ----------------------------------------------------------------------
 
 @Injectable()
 export class SitemapService {
+    /**************************************************
+     * Constructor
+     **************************************************/
     constructor(
         private readonly tagRepository: TagRepository,
         private readonly commonCodeRepository: CommonCodeRepository,
         private readonly guildRepository: GuildRepository,
     ) {}
 
+    /**************************************************
+     * Public Methods
+     **************************************************/
     /**
-     * 공통코드 가져오기
-     * @param code
+     * 동적 Url 가져오기
      */
     async getDynamicUrl(): Promise<string[]> {
-        const promises = [];
+        const promise1 = this.tagRepository.findSitemapUrls();
+        const promise2 = this.guildRepository.findSitemapUrls();
+        const promise3 = this.commonCodeRepository.findCategorySitemapUrls();
 
-        promises.push(this.tagRepository.getTagUrls());
-        promises.push(this.guildRepository.getServerUrls());
-        promises.push(this.commonCodeRepository.getCategoryUrls());
+        const [tags, servers, categorys] = await Promise.all([promise1, promise2, promise3]);
 
-        const [tagsUrls, serverUrls, categoryUrls] = await Promise.all(promises);
+        const categoryUrls = this.urlJsonArrayToArray(categorys);
+        const serverUrls = this.urlJsonArrayToArray(servers);
+        const tagsUrls = this.urlJsonArrayToArray(tags);
 
         const sitemap = [].concat(categoryUrls, serverUrls, tagsUrls);
+
         return sitemap;
+    }
+
+    /**************************************************
+     * Private Methods
+     **************************************************/
+    private urlJsonArrayToArray(urlJsonArray: { url: string }[]) {
+        const urlArray = [];
+
+        const { length = 0 } = urlJsonArray;
+        for (let i = 0; i < length; i++) {
+            const json = urlJsonArray[i];
+
+            urlArray.push(json.url);
+        }
+
+        return urlArray;
     }
 }

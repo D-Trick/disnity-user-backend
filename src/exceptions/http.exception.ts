@@ -13,7 +13,8 @@ import {
 } from '@nestjs/common';
 // lib
 import { Response } from 'express';
-import { isJson } from '@lib/utiles';
+// utils
+import { isJson } from '@utils/index';
 // messages
 import { ERROR_MESSAGES } from '@common/messages';
 // exceptions

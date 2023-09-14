@@ -1,6 +1,6 @@
 // lib
 import { Strategy as OAuth2Strategy, StrategyOptions, VerifyFunction } from 'passport-oauth2';
-import { getAdminGuilds } from '@lib/discord/permission';
+import { filterAdminGuilds } from 'src/utils/discord/permission';
 // configs
 import { discordConfig } from '@config/discord.config';
 
@@ -65,7 +65,7 @@ export class Strategy extends OAuth2Strategy {
             const profile = {
                 ...user,
                 guilds,
-                admin_guilds: getAdminGuilds(guilds),
+                admin_guilds: filterAdminGuilds(guilds),
             };
 
             return done(null, profile);

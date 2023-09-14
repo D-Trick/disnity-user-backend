@@ -1,18 +1,22 @@
-// types
-import { FindAll } from '@databases/ts/interfaces/tag.interface';
 // lib
 import { Injectable } from '@nestjs/common';
-// repositorys
-import { TagRepository } from '@databases/repositories/tag.repository';
+// repositories
+import { TagRepository } from '@databases/repositories/tag';
 
 // ----------------------------------------------------------------------
 
 @Injectable()
 export class TagsService {
+    /**************************************************
+     * Constructor
+     **************************************************/
     constructor(private readonly tagRepository: TagRepository) {}
 
-    async findAll(): Promise<FindAll[]> {
-        const promise = this.tagRepository.findAll();
+    /**************************************************
+     * Public Methods
+     **************************************************/
+    async findNames() {
+        const promise = this.tagRepository.findNames();
 
         return promise;
     }

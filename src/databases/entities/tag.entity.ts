@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
 
 // ----------------------------------------------------------------------
 
@@ -8,8 +8,12 @@ export class Tag {
     id: string;
 
     @Column('bigint', { unsigned: true })
+    @Index('ix_guild_id')
     guild_id: string;
 
     @Column('varchar', { length: 10 })
     name: string;
+
+    @Column('tinyint', { default: 0 })
+    sort: number;
 }

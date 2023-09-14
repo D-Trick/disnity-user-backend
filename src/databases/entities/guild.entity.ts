@@ -1,7 +1,7 @@
 // types
-import type { DataTypeBoolean, DataTypeDate } from '@databases/ts/types/global';
+import type { DataTypeBoolean, DataTypeDate } from '@databases/types/global';
 // lib
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
 
 // ----------------------------------------------------------------------
 
@@ -10,7 +10,8 @@ export class Guild {
     @PrimaryColumn({ type: 'bigint', unsigned: true })
     id: string;
 
-    @PrimaryColumn({ type: 'bigint', unsigned: true })
+    @Column('bigint', { unsigned: true })
+    @Index('ix_user_id')
     user_id: string;
 
     @Column('smallint', { unsigned: true })
@@ -74,5 +75,6 @@ export class Guild {
     updated_at?: DataTypeDate;
 
     @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
-    server_refresh_date?: DataTypeDate;
+    @Index('ix_refresh_date')
+    refresh_date?: DataTypeDate;
 }

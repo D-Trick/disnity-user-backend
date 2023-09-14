@@ -1,7 +1,7 @@
 // types
-import type { DataTypeDate } from '@databases/ts/types/global';
+import type { DataTypeDate } from '@databases/types/global';
 // lib
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
 
 // ----------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ export class AccessLog {
     id: string;
 
     @Column({ type: 'bigint', unsigned: true })
+    @Index('ix_user_id')
     user_id: string;
 
     @Column('varchar', { length: 15, nullable: true })

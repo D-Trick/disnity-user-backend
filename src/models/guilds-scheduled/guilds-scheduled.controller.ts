@@ -1,7 +1,5 @@
 // lib
-import { Param, Controller, Get } from '@nestjs/common';
-// dtos
-import { ParamScheduledDateDto } from '@common/dtos';
+import { Controller, Get } from '@nestjs/common';
 // services
 import { GuildsScheduledService } from '@models/guilds-scheduled/guilds-scheduled.service';
 
@@ -9,11 +7,17 @@ import { GuildsScheduledService } from '@models/guilds-scheduled/guilds-schedule
 
 @Controller()
 export class GuildsScheduledController {
+    /**************************************************
+     * Constructor
+     **************************************************/
     constructor(private readonly guildScheduledService: GuildsScheduledService) {}
 
-    @Get(':start/:end')
-    async scheduledDateSearch(@Param() param: ParamScheduledDateDto) {
-        const schedules = await this.guildScheduledService.findByDate(param);
+    /**************************************************
+     * Public Methods
+     **************************************************/
+    @Get()
+    async index() {
+        const schedules = await this.guildScheduledService.getThisMonthScheduled();
 
         return schedules;
     }

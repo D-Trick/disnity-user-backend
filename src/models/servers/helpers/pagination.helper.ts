@@ -1,16 +1,15 @@
 // types
-import type { SelectFilter } from '@common/ts/interfaces/select-filter.interface';
-import type { FindOptions } from '../ts/interfaces/options.interface';
-import type { ServerPagination } from '../ts/interfaces/pagination.interface';
-
+import type { SelectFilter } from '@common/types/select-filter.type';
+import type { PaginateOptions } from '../types/pagination.type';
+import type { FindGuildsByIdsSqlName } from '@databases/types/guild.type';
 // lib
 import { Injectable } from '@nestjs/common';
-import { pagination } from '@lib/utiles';
 import { isEmpty } from '@lib/lodash';
-
-// repositorys
-import { TagRepository } from '@databases/repositories/tag.repository';
-import { GuildRepository } from '@databases/repositories/guild.repository';
+// utils
+import { pagination } from '@utils/index';
+// repositories
+import { TagRepository } from '@databases/repositories/tag';
+import { GuildRepository } from '@databases/repositories/guild';
 
 // ----------------------------------------------------------------------
 
@@ -31,21 +30,27 @@ export class PaginationHelper {
      **************************************************/
     /**
      * Server Pagination
-     * @param {FindOptions} options
+     * @param {PaginateOptions} options
      * @returns 서버목록
      */
-    async paginate(options: FindOptions): Promise<ServerPagination> {
-        const { filter, userId } = options;
+    async paginate<T extends FindGuildsByIdsSqlName>(options: PaginateOptions) {
+        const { listType, filter } = options;
+
         this.selectFilter = this.filterFormat(filter);
         const { sort } = this.selectFilter;
 
         const serverIds = await this.getServerIds(options);
         if (isEmpty(serverIds)) return { totalCount: 0, list: [] };
 
-        const totalPromise = this.getTotalCount(options);
-        const serversPromise = this.guildRepository.findMany({
+        const promise1 = this.getTotalCount(options);
+        const promise2 = this.guildRepository.findGuildsByIds<T>({
+            select: {
+                sql: {
+                    base: listType !== 'my-server',
+                    myGuild: listType === 'my-server',
+                },
+            },
             where: {
-                user_id: userId,
                 IN: {
                     ids: serverIds,
                 },
@@ -54,12 +59,11 @@ export class PaginationHelper {
                 sort,
             },
         });
-
-        const [total, _servers] = await Promise.all([totalPromise, serversPromise]);
+        const [total, servers] = await Promise.all([promise1, promise2]);
 
         return {
             totalCount: parseInt(total.count),
-            list: _servers,
+            list: servers,
         };
     }
 
@@ -67,54 +71,57 @@ export class PaginationHelper {
      * Private Methods
      **************************************************/
     /**
-     * 리스트타입에 맞는 총 합계 가져오기
+     * listType에 맞는 총 길드 수 가져오기
      * (Pagination을 위해 총 개수를 구한다.)
-     * @param options
-     * @returns 총 합계
+     * @param {PaginateOptions} options
      */
-    private async getTotalCount(options: FindOptions): Promise<{ count: string }> {
+    private async getTotalCount(options: PaginateOptions): Promise<{ count: string }> {
         const { listType, keyword, tagName, categoryId, userId } = options;
         const { min, max } = this.selectFilter;
 
-        let promise = undefined;
-        if (listType === 'tag') {
-            promise = this.tagRepository.serverTotalCount({
-                where: {
-                    tag_name: tagName,
-                    min,
-                    max,
-                },
-            });
-        } else if (listType === 'search') {
-            promise = this.guildRepository.searchTotalCount({
-                where: {
-                    keyword,
-                    min,
-                    max,
-                },
-            });
-        } else {
-            promise = this.guildRepository.totalCount({
-                where: {
-                    category_id: categoryId,
-                    user_id: userId,
-                    min,
-                    max,
-                },
-            });
-        }
+        switch (listType) {
+            case 'tag-server':
+                return this.tagRepository.totalTagGuildsCount({
+                    where: {
+                        tag_name: tagName,
+                        min,
+                        max,
+                    },
+                });
 
-        return promise;
+            case 'search-server':
+                return this.guildRepository.totalSearchGuildsCount({
+                    where: {
+                        keyword,
+                        min,
+                        max,
+                    },
+                });
+
+            case 'my-server':
+                return this.guildRepository.totalMyGuildsCount({
+                    where: {
+                        user_id: userId,
+                    },
+                });
+
+            default:
+                return this.guildRepository.totalCategoryGuildsCount({
+                    where: {
+                        category_id: categoryId,
+                        min,
+                        max,
+                    },
+                });
+        }
     }
 
     /**
-     * 리스트타입에 맞는 server id 목록 가져오기
+     * listType에 맞는 server ids 가져오기
      * type list: tag, search
-     * @param {string} type
-     * @param {FindOptions} options
-     * @returns ids
+     * @param {PaginateOptions} options
      */
-    private async getServerIds(options: FindOptions) {
+    private async getServerIds(options: PaginateOptions) {
         const { listType, tagName, keyword, categoryId, userId } = options;
         const { itemSize, page, min, max, sort } = this.selectFilter;
 
@@ -127,38 +134,44 @@ export class PaginationHelper {
             offset: page,
         };
 
-        let ids = [];
-        if (listType === 'tag') {
-            ids = await this.tagRepository.getIdsByServer({
-                ...commonOptions,
-                where: {
-                    tag_name: tagName,
-                    max,
-                    min,
-                },
-            });
-        } else if (listType === 'search') {
-            ids = await this.guildRepository.getIdsBySearch({
-                ...commonOptions,
-                where: {
-                    keyword,
-                    max,
-                    min,
-                },
-            });
-        } else {
-            ids = await this.guildRepository.getIds({
-                ...commonOptions,
-                where: {
-                    category_id: categoryId,
-                    user_id: userId,
-                    max,
-                    min,
-                },
-            });
-        }
+        switch (listType) {
+            case 'tag-server':
+                return await this.tagRepository.findTagGuildIds({
+                    ...commonOptions,
+                    where: {
+                        tag_name: tagName,
+                        max,
+                        min,
+                    },
+                });
 
-        return ids;
+            case 'search-server':
+                return await this.guildRepository.findSearchGuildIds({
+                    ...commonOptions,
+                    where: {
+                        keyword,
+                        max,
+                        min,
+                    },
+                });
+
+            case 'my-server':
+                return this.guildRepository.findMyGuildIds({
+                    where: {
+                        user_id: userId,
+                    },
+                });
+
+            default:
+                return await this.guildRepository.findCategoryGuildIds({
+                    ...commonOptions,
+                    where: {
+                        category_id: categoryId,
+                        max,
+                        min,
+                    },
+                });
+        }
     }
 
     /**
@@ -176,7 +189,7 @@ export class PaginationHelper {
         } else if (sort === 'member') {
             tempSort = 'member';
         } else {
-            tempSort = 'server_refresh_date';
+            tempSort = 'refresh_date';
         }
 
         return {

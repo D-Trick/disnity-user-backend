@@ -1,16 +1,17 @@
 // types
-import type { AdminGuild } from '../ts/interfaces/users.interface';
-import type { Select } from '@databases/ts/types/guild.type';
-import type { Channel } from '@models/discord-api/ts/interfaces/discordApi.interface';
+import type { AdminGuild } from '../types/users.type';
+import type { Channel } from '@models/discord-api/types/discordApi.type';
 // lib
 import { Injectable } from '@nestjs/common';
 import { isNotEmpty } from '@lib/lodash';
 // flags
-import { permissionFlags } from '@lib/discord/flags/permission.flag';
+import { permissionFlags } from 'src/utils/discord/flags/permission.flag';
 // services
 import { DiscordApiService } from '@models/discord-api/discordApi.service';
-// repositorys
-import { GuildRepository } from '@databases/repositories/guild.repository';
+// entities
+import { Guild } from '@databases/entities/guild.entity';
+// repositories
+import { GuildRepository } from '@databases/repositories/guild';
 
 // ----------------------------------------------------------------------
 
@@ -29,18 +30,23 @@ export class FilterHelper {
      * Public Methods
      **************************************************/
     /**
-     * 관리자 권한이 있는 길드 목록으로 필터한다.
+     * 관리자 권한을 가진 길드만 가져온다.
      * @param {string} userId
-     * @param {AdminGuild[]} adminGuilds
+     * @param {AdminGuild[]} discordAdminGuilds
      */
-    async adminGuildsFilter(userId: string, adminGuilds: AdminGuild[]): Promise<AdminGuild[]> {
-        const myServers = await this.guildRepository.selectMany({
+    async filterAdminGuilds(userId: string, discordAdminGuilds: AdminGuild[]): Promise<AdminGuild[]> {
+        const myGuilds = await this.guildRepository.selectMany<'publicList'>({
+            select: {
+                sql: {
+                    publicList: true,
+                },
+            },
             where: {
                 user_id: userId,
             },
         });
 
-        const newAdminGuilds = this.removeRegisteredServer(adminGuilds, myServers);
+        const newAdminGuilds = this.removeRegisteredGuild(discordAdminGuilds, myGuilds);
 
         return newAdminGuilds;
     }
@@ -83,7 +89,7 @@ export class FilterHelper {
      * @param {AdminGuild[]} adminGuilds
      * @param {Select[]} compareServers
      */
-    private removeRegisteredServer(adminGuilds: AdminGuild[], compareServers: Select[]): AdminGuild[] {
+    private removeRegisteredGuild(adminGuilds: AdminGuild[], compareServers: Partial<Guild>[]): AdminGuild[] {
         const result = [];
 
         const length = adminGuilds.length;

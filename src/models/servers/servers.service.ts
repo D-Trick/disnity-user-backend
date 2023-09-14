@@ -1,35 +1,43 @@
 // types
-import type { SelectFilter } from '@common/ts/interfaces/select-filter.interface';
-import type { FindDetail, InsertOptions, UpdateOptions } from '@databases/ts/interfaces/guild.interface';
-import type { ServerDetail } from './ts/interfaces/servers.interface';
-import type { ServerPagination } from './ts/interfaces/pagination.interface';
-import type { SaveUser, UpdateValues, InertValues, Save, Admins } from './ts/interfaces/save.interface';
+import type { SelectFilter } from '@common/types/select-filter.type';
+import type { ServerDetail } from './types/servers.type';
+import type { Save, SaveValues } from './types/save.type';
 // lib
-import { Injectable, HttpException, HttpStatus, BadRequestException } from '@nestjs/common';
-import { DataSource, InsertResult, UpdateResult } from 'typeorm';
+import {
+    Injectable,
+    HttpException,
+    HttpStatus,
+    BadRequestException,
+    NotFoundException,
+    ForbiddenException,
+    Logger,
+} from '@nestjs/common';
+import { DataSource } from 'typeorm';
 import { ERROR_MESSAGES } from '@common/messages';
 import dayjs from '@lib/dayjs';
-import { timePassed } from '@lib/utiles/time-passed';
-import { generateSnowflakeId } from '@lib/snowflake';
 import { isEmpty, isNotEmpty, differenceBy, uniq, uniqBy } from '@lib/lodash';
+// utils
+import { timePassed, generateSnowflakeId } from '@utils/index';
 // helpers
 import { PaginationHelper } from './helpers/pagination.helper';
-
 // services
+import { CacheService } from '@cache/redis/cache.service';
 import { DiscordApiService } from '@models/discord-api/discordApi.service';
-// repositorys
-import { TagRepository } from '@databases/repositories/tag.repository';
-import { UserRepository } from '@databases/repositories/user.repository';
-import { GuildRepository } from '@databases/repositories/guild.repository';
-import { EmojiRepository } from '@databases/repositories/emoji.repository';
-import { CommonCodeRepository } from '@databases/repositories/common-code.repository';
-import { GuildsScheduledRepository } from '@databases/repositories/guilds-scheduled.repository';
-import { ServerAdminPermissionRepository } from '@databases/repositories/server-admin-permission.repository';
+// repositories
+import { TagRepository } from '@databases/repositories/tag';
+import { UserRepository } from '@databases/repositories/user';
+import { GuildRepository } from '@databases/repositories/guild';
+import { EmojiRepository } from '@databases/repositories/emoji';
+import { CommonCodeRepository } from '@databases/repositories/common-code';
+import { GuildsScheduledRepository } from '@databases/repositories/guilds-scheduled';
+import { GuildAdminPermissionRepository } from '@databases/repositories/guild-admin-permission';
 
 // ----------------------------------------------------------------------
 
 @Injectable()
 export class ServersService {
+    private readonly logger = new Logger(ServersService.name);
+
     /**************************************************
      * Constructor
      **************************************************/
@@ -38,6 +46,7 @@ export class ServersService {
 
         private readonly paginationHelper: PaginationHelper,
 
+        private readonly cacheService: CacheService,
         private readonly discordApiService: DiscordApiService,
 
         private readonly tagRepository: TagRepository,
@@ -46,55 +55,57 @@ export class ServersService {
         private readonly guildRepository: GuildRepository,
         private readonly commonCodeRepository: CommonCodeRepository,
         private readonly guildScheduledRepository: GuildsScheduledRepository,
-        private readonly serverAdminPermissionRepository: ServerAdminPermissionRepository,
+        private readonly guildAdminPermissionRepository: GuildAdminPermissionRepository,
     ) {}
 
     /**************************************************
      * Public Methods
      **************************************************/
     /**
-     * 서버갱신
+     * 서버 새로고침
      * @param {string} guildId
      * @param {string} userId
      */
     async serverRefresh(guildId: string, userId: string): Promise<{ result: boolean }> {
         try {
             const server = await this.guildRepository.selectOne({
+                select: {
+                    columns: {
+                        refresh_date: true,
+                    },
+                },
                 where: {
                     id: guildId,
                     user_id: userId,
                 },
             });
             if (isEmpty(server)) {
-                throw { status: 404, customMessage: ERROR_MESSAGES.SERVER_NOT_FOUND };
+                throw new NotFoundException(ERROR_MESSAGES.SERVER_NOT_FOUND);
             }
 
             const minutes = 60 * 10;
-            const { isTimePassed, currentDate, compareDate } = timePassed(
-                server.server_refresh_date as string,
-                minutes,
-            );
+            const { isTimePassed, currentDate, compareDate } = timePassed(server.refresh_date as string, minutes);
 
             if (!isTimePassed) {
                 const minutes = dayjs.duration(dayjs(compareDate).diff(currentDate)).minutes();
                 const seconds = dayjs.duration(dayjs(compareDate).diff(currentDate)).seconds();
 
                 const timeRemainning = minutes !== 0 ? `${minutes}분` : `${seconds}초`;
-                throw { customMessage: `${timeRemainning} 후 다시 시도해주세요.` };
+                throw new HttpException(`${timeRemainning} 후 다시 시도해주세요.`, HttpStatus.BAD_REQUEST);
             }
 
-            const guild = await this.discordApiService.guilds().detail(guildId);
+            const discordGuild = await this.discordApiService.guilds().detail('1');
 
-            await this.guildRepository._update({
+            await this.guildRepository.cUpdate({
                 values: {
-                    name: guild.name,
-                    banner: guild.banner || null,
-                    splash: guild.splash || null,
-                    icon: guild.icon || null,
-                    member: guild.approximate_member_count,
-                    online: guild.approximate_presence_count,
-                    premium_tier: guild.premium_tier,
-                    server_refresh_date: isTimePassed ? () => 'now()' : undefined,
+                    name: discordGuild.name,
+                    banner: discordGuild.banner || null,
+                    splash: discordGuild.splash || null,
+                    icon: discordGuild.icon || null,
+                    member: discordGuild.approximate_member_count,
+                    online: discordGuild.approximate_presence_count,
+                    premium_tier: discordGuild.premium_tier,
+                    refresh_date: isTimePassed ? () => 'now()' : undefined,
                     is_bot: 1,
                 },
                 where: {
@@ -104,8 +115,10 @@ export class ServersService {
 
             return { result: true };
         } catch (error: any) {
+            this.logger.error(error.message, error.stack);
+
             if (error.status === 403) {
-                await this.guildRepository._update({
+                await this.guildRepository.cUpdate({
                     values: {
                         is_bot: 0,
                     },
@@ -114,51 +127,66 @@ export class ServersService {
                     },
                 });
 
-                throw new HttpException(error.customMessage || ERROR_MESSAGES.BOT_NOT_FOUND, HttpStatus.FORBIDDEN);
+                throw new HttpException(error.message || ERROR_MESSAGES.BOT_NOT_FOUND, HttpStatus.FORBIDDEN);
             } else {
-                throw new HttpException(error.customMessage, error.status || HttpStatus.BAD_REQUEST);
+                throw new HttpException(error.message, error.status || HttpStatus.BAD_REQUEST);
             }
         }
     }
 
     /**
      * 서버 상세조회
-     * @param {number} id
+     * @param {string} id
      * @param {string} userId
      * @returns 서버상세 정보
      */
     async detail(id: string, userId: string): Promise<ServerDetail> {
-        const admin = await this.guildRepository.adminTotalCount({
+        let server = await this.guildRepository.findGuildDetailById({
             where: {
                 id,
-                user_id: userId,
             },
         });
 
-        const server = await this.guildRepository.findDetail({
-            where: {
-                id,
-                user_id: Number(admin.count) ? userId : undefined,
-            },
-        });
-        if (isEmpty(server)) {
-            throw new HttpException({ customMessage: ERROR_MESSAGES.E404 }, HttpStatus.NOT_FOUND);
+        if (isEmpty(server) && userId) {
+            server = await this.guildRepository.findMyGuildDetailById({
+                where: {
+                    id,
+                    user_id: userId,
+                },
+            });
         }
 
-        const emojisPromise = this.emojiRepository.selectMany({
+        if (isEmpty(server)) {
+            throw new NotFoundException(ERROR_MESSAGES.E404);
+        }
+
+        const promise1 = this.emojiRepository.selectMany({
+            select: {
+                columns: {
+                    id: true,
+                    name: true,
+                    animated: true,
+                },
+            },
             where: {
                 guild_id: id,
                 animated: 0,
             },
         });
-        const animateEmojisPromise = this.emojiRepository.selectMany({
+        const promise2 = this.emojiRepository.selectMany({
+            select: {
+                columns: {
+                    id: true,
+                    name: true,
+                    animated: true,
+                },
+            },
             where: {
                 guild_id: id,
                 animated: 1,
             },
         });
-
-        const [emojis, animate_emojis] = await Promise.all([emojisPromise, animateEmojisPromise]);
+        const [emojis, animate_emojis] = await Promise.all([promise1, promise2]);
 
         return {
             ...server,
@@ -168,136 +196,140 @@ export class ServersService {
     }
 
     /**
-     * 관리자 권한을 가진 유저의 서버 상세 정보 조회
-     * @param id
-     * @param userId
+     * [Mypage] 나의 서버 상세 정보 조회
+     * @param {string} id
+     * @param {string } userId
      */
-    async adminServerDetail(id: string, userId: string): Promise<FindDetail> {
-        const admin = await this.guildRepository.adminTotalCount({
+    async myServerDetail(id: string, userId: string) {
+        const server = await this.guildRepository.findMyGuildDetailById({
             where: {
                 id,
                 user_id: userId,
             },
         });
-        if (!Number(admin.count)) {
-            throw new HttpException({ customMessage: ERROR_MESSAGES.E404 }, HttpStatus.NOT_FOUND);
-        }
 
-        const server = await this.guildRepository.findDetail({
-            where: {
-                id,
-                user_id: userId,
-            },
-        });
+        if (isEmpty(server)) {
+            throw new NotFoundException(ERROR_MESSAGES.E404);
+        }
 
         return server;
     }
 
     /**
-     * 관리자 권한을 가진 유저의 서버 목록 조회
-     * @param {string} userId
+     * 전체 서버 목록 조회
+     * @param {SelectFilter} filter
+     */
+    async allServerList(filter: SelectFilter) {
+        const promise1 = this.commonCodeRepository.selectOne({
+            select: {
+                columns: {
+                    name: true,
+                },
+            },
+            where: {
+                code: 'category',
+                value: 'all',
+            },
+        });
+        const promise2 = this.paginationHelper.paginate<'base'>({
+            listType: 'category-server',
+            filter,
+        });
+        const [category, servers] = await Promise.all([promise1, promise2]);
+
+        return {
+            ...servers,
+            categoryName: category?.name,
+        };
+    }
+
+    /**
+     * 카테고리에 해당하는 서버 목록 조회
+     * @param {number} categoryId
      * @param {Filter} filter
      */
-    async adminServerList(userId: string, filter: SelectFilter): Promise<ServerPagination> {
-        const servers = await this.paginationHelper.paginate({
+    async categoryServerList(categoryId: number, filter: SelectFilter) {
+        const promise1 = this.commonCodeRepository.selectOne({
+            select: {
+                columns: {
+                    name: true,
+                },
+            },
+            where: {
+                code: 'category',
+                value: String(categoryId),
+            },
+        });
+        const promise2 = this.paginationHelper.paginate<'base'>({
+            listType: 'category-server',
+            categoryId,
             filter,
+        });
+        const [category, servers] = await Promise.all([promise1, promise2]);
+
+        return {
+            ...servers,
+            categoryName: category?.name,
+        };
+    }
+
+    /**
+     * 검색(키워드)에 해당하는 서버 목록 조회
+     * @param {string} keyword
+     * @param {SelectFilter} filter
+     */
+    async searchServerList(keyword: string, filter: SelectFilter) {
+        const servers = await this.paginationHelper.paginate<'base'>({
+            listType: 'search-server',
+            filter,
+            keyword,
+        });
+
+        return {
+            ...servers,
+            keyword,
+        };
+    }
+
+    /**
+     * 태그명에 해당하는 서버 목록 조회
+     * @param {string} tagName
+     * @param {Filter} filter
+     */
+    async tagServerList(tagName: string, filter: SelectFilter) {
+        const servers = await this.paginationHelper.paginate<'base'>({
+            listType: 'tag-server',
+            filter,
+            tagName,
+        });
+
+        return {
+            tagName,
+            ...servers,
+        };
+    }
+
+    /**
+     * [Mypage] 나의 서버 목록 조회
+     * @param {string} userId
+     * @param {SelectFilter} filter
+     */
+    async myServerList(userId: string, filter: SelectFilter) {
+        const servers = await this.paginationHelper.paginate<'myGuild'>({
+            listType: 'my-server',
             userId,
+            filter,
         });
 
         return servers;
     }
 
     /**
-     * 카테고리에 해당하는 서버목록 조회
-     * @param {number} categoryId
-     * @param {Filter} filter
-     */
-    async categoryServerList(categoryId: number, filter: SelectFilter): Promise<ServerPagination> {
-        const categoryPromise = this.commonCodeRepository.selectOne({
-            where: {
-                code: 'category',
-                value: categoryId,
-            },
-        });
-        const serversPromise = this.paginationHelper.paginate({
-            categoryId,
-            filter,
-        });
-
-        const [category, servers] = await Promise.all([categoryPromise, serversPromise]);
-
-        return {
-            categoryName: category?.name,
-            ...servers,
-        };
-    }
-
-    /**
-     * 검색(키워드)에 해당하는 서버목록 조회
-     * @param {string} keyword
-     * @param {Filter} filter
-     */
-    async searchServerList(keyword: string, filter: SelectFilter): Promise<ServerPagination> {
-        const servers = await this.paginationHelper.paginate({
-            listType: 'search',
-            filter,
-            keyword,
-        });
-
-        return {
-            keyword,
-            ...servers,
-        };
-    }
-
-    /**
-     * 태그명에 해당하는 서버목록 조회
-     * @param {string} tagName
-     * @param {Filter} filter
-     */
-    async tagServerList(tagName: string, filter: SelectFilter): Promise<ServerPagination> {
-        const servers = await this.paginationHelper.paginate({
-            listType: 'tag',
-            filter,
-            tagName,
-        });
-
-        return {
-            tagName,
-            ...servers,
-        };
-    }
-
-    /**
-     * 서버 전체목록 조회
-     * @param {Filter} filter
-     */
-    async allServerList(filter: SelectFilter): Promise<ServerPagination> {
-        const categoryPromise = this.commonCodeRepository.selectOne({
-            where: {
-                code: 'category',
-                value: 'all',
-            },
-        });
-        const serversPromise = this.paginationHelper.paginate({
-            filter,
-        });
-
-        const [category, servers] = await Promise.all([categoryPromise, serversPromise]);
-
-        return {
-            categoryName: category.name,
-            ...servers,
-        };
-    }
-
-    /**
      * 서버 등록
-     * @param {SaveUser} user 사용자정보
-     * @param {Admins[]} admins 관리자 목록
-     * @param {InsertValues} values 저장 값
+     * @param {string} userId
+     * @param {SaveValues} saveValues
      */
-    async store(user: SaveUser, admins: Admins[], values: InertValues): Promise<Save> {
+    async store(userId: string, saveValues: SaveValues): Promise<Save> {
         const {
             id,
             serverOpen,
@@ -311,7 +343,7 @@ export class ServersService {
             summary,
             content,
             contentType,
-        } = values;
+        } = saveValues;
 
         let newInviteCode = inviteCode;
 
@@ -327,11 +359,18 @@ export class ServersService {
         const queryRunner = this.dataSource.createQueryRunner();
         try {
             const guild = await this.guildRepository.selectOne({
+                select: {
+                    columns: {
+                        id: true,
+                    },
+                },
                 where: {
                     id,
                 },
             });
-            if (isNotEmpty(guild)) throw { customMessage: ERROR_MESSAGES.SERVER_EXISTE };
+            if (isNotEmpty(guild)) {
+                new BadRequestException(ERROR_MESSAGES.SERVER_EXISTE);
+            }
 
             if (linkType === 'invite') {
                 if (inviteAuto === 'auto') {
@@ -348,11 +387,11 @@ export class ServersService {
 
             await queryRunner.startTransaction();
             // 서버 저장
-            promise1 = this.guildRepository._insert({
+            promise1 = this.guildRepository.cInsert({
                 transaction: queryRunner,
                 values: {
                     id: discordGuild.id,
-                    user_id: user.id,
+                    user_id: userId,
                     category_id: categoryId,
                     name: discordGuild.name,
                     summary,
@@ -384,9 +423,10 @@ export class ServersService {
                         id: generateSnowflakeId(),
                         guild_id: discordGuild.id,
                         name: tag.name,
+                        sort: i,
                     });
                 }
-                promise2 = this.tagRepository._insert({
+                promise2 = this.tagRepository.cInsert({
                     transaction: queryRunner,
                     values: formatTags,
                 });
@@ -407,21 +447,22 @@ export class ServersService {
                         animated: emoji.animated,
                     });
                 }
-                promise3 = this.emojiRepository._insert({
+                promise3 = this.emojiRepository.cInsert({
                     transaction: queryRunner,
                     values: formatEmojis,
                 });
             }
 
             // 관리자 저장
-            if (isNotEmpty(admins)) {
+            const cacheAdmins = await this.cacheService.get(`disnity-bot-${id}-admins`);
+            if (isNotEmpty(cacheAdmins)) {
                 const adminIds = [];
                 const adminUsers = [];
                 const adminPermissions = [];
 
-                const adminsLength = admins.length;
-                for (let i = 0; i < adminsLength; i++) {
-                    const admin = admins[i];
+                const cacheAdminsLength = cacheAdmins.length;
+                for (let i = 0; i < cacheAdminsLength; i++) {
+                    const admin = cacheAdmins[i];
 
                     adminIds.push(admin.id);
 
@@ -441,7 +482,7 @@ export class ServersService {
                 }
 
                 // 관리자 추가
-                promise4 = this.serverAdminPermissionRepository._insert({
+                promise4 = this.guildAdminPermissionRepository.cInsert({
                     transaction: queryRunner,
                     values: adminPermissions,
                 });
@@ -449,6 +490,11 @@ export class ServersService {
                 // 관리자권한있는 사용자 저장
                 const users = await this.userRepository.selectMany({
                     transaction: queryRunner,
+                    select: {
+                        sql: {
+                            base: true,
+                        },
+                    },
                     where: {
                         IN: {
                             ids: adminIds,
@@ -459,12 +505,12 @@ export class ServersService {
                 const usersValues = differenceBy(adminUsers, users, 'id');
 
                 if (isNotEmpty(usersValues)) {
-                    promise5 = this.userRepository._insert({
+                    promise5 = this.userRepository.cInsert({
                         transaction: queryRunner,
                         values: usersValues,
                     });
                 } else {
-                    promise6 = this.userRepository.bulkUpdate({
+                    promise6 = this.userRepository.cBulkUpdate({
                         transaction: queryRunner,
                         values: adminUsers,
                         where: {
@@ -514,7 +560,7 @@ export class ServersService {
                         });
                     }
                 }
-                promise6 = this.guildScheduledRepository._insert({
+                promise6 = this.guildScheduledRepository.cInsert({
                     transaction: queryRunner,
                     values: scheduledValues,
                 });
@@ -523,6 +569,11 @@ export class ServersService {
                 const uniqByCreators = uniqBy(creators, 'id');
 
                 const users = await this.userRepository.selectMany({
+                    select: {
+                        sql: {
+                            base: true,
+                        },
+                    },
                     transaction: queryRunner,
                     where: {
                         IN: {
@@ -533,12 +584,12 @@ export class ServersService {
 
                 const usersValues = differenceBy(uniqByCreators, users, 'id');
                 if (isNotEmpty(usersValues)) {
-                    promise7 = this.userRepository._insert({
+                    promise7 = this.userRepository.cInsert({
                         transaction: queryRunner,
                         values: usersValues,
                     });
                 } else {
-                    promise8 = this.userRepository.bulkUpdate({
+                    promise8 = this.userRepository.cBulkUpdate({
                         transaction: queryRunner,
                         values: uniqByCreators,
                         where: {
@@ -556,18 +607,13 @@ export class ServersService {
 
             return { id: discordGuild.id };
         } catch (error: any) {
-            console.log(error);
+            this.logger.error(error.message, error.stack);
+
             if (queryRunner.isTransactionActive) {
                 await queryRunner.rollbackTransaction();
             }
 
-            // DiscordApi 오류일 경우
-            if (error.status) {
-                throw new HttpException(error.customMessage, error.status);
-            }
-
-            // 기본 오류 처리
-            throw new BadRequestException(error.customMessage || ERROR_MESSAGES.E400);
+            throw new HttpException(error.message || ERROR_MESSAGES.E400, error.status || HttpStatus.BAD_REQUEST);
         } finally {
             await queryRunner.release();
         }
@@ -575,12 +621,11 @@ export class ServersService {
 
     /**
      * 서버 수정
-     * @param user 사용자정보
-     * @param values 저장 값
+     * @param {string} userId
+     * @param {SaveValues} saveValues
      */
-    async edit(user: SaveUser, values: UpdateValues): Promise<Save> {
+    async edit(serverId: string, userId: string, saveValues: Partial<SaveValues>): Promise<Save> {
         const {
-            id,
             serverOpen,
             categoryId,
             linkType,
@@ -592,7 +637,7 @@ export class ServersService {
             summary,
             content,
             contentType,
-        } = values;
+        } = saveValues;
 
         let newInviteCode = inviteCode;
 
@@ -601,13 +646,20 @@ export class ServersService {
 
         const queryRunner = this.dataSource.createQueryRunner();
         try {
-            const server = await this.guildRepository.selectOne({
+            const guild = await this.guildRepository.selectOne({
+                select: {
+                    columns: {
+                        id: true,
+                    },
+                },
                 where: {
-                    id,
-                    user_id: user.id,
+                    id: serverId,
+                    user_id: userId,
                 },
             });
-            if (!server) throw { customMessage: ERROR_MESSAGES.SERVER_NOT_FOUND_OR_NOT_PERMISSION };
+            if (!guild) {
+                throw new BadRequestException(ERROR_MESSAGES.SERVER_NOT_FOUND_OR_NOT_PERMISSION);
+            }
 
             if (linkType === 'invite') {
                 if (inviteAuto === 'auto') {
@@ -622,7 +674,7 @@ export class ServersService {
 
             await queryRunner.startTransaction();
             // 서버 수정
-            promise1 = this.guildRepository._update({
+            promise1 = this.guildRepository.cUpdate({
                 transaction: queryRunner,
                 values: {
                     category_id: categoryId,
@@ -635,18 +687,19 @@ export class ServersService {
                     is_open: serverOpen === 'public',
                 },
                 where: {
-                    id,
+                    id: serverId,
                 },
             });
 
-            // 이전 태그 삭제 후 현재 태그 추가
-            await this.tagRepository._delete({
+            // 이전 태그 삭제
+            await this.tagRepository.cDelete({
                 transaction: queryRunner,
                 where: {
-                    guild_id: id,
+                    guild_id: serverId,
                 },
             });
 
+            // 현재 태그 추가
             const tagsLength = tags.length;
             if (tagsLength > 0) {
                 const formatTags = [];
@@ -656,11 +709,12 @@ export class ServersService {
 
                     formatTags.push({
                         id: generateSnowflakeId(),
-                        guild_id: id,
+                        guild_id: serverId,
                         name: tag.name,
+                        sort: i,
                     });
                 }
-                promise2 = this.tagRepository._insert({
+                promise2 = this.tagRepository.cInsert({
                     transaction: queryRunner,
                     values: formatTags,
                 });
@@ -670,125 +724,112 @@ export class ServersService {
 
             await queryRunner.commitTransaction();
 
-            return { id };
+            return { id: serverId };
         } catch (error: any) {
+            this.logger.error(error.message, error.stack);
+
             if (queryRunner.isTransactionActive) {
                 await queryRunner.rollbackTransaction();
             }
 
-            // DiscordApi 오류일 경우
-            if (error.status) {
-                throw new HttpException(error.customMessage, error.status);
-            }
-
-            // 기본 오류 처리
-            throw new BadRequestException(error.customMessage || ERROR_MESSAGES.E400);
+            throw new HttpException(error.message || ERROR_MESSAGES.E400, error.status || HttpStatus.BAD_REQUEST);
         } finally {
             await queryRunner.release();
         }
     }
 
     /**
-     * 서버 추가
-     * @param options
-     * @returns
-     */
-    async insert(options: InsertOptions): Promise<InsertResult> {
-        return this.guildRepository._insert(options);
-    }
-
-    /**
-     * 서버 업데이트
-     * @param options
-     * @returns
-     */
-    async update(options: UpdateOptions): Promise<UpdateResult> {
-        return this.guildRepository._update(options);
-    }
-
-    /**
      * 서버 삭제
-     * @param options
-     * @returns
+     * @param {string} userId
+     * @param {string} serverId
      */
     async delete(userId: string, serverId: string): Promise<{ result: boolean }> {
         const queryRunner = this.dataSource.createQueryRunner();
-        await queryRunner.startTransaction();
         try {
             const user = await this.userRepository.selectOne({
-                transaction: queryRunner,
+                select: {
+                    sql: {
+                        base: true,
+                    },
+                },
                 where: {
                     id: userId,
                 },
             });
 
-            const server = await this.guildRepository.selectOne({
+            const guild = await this.guildRepository.selectOne({
+                select: {
+                    columns: {
+                        id: true,
+                        is_admin_open: true,
+                    },
+                },
+                where: {
+                    id: serverId,
+                    user_id: user.id,
+                },
+            });
+            if (isEmpty(guild)) {
+                throw new NotFoundException(ERROR_MESSAGES.SERVER_NOT_FOUND);
+            }
+
+            if (guild.is_admin_open === 0) {
+                throw new ForbiddenException(ERROR_MESSAGES.E403);
+            }
+
+            await queryRunner.startTransaction();
+
+            const serversDelete = await this.guildRepository.cDelete({
                 transaction: queryRunner,
                 where: {
                     id: serverId,
-                    wirter_id: user.id,
+                    user_id: user.id,
+                },
+            });
+            if (serversDelete.affected === 0) {
+                throw new BadRequestException(ERROR_MESSAGES.DELETE_SERVER_NOT_FOUND);
+            }
+
+            const promise1 = this.tagRepository.cDelete({
+                transaction: queryRunner,
+                where: {
+                    guild_id: serverId,
                 },
             });
 
-            if (isNotEmpty(server)) {
-                if (server.is_admin_open === 0) {
-                    throw { status: 403, customMessage: ERROR_MESSAGES.E403 };
-                }
+            const promise2 = this.emojiRepository.cDelete({
+                transaction: queryRunner,
+                where: {
+                    guild_id: serverId,
+                },
+            });
 
-                const serversDelete = await this.guildRepository._delete({
-                    transaction: queryRunner,
-                    where: {
-                        id: serverId,
-                        user_id: user.id,
-                    },
-                });
-                if (serversDelete.affected === 0) throw { customMessage: ERROR_MESSAGES.DELETE_SERVER_NOT_FOUND };
+            const promise3 = this.guildAdminPermissionRepository.cDelete({
+                transaction: queryRunner,
+                where: {
+                    guild_id: serverId,
+                },
+            });
 
-                const promise1 = this.tagRepository._delete({
-                    transaction: queryRunner,
-                    where: {
-                        guild_id: serverId,
-                    },
-                });
+            const promise4 = this.guildScheduledRepository.cDelete({
+                transaction: queryRunner,
+                where: {
+                    guild_id: serverId,
+                },
+            });
+            await Promise.all([promise1, promise2, promise3, promise4]);
 
-                const promise2 = this.emojiRepository._delete({
-                    transaction: queryRunner,
-                    where: {
-                        guild_id: serverId,
-                    },
-                });
+            await queryRunner.commitTransaction();
 
-                const promise3 = this.serverAdminPermissionRepository._delete({
-                    transaction: queryRunner,
-                    where: {
-                        guild_id: server.id,
-                    },
-                });
-
-                const promise4 = this.guildScheduledRepository._delete({
-                    transaction: queryRunner,
-                    where: {
-                        guild_id: server.id,
-                    },
-                });
-
-                await Promise.all([promise1, promise2, promise3, promise4]);
-
-                await queryRunner.commitTransaction();
-
-                return { result: true };
-            } else {
-                throw { status: 404, customMessage: ERROR_MESSAGES.SERVER_NOT_FOUND };
-            }
+            return { result: true };
         } catch (error: any) {
+            this.logger.error(error.message, error.stack);
+
             if (queryRunner.isTransactionActive) {
                 await queryRunner.rollbackTransaction();
             }
 
-            throw new HttpException(
-                { customMessage: error.customMessage || '' },
-                error.status || HttpStatus.BAD_REQUEST,
-            );
+            throw new HttpException(error.message, error.status || HttpStatus.BAD_REQUEST);
         } finally {
             await queryRunner.release();
         }

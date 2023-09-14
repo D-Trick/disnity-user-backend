@@ -1,9 +1,9 @@
 // types
-import type { Guild, Channel } from '../ts/interfaces/discordApi.interface';
+import type { Guild, Channel } from '../types/discordApi.type';
 // lib
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import * as discordApi from '@lib/discord/api';
+import * as discordApi from 'src/utils/discord/api';
 // configs
 import { discordConfig } from '@config/discord.config';
 

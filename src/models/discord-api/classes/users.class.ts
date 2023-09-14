@@ -1,8 +1,8 @@
 // types
-import type { User, UserGuild } from '@models/discord-api/ts/interfaces/discordApi.interface';
+import type { User, UserGuild } from '@models/discord-api/types/discordApi.type';
 // lib
 import { HttpService } from '@nestjs/axios';
-import * as discordApi from '@lib/discord/api';
+import * as discordApi from 'src/utils/discord/api';
 // configs
 import { discordConfig } from '@config/discord.config';
 
