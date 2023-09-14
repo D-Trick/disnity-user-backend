@@ -1,5 +1,3 @@
-// types
-import type { Select } from '@databases/ts/types/common-code.type';
 // lib
 import { Controller, Get, Param } from '@nestjs/common';
 // dtos
@@ -11,13 +9,19 @@ import { CommonCodeService } from './common-code.service';
 
 @Controller()
 export class CommonCodeController {
+    /**************************************************
+     * Constructor
+     **************************************************/
     constructor(private commonCodeService: CommonCodeService) {}
 
+    /**************************************************
+     * Public Methods
+     **************************************************/
     @Get(':code')
-    async findByCode(@Param() param: ParamCodeDto): Promise<Select[]> {
+    async code(@Param() param: ParamCodeDto) {
         const { code } = param;
 
-        const common = await this.commonCodeService.getCodeByCommon(code);
+        const common = await this.commonCodeService.getCommonCode(code);
 
         return common;
     }

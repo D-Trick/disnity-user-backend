@@ -1,5 +1,3 @@
-// types
-import type { MenuTree } from '@lib/utiles';
 // lib
 import { Controller, Get, Param } from '@nestjs/common';
 import { MenusService } from '@models/menus/menus.service';
@@ -10,13 +8,19 @@ import { ParamTypeDto } from './dtos/routers';
 
 @Controller()
 export class MenusController {
+    /**************************************************
+     * Constructor
+     **************************************************/
     constructor(private readonly menusService: MenusService) {}
 
+    /**************************************************
+     * Public Methods
+     **************************************************/
     @Get(':type')
-    async menuType(@Param() params: ParamTypeDto): Promise<MenuTree[]> {
-        const { type }: ParamTypeDto = params;
+    async type(@Param() params: ParamTypeDto) {
+        const { type } = params;
 
-        const menus = await this.menusService.getMenusByType(type);
+        const menus = await this.menusService.getTypeMenus(type);
         return menus;
     }
 }

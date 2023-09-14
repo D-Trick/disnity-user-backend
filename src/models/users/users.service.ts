@@ -1,13 +1,14 @@
 // types
-import type { Select } from '@databases/ts/types/user.type';
-import type { QueryRunner } from 'typeorm';
-import type { AdminGuild, LoginUserSave } from './ts/interfaces/users.interface';
-import type { Channel } from '@models/discord-api/ts/interfaces/discordApi.interface';
+import type { CacheUser } from '@cache/types';
+import type { AdminGuild, SaveLoginInfo } from './types/users.type';
+import type { Channel } from '@models/discord-api/types/discordApi.type';
 // lib
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { isEmpty } from '@lib/lodash';
-import { getAdminGuilds } from '@lib/discord/permission';
+//uitls
+import { generateSnowflakeId } from '@utils/index';
+import { filterAdminGuilds } from '@utils/discord/permission';
 // configs
 import { refreshTokenTTL } from '@config/jwt.config';
 // helpers
@@ -16,104 +17,130 @@ import { FilterHelper } from './helper/filter.helper';
 // services
 import { CacheService } from '@cache/redis/cache.service';
 import { DiscordApiService } from '@models/discord-api/discordApi.service';
-// repositorys
-import { UserRepository } from '@databases/repositories/user.repository';
-import { AccessLogRepository } from '@databases/repositories/access-log.repository';
-import { generateSnowflakeId } from '@lib/snowflake';
+// repositories
+import { UserRepository } from '@databases/repositories/user';
+import { AccessLogRepository } from '@databases/repositories/access-log';
 
 // ----------------------------------------------------------------------
 
 @Injectable()
 export class UsersService {
+    private readonly logger = new Logger(UsersService.name);
+
+    /**************************************************
+     * Constructor
+     **************************************************/
     constructor(
         private readonly dataSource: DataSource,
 
-        private readonly cacheService: CacheService,
-        private readonly discordApiService: DiscordApiService,
-
         private readonly utilHelper: UtilHelper,
         private readonly filterHelper: FilterHelper,
+
+        private readonly cacheService: CacheService,
+        private readonly discordApiService: DiscordApiService,
 
         private readonly userRepository: UserRepository,
         private readonly accessLogRepository: AccessLogRepository,
     ) {}
 
+    /**************************************************
+     * Public Methods
+     **************************************************/
     /**
      * 유저 가져오기
      * @param {string} userId
      */
-    async getUser(userId: string, queryRunner?: QueryRunner): Promise<Select | undefined> {
-        const user = await this.userRepository.selectOne({
-            transaction: queryRunner,
-            where: {
-                id: userId,
-            },
-        });
+    async getUser(userId: string) {
+        const cacheUser = await this.cacheService.getUser(userId);
+        if (!cacheUser) {
+            const refreshUser = await this.userRepository.selectOne<'base'>({
+                select: {
+                    sql: {
+                        base: true,
+                    },
+                },
+                where: {
+                    id: userId,
+                },
+            });
+            if (!refreshUser) {
+                throw new UnauthorizedException();
+            }
 
-        return user;
+            await this.cacheService.set<CacheUser>(`disnity-user-${userId}`, refreshUser, refreshTokenTTL);
+
+            return refreshUser;
+        }
+
+        return cacheUser;
     }
 
     /**
-     * 유저 정보 저장
+     * 디스코드에 로그인한 유저 가져오기
+     * @param {string} userId
+     */
+    async getDiscordUser(userId: string) {
+        const cacheDiscordUser = await this.cacheService.getDiscordUser(userId);
+
+        if (!cacheDiscordUser) {
+            throw new UnauthorizedException();
+        }
+
+        return cacheDiscordUser;
+    }
+
+    /**
+     * 로그인 유저 정보 저장
      * @param user
      */
-    async infoSave(loginUser: LoginUserSave): Promise<{ result: boolean }> {
+    async saveLoginInfo(loginUser: SaveLoginInfo): Promise<{ result: boolean }> {
+        let promise1 = undefined;
+        let promise2 = undefined;
+
         const queryRunner = this.dataSource.createQueryRunner();
-        await queryRunner.startTransaction();
         try {
-            let promise1 = undefined;
-            let promise2 = undefined;
-
-            const user = await this.getUser(loginUser.id, queryRunner);
-
-            let userValues = undefined;
+            const user = await this.getUser(loginUser.id);
+            await queryRunner.startTransaction();
             if (isEmpty(user)) {
-                userValues = {
-                    id: loginUser.id,
-                    global_name: loginUser.global_name,
-                    username: loginUser.username,
-                    discriminator: loginUser.discriminator,
-                    email: loginUser.email,
-                    verified: loginUser.verified,
-                    avatar: loginUser.avatar,
-                    banner: loginUser.banner,
-                    locale: loginUser.locale,
-                    premium_type: loginUser.premium_type,
-                    created_at: () => 'now()',
-                };
-
-                promise1 = this.userRepository._insert({
+                promise1 = this.userRepository.cInsert({
                     transaction: queryRunner,
-                    values: userValues,
+                    values: {
+                        id: loginUser.id,
+                        global_name: loginUser.global_name,
+                        username: loginUser.username,
+                        discriminator: loginUser.discriminator,
+                        email: loginUser.email,
+                        verified: loginUser.verified,
+                        avatar: loginUser.avatar,
+                        banner: loginUser.banner,
+                        locale: loginUser.locale,
+                        premium_type: loginUser.premium_type,
+                        created_at: () => 'now()',
+                    },
                 });
             } else {
-                userValues = {
-                    global_name: loginUser.global_name,
-                    username: loginUser.username,
-                    discriminator: loginUser.discriminator,
-                    email: loginUser.email,
-                    verified: loginUser.verified,
-                    avatar: loginUser.avatar,
-                    banner: loginUser.banner,
-                    locale: loginUser.locale,
-                    premium_type: loginUser.premium_type,
-                    updated_at: () => 'now()',
-                };
-
-                if (isEmpty(user.created_at)) {
-                    userValues.created_at = () => 'now()';
-                }
-
-                promise1 = this.userRepository._update({
+                promise1 = this.userRepository.cUpdate({
                     transaction: queryRunner,
-                    values: userValues,
+                    values: {
+                        global_name: loginUser.global_name,
+                        username: loginUser.username,
+                        discriminator: loginUser.discriminator,
+                        email: loginUser.email,
+                        verified: loginUser.verified,
+                        avatar: loginUser.avatar,
+                        banner: loginUser.banner,
+                        locale: loginUser.locale,
+                        premium_type: loginUser.premium_type,
+                        created_at: isEmpty(user.created_at) ? () => 'now()' : undefined,
+                        updated_at: () => 'now()',
+                    },
                     where: {
                         id: loginUser.id,
                     },
                 });
             }
 
-            promise2 = this.accessLogRepository._insert({
+            promise2 = this.accessLogRepository.cInsert({
                 transaction: queryRunner,
                 values: {
                     id: generateSnowflakeId(),
@@ -122,11 +149,12 @@ export class UsersService {
                 },
             });
             await Promise.all([promise1, promise2]);
+
             await queryRunner.commitTransaction();
 
             const reloadUser = await this.getUser(loginUser.id);
-            await this.cacheService.set(
-                loginUser.id,
+            promise1 = this.cacheService.set(
+                `discord-user-${loginUser.id}`,
                 {
                     ...reloadUser,
                     guilds: loginUser.guilds,
@@ -136,9 +164,13 @@ export class UsersService {
                 },
                 refreshTokenTTL,
             );
+            promise2 = await this.cacheService.set(`disnity-user-${loginUser.id}`, reloadUser, refreshTokenTTL);
+            await Promise.all([promise1, promise2]);
 
             return { result: true };
-        } catch {
+        } catch (error: any) {
+            this.logger.error(error.message, error.stack);
+
             if (queryRunner.isTransactionActive) {
                 await queryRunner.rollbackTransaction();
             }
@@ -150,14 +182,13 @@ export class UsersService {
     }
 
     /**
-     * 관리자 권한이 있는 길드 목록 조회
+     * 관리자 권한이 있는 나의 길드 목록 조회
      * @param {string} userId
      */
-    async guilds(userId: string): Promise<AdminGuild[]> {
-        const cacheUser = await this.cacheService.getUser(userId);
+    async getAdminGuilds(userId: string): Promise<AdminGuild[]> {
+        const cacheDiscordUser = await this.cacheService.getDiscordUser(userId);
 
-        const promise = this.filterHelper.adminGuildsFilter(userId, cacheUser.admin_guilds);
-        return promise;
+        return this.filterHelper.filterAdminGuilds(userId, cacheDiscordUser.admin_guilds);
     }
 
     /**
@@ -165,22 +196,21 @@ export class UsersService {
      * @param {string} userId
      */
     async refreshGuilds(userId: string): Promise<AdminGuild[]> {
-        const cacheUser = await this.cacheService.getUser(userId);
-        const guilds = await this.discordApiService.users(cacheUser.access_token).guilds;
+        const cacheDiscordUser = await this.cacheService.getDiscordUser(userId);
+        const guilds = await this.discordApiService.users(cacheDiscordUser.access_token).guilds;
 
-        const adminGuilds = getAdminGuilds(guilds);
+        const adminGuilds = filterAdminGuilds(guilds);
 
         await this.cacheService.set(
-            userId,
+            `discord-user-${userId}`,
             {
-                ...cacheUser,
+                ...cacheDiscordUser,
                 admin_guilds: adminGuilds,
             },
             refreshTokenTTL,
         );
 
-        const promise = this.filterHelper.adminGuildsFilter(userId, adminGuilds);
-        return promise;
+        return this.filterHelper.filterAdminGuilds(userId, adminGuilds);
     }
 
     /**
@@ -189,11 +219,11 @@ export class UsersService {
      * @param {string} userId
      */
     async channels(guildId: string, userId: string, refresh: boolean): Promise<Channel[]> {
-        const cacheUser = await this.cacheService.getUser(userId);
+        const cacheDiscordUser = await this.cacheService.getDiscordUser(userId);
 
         let channels = [];
 
-        const adminGuild: any = this.utilHelper.getGuildByGuildId(guildId, cacheUser.admin_guilds);
+        const adminGuild: any = this.utilHelper.getAdminGuild(guildId, cacheDiscordUser.admin_guilds);
         if (adminGuild) {
             if (refresh) {
                 channels = [];
@@ -205,7 +235,7 @@ export class UsersService {
                 channels = await this.filterHelper.inviteCodeCreatePermissionChannelsFilter(guildId);
                 adminGuild.channels = channels;
 
-                await this.cacheService.set(userId, cacheUser, refreshTokenTTL);
+                await this.cacheService.set(`discord-user-${userId}`, cacheDiscordUser, refreshTokenTTL);
             }
         }
 

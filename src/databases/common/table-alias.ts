@@ -1,0 +1,9 @@
+export const TAG_TABLE_ALIAS = 't';
+export const USER_TABLE_ALIAS = 'u';
+export const MENU_TABLE_ALIAS = 'm';
+export const GUILD_TABLE_ALIAS = 'g';
+export const EMOJI_TABLE_ALIAS = 'e';
+export const ACCESS_LOG_ALIAS = 'al';
+export const COMMON_CODE_TABLE_ALIAS = 'cc';
+export const GUILD_SCHEDULED_TABLE_ALIAS = 'gc';
+export const GUILD_ADMIN_PERMISSION_TABLE_ALIAS = 'gap';

@@ -1,5 +1,3 @@
-// types
-import type { ServerPagination } from '@models/servers/ts/interfaces/pagination.interface';
 // lib
 import { Controller, Get, Query, Param } from '@nestjs/common';
 // dtos
@@ -12,13 +10,18 @@ import { ServersService } from '@models/servers/servers.service';
 
 @Controller()
 export class SearchController {
+    /**************************************************
+     * Constructor
+     **************************************************/
     constructor(private readonly serversService: ServersService) {}
 
+    /**************************************************
+     * Public Methods
+     **************************************************/
     @Get(':keyword')
-    async index(@Param() param: ParamKeywordDto, @Query() query: QuerysDto): Promise<ServerPagination> {
-        const { keyword } = param;
+    async keyword(@Param() param: ParamKeywordDto, @Query() query: QuerysDto) {
+        const servers = await this.serversService.searchServerList(param.keyword, query);
 
-        const promise = this.serversService.searchServerList(keyword, query);
-        return promise;
+        return servers;
     }
 }

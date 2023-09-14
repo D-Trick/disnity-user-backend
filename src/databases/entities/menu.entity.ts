@@ -1,5 +1,5 @@
 // types
-import type { DataTypeBoolean } from '@databases/ts/types/global';
+import type { DataTypeBoolean } from '@databases/types/global';
 // lib
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 

@@ -1,5 +1,5 @@
 // types
-import type { AdminGuild } from '../ts/interfaces/users.interface';
+import type { AdminGuild } from '../types/users.type';
 // lib
 import { Injectable } from '@nestjs/common';
 
@@ -11,11 +11,11 @@ export class UtilHelper {
      * Public Methods
      **************************************************/
     /**
-     * 관리자 권한이 있는 길드 목록을 가져온다.
+     * 관리자 권한이 있는 길드를 가져온다.
      * @param userId
      * @param adminGuilds
      */
-    getGuildByGuildId(guildId: string, adminGuilds: AdminGuild[]): AdminGuild | undefined {
+    getAdminGuild(guildId: string, adminGuilds: AdminGuild[]): AdminGuild | undefined {
         let guild = undefined;
 
         for (let i = adminGuilds.length - 1; i >= 0; i--) {

@@ -1,7 +1,7 @@
 // types
-import type { DataTypeDate } from '@databases/ts/types/global';
+import type { DataTypeDate } from '@databases/types/global';
 // lib
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
 
 // ----------------------------------------------------------------------
 
@@ -10,7 +10,8 @@ export class GuildScheduled {
     @PrimaryColumn({ type: 'bigint', unsigned: true })
     id: string;
 
-    @PrimaryColumn({ type: 'bigint', unsigned: true })
+    @Column('bigint', { unsigned: true })
+    @Index('ix_guild_id')
     guild_id: string;
 
     @Column('bigint', { nullable: true, unsigned: true })

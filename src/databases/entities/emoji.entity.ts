@@ -1,7 +1,7 @@
 // types
-import type { DataTypeBoolean } from '@databases/ts/types/global';
+import type { DataTypeBoolean } from '@databases/types/global';
 // lib
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
 
 // ----------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ export class Emoji {
     id: string;
 
     @Column('bigint', { unsigned: true })
+    @Index('ix_guild_id')
     guild_id: string;
 
     @Column('varchar', { length: 255, nullable: true })

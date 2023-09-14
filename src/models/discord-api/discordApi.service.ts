@@ -12,8 +12,14 @@ import { DiscordApiGuildScheduledEvent } from './classes/guild-scheduled-event.c
 
 @Injectable()
 export class DiscordApiService {
+    /**************************************************
+     * Constructor
+     **************************************************/
     constructor(private readonly axios: HttpService) {}
 
+    /**************************************************
+     * Public Methods
+     **************************************************/
     /**
      * Discord Users Api 목록
      */
