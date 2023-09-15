@@ -3,7 +3,7 @@ import type { GuildScheduledEvent } from '../types/discordApi.type';
 // lib
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import * as discordApi from 'src/utils/discord/api';
+import * as discordApi from '@utils/discord/api';
 // configs
 import { discordConfig } from '@config/discord.config';
 
