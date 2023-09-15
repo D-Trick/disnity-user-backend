@@ -68,7 +68,7 @@ export class ServersService {
      */
     async serverRefresh(guildId: string, userId: string): Promise<{ result: boolean }> {
         try {
-            const server = await this.guildRepository.selectOne({
+            const myServer = await this.guildRepository.selectMyGuildOne({
                 select: {
                     columns: {
                         refresh_date: true,
@@ -79,12 +79,12 @@ export class ServersService {
                     user_id: userId,
                 },
             });
-            if (isEmpty(server)) {
+            if (isEmpty(myServer)) {
                 throw new NotFoundException(ERROR_MESSAGES.SERVER_NOT_FOUND);
             }
 
             const minutes = 60 * 10;
-            const { isTimePassed, currentDate, compareDate } = timePassed(server.refresh_date as string, minutes);
+            const { isTimePassed, currentDate, compareDate } = timePassed(myServer.refresh_date as string, minutes);
 
             if (!isTimePassed) {
                 const minutes = dayjs.duration(dayjs(compareDate).diff(currentDate)).minutes();
