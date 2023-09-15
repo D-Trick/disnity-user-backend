@@ -14,4 +14,4 @@ export interface FindByTypeOptions extends SqlOptions {
     };
 }
 
-export type FindByType = Menu;
+export type FindByType = Pick<Menu, 'id' | 'name' | 'path' | 'icon' | 'caption' | 'disabled' | 'depth' | 'sort'>;

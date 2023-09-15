@@ -26,7 +26,7 @@ export class Menu {
     caption?: string;
 
     @Column('tinyint', { width: 1, default: 0 })
-    disabled?: DataTypeBoolean;
+    disabled: DataTypeBoolean;
 
     @Column('smallint', { nullable: true })
     parent_id?: number;

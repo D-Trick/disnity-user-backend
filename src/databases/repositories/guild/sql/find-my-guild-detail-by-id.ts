@@ -28,6 +28,7 @@ export async function findMyGuildDetailById(
     // SELECT
     qb.select([
         `${TABLE_ALIAS}.id                                                      AS id`,
+        `${TABLE_ALIAS}.category_id                                             AS category_id`,
         `${TABLE_ALIAS}.name                                                    AS name`,
         `${TABLE_ALIAS}.summary                                                 AS summary`,
         `${TABLE_ALIAS}.content                                                 AS content`,
@@ -40,6 +41,7 @@ export async function findMyGuildDetailById(
         `${TABLE_ALIAS}.link_type                                               AS link_type`,
         `${TABLE_ALIAS}.invite_code                                             AS invite_code`,
         `${TABLE_ALIAS}.membership_url                                          AS membership_url`,
+        `${TABLE_ALIAS}.is_open                                                 AS is_open`,
 
         `DATE_FORMAT(${TABLE_ALIAS}.created_at, '%Y-%m-%d %H:%i:%S')            AS created_at`,
         `DATE_FORMAT(${TABLE_ALIAS}.refresh_date, '%Y-%m-%d %H:%i:%s')          AS refresh_date`,
