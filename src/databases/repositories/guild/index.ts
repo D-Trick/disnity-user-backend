@@ -18,6 +18,7 @@ import type {
     FindMyGuildDetailByIdOptions,
     FindGuildsByIdsSqlName,
     SelectSqlName,
+    SelectMyGuildOptions,
 } from '@databases/types/guild.type';
 // lib
 import { Repository } from 'typeorm';
@@ -27,6 +28,7 @@ import { Guild } from '@databases/entities/guild.entity';
 import { CustomRepository } from '@common/modules/typeorm-custom-repository.module';
 // sql
 import { selectMany, selectOne } from './sql/select';
+import { selectMyGuildOne } from './sql/selectMyGuild';
 import { totalCategoryGuildsCount } from './sql/total-category-guilds-count';
 import { totalSearchGuildsCount } from './sql/total-search-guilds-count';
 import { totalGuildAdminsCount } from './sql/total-admin-guilds-count';
@@ -92,6 +94,13 @@ export class GuildRepository extends Repository<Guild> {
      */
     async selectMany<T extends SelectSqlName = 'columns'>(options: SelectOptions) {
         return selectMany<T>(this, options);
+    }
+    /**
+     * Select MyGuild One
+     * @param {SelectMyGuildOptions} options
+     */
+    async selectMyGuildOne(options: SelectMyGuildOptions) {
+        return selectMyGuildOne(this, options);
     }
 
     /**
