@@ -145,8 +145,6 @@ function select(qb: SelectQueryBuilder<Guild>, options: SelectOptions) {
     if (is_admin_open) qb.andWhere(`${TABLE_ALIAS}.is_admin_open = :is_admin_open`, { is_admin_open });
     if (ids) qb.andWhere(`${TABLE_ALIAS}.id IN (:ids)`, { ids });
 
-    // ORDER BY
-
     return qb;
 }
 // ----------------------------------------------------------------------

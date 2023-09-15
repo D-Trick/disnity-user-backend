@@ -62,5 +62,5 @@ export async function findTagGuildIds(repository: Repository<Tag>, options: Find
         tagGuildIds.push(guild.guild_id);
     }
 
-    return tagGuilds;
+    return tagGuildIds;
 }

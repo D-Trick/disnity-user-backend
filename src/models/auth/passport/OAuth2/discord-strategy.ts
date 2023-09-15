@@ -1,6 +1,6 @@
 // lib
 import { Strategy as OAuth2Strategy, StrategyOptions, VerifyFunction } from 'passport-oauth2';
-import { filterAdminGuilds } from 'src/utils/discord/permission';
+import { filterAdminGuilds } from '@utils/discord/permission';
 // configs
 import { discordConfig } from '@config/discord.config';
 

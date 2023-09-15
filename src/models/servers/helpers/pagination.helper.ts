@@ -136,7 +136,7 @@ export class PaginationHelper {
 
         switch (listType) {
             case 'tag-server':
-                return await this.tagRepository.findTagGuildIds({
+                return this.tagRepository.findTagGuildIds({
                     ...commonOptions,
                     where: {
                         tag_name: tagName,
@@ -146,7 +146,7 @@ export class PaginationHelper {
                 });
 
             case 'search-server':
-                return await this.guildRepository.findSearchGuildIds({
+                return this.guildRepository.findSearchGuildIds({
                     ...commonOptions,
                     where: {
                         keyword,
@@ -163,7 +163,7 @@ export class PaginationHelper {
                 });
 
             default:
-                return await this.guildRepository.findCategoryGuildIds({
+                return this.guildRepository.findCategoryGuildIds({
                     ...commonOptions,
                     where: {
                         category_id: categoryId,

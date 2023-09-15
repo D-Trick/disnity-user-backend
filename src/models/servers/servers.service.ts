@@ -94,7 +94,7 @@ export class ServersService {
                 throw new HttpException(`${timeRemainning} 후 다시 시도해주세요.`, HttpStatus.BAD_REQUEST);
             }
 
-            const discordGuild = await this.discordApiService.guilds().detail('1');
+            const discordGuild = await this.discordApiService.guilds().detail(guildId);
 
             await this.guildRepository.cUpdate({
                 values: {
@@ -646,7 +646,7 @@ export class ServersService {
 
         const queryRunner = this.dataSource.createQueryRunner();
         try {
-            const guild = await this.guildRepository.selectOne({
+            const myGuild = await this.guildRepository.selectMyGuildOne({
                 select: {
                     columns: {
                         id: true,
@@ -657,7 +657,7 @@ export class ServersService {
                     user_id: userId,
                 },
             });
-            if (!guild) {
+            if (!myGuild) {
                 throw new BadRequestException(ERROR_MESSAGES.SERVER_NOT_FOUND_OR_NOT_PERMISSION);
             }
 

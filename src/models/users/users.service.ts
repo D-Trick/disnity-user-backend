@@ -219,6 +219,8 @@ export class UsersService {
      * @param {string} userId
      */
     async channels(guildId: string, userId: string, refresh: boolean): Promise<Channel[]> {
+        await this.refreshGuilds(userId);
+
         const cacheDiscordUser = await this.cacheService.getDiscordUser(userId);
 
         let channels = [];
