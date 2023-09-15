@@ -26,7 +26,11 @@ export async function findByType(repository: Repository<Menu>, options: FindByTy
         `${TABLE_ALIAS}.id         AS id`,
         `${TABLE_ALIAS}.name       AS name`,
         `${TABLE_ALIAS}.path       AS path`,
+        `${TABLE_ALIAS}.icon       AS icon`,
+        `${TABLE_ALIAS}.caption    AS caption`,
+        `${TABLE_ALIAS}.disabled   AS disabled`,
         `${TABLE_ALIAS}.depth      AS depth`,
+        `${TABLE_ALIAS}.sort       AS sort`,
     ]);
 
     // JOIN
