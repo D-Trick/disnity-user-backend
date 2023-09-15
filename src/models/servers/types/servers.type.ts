@@ -6,6 +6,6 @@ import { Emoji } from '@databases/entities/emoji.entity';
 // ----------------------------------------------------------------------
 
 export interface ServerDetail extends FindGuildDetailById {
-    emojis: Partial<Emoji>[];
-    animate_emojis: Partial<Emoji>[];
+    emojis: Partial<Pick<Emoji, 'id' | 'name' | 'animated'>>[];
+    animate_emojis: Partial<Pick<Emoji, 'id' | 'name' | 'animated'>>[];
 }
