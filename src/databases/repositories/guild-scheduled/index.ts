@@ -1,11 +1,6 @@
 // types
 import type { SqlOptions } from '@common/types/sql-options.type';
-import type {
-    SelectOptions,
-    InsertOptions,
-    UpdateOptions,
-    DeleteOptions,
-} from '@databases/types/guilds-scheduled.type';
+import type { SelectOptions, InsertOptions, UpdateOptions, DeleteOptions } from '@databases/types/guild-scheduled.type';
 // lib
 import { Repository } from 'typeorm';
 // entities

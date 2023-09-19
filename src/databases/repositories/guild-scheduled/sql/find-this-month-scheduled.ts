@@ -1,6 +1,6 @@
 // types
 import type { SqlOptions } from '@common/types/sql-options.type';
-import type { FindThisMonthScheduled } from '@databases/types/guilds-scheduled.type';
+import type { FindThisMonthScheduled } from '@databases/types/guild-scheduled.type';
 // lib
 import { Brackets, Repository } from 'typeorm';
 // utils

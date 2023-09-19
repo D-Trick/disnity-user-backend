@@ -42,7 +42,7 @@ export class EmojiRepository extends Repository<Emoji> {
 
     /**
      * Custom Update
-     * @param {InsertOptions} options
+     * @param {UpdateOptions} options
      */
     async cUpdate(options: UpdateOptions) {
         return cUpdate(this, options);
@@ -50,7 +50,7 @@ export class EmojiRepository extends Repository<Emoji> {
 
     /**
      * Custom Delete
-     * @param {InsertOptions} options
+     * @param {DeleteOptions} options
      */
     async cDelete(options: DeleteOptions) {
         return cDelete(this, options);

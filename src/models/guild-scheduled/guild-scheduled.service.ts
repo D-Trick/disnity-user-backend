@@ -1,12 +1,12 @@
 // lib
 import { Injectable } from '@nestjs/common';
 // repositories
-import { GuildsScheduledRepository } from '@databases/repositories/guilds-scheduled';
+import { GuildsScheduledRepository } from '@databases/repositories/guild-scheduled';
 
 // ----------------------------------------------------------------------
 
 @Injectable()
-export class GuildsScheduledService {
+export class GuildScheduledService {
     /**************************************************
      * Constructor
      **************************************************/

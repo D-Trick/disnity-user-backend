@@ -180,7 +180,7 @@ export class GuildRepository extends Repository<Guild> {
      * Custom Bulk Update
      * @param {BulkUpdateOptions} options
      */
-    async bulkUpdate(options: BulkUpdateOptions) {
+    async cBulkUpdate(options: BulkUpdateOptions) {
         return cBulkUpdate(this, options);
     }
 

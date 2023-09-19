@@ -1,6 +1,6 @@
 // types
 import type { InsertResult } from 'typeorm';
-import type { InsertOptions } from '@databases/types/guilds-scheduled.type';
+import type { InsertOptions } from '@databases/types/guild-scheduled.type';
 // lib
 import { Repository } from 'typeorm';
 // utils

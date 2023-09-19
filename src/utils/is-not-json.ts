@@ -1,4 +1,4 @@
-import { isJson } from './isJson';
+import { isJson } from './is-json';
 
 export function isNotJson(value: any) {
     return !isJson(value);

@@ -1,6 +1,6 @@
 // types
 import type { UpdateResult } from 'typeorm';
-import type { UpdateOptions } from '@databases/types/guilds-scheduled.type';
+import type { UpdateOptions } from '@databases/types/guild-scheduled.type';
 // lib
 import { Repository } from 'typeorm';
 import { isAllEmpty } from '@utils/index';

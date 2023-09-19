@@ -7,7 +7,7 @@ import { SearchModule } from '@models/search/search.module';
 import { CommonCodeModule } from '@models/common-code/common-code.module';
 import { ServersModule } from '@models/servers/servers.module';
 import { SitemapModule } from '@models/sitemap/sitemap.module';
-import { GuildsScheduledModule } from '@models/guilds-scheduled/guilds-scheduled.module';
+import { GuildScheduledModule } from '@models/guild-scheduled/guild-scheduled.module';
 
 // ----------------------------------------------------------------------
 
@@ -31,8 +31,8 @@ const apiRouter = {
             module: ServersModule,
         },
         {
-            path: 'guilds-scheduled',
-            module: GuildsScheduledModule,
+            path: 'guild-scheduled',
+            module: GuildScheduledModule,
         },
         {
             path: 'search',

@@ -29,7 +29,7 @@ import { UserRepository } from '@databases/repositories/user';
 import { GuildRepository } from '@databases/repositories/guild';
 import { EmojiRepository } from '@databases/repositories/emoji';
 import { CommonCodeRepository } from '@databases/repositories/common-code';
-import { GuildsScheduledRepository } from '@databases/repositories/guilds-scheduled';
+import { GuildsScheduledRepository } from '@databases/repositories/guild-scheduled';
 import { GuildAdminPermissionRepository } from '@databases/repositories/guild-admin-permission';
 
 // ----------------------------------------------------------------------

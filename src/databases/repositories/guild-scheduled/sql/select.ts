@@ -1,6 +1,6 @@
 // types
 import type { SelectQueryBuilder } from 'typeorm';
-import type { SelectOptions } from '@databases/types/guilds-scheduled.type';
+import type { SelectOptions } from '@databases/types/guild-scheduled.type';
 // lib
 import { Repository } from 'typeorm';
 // utils
