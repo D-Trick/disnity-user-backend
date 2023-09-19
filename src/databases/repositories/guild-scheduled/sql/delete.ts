@@ -1,6 +1,6 @@
 // types
 import type { DeleteResult } from 'typeorm';
-import type { DeleteOptions } from '@databases/types/guilds-scheduled.type';
+import type { DeleteOptions } from '@databases/types/guild-scheduled.type';
 // lib
 import { Repository } from 'typeorm';
 // utils

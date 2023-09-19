@@ -63,14 +63,9 @@ export interface SelectOptions extends SqlOptions {
 export interface SelectMyGuildOptions extends SqlOptions {
     select: {
         columns?: SelectBooleanified<Guild>;
-        sql?: {
-            serverUrls?: boolean;
-            publicList?: boolean;
-            publicDetail?: boolean;
-        };
     };
 
-    where: Partial<Pick<Guild, 'id' | 'user_id'>>;
+    where: Pick<Guild, 'id' | 'user_id'>;
 }
 
 export interface ReturnSelect {

@@ -21,7 +21,7 @@ import { SitemapModule } from '@models/sitemap/sitemap.module';
 import { ServersModule } from '@models/servers/servers.module';
 import { RedirectModule } from '@models/redirect/redirect.module';
 import { CommonCodeModule } from '@models/common-code/common-code.module';
-import { GuildsScheduledModule } from '@models/guilds-scheduled/guilds-scheduled.module';
+import { GuildScheduledModule } from '@models/guild-scheduled/guild-scheduled.module';
 
 // ----------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ import { GuildsScheduledModule } from '@models/guilds-scheduled/guilds-scheduled
         ServersModule,
         RedirectModule,
         CommonCodeModule,
-        GuildsScheduledModule,
+        GuildScheduledModule,
     ],
 })
 export class AppModule {}
