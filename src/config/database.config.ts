@@ -34,5 +34,5 @@ export const mysqlConfig: TypeOrmModuleOptions = {
      * all: 전체 ex) logging: 'all'
      */
     logging: ['error'],
-    maxQueryExecutionTime: 1000 * 5, // 10초이상 걸리는 쿼리를 기록한다.
+    maxQueryExecutionTime: 1000 * 7, // 7초이상 걸리는 쿼리를 기록한다.
 };

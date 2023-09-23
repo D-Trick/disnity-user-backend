@@ -69,7 +69,8 @@ export async function findGuildDetailById(
     qb.leftJoin('user', 'user', 'user.id = admin.user_id');
 
     // WHERE
-    qb.where(`${TABLE_ALIAS}.id = :id`, { id });
+    qb.andWhere('refresh_date >= date_add(NOW(), interval - 1 month)');
+    qb.andWhere(`${TABLE_ALIAS}.id = :id`, { id });
     qb.andWhere(`${TABLE_ALIAS}.is_admin_open = 1`);
     qb.andWhere(`${TABLE_ALIAS}.is_open = 1`);
     qb.andWhere(`${TABLE_ALIAS}.is_bot = 1`);
