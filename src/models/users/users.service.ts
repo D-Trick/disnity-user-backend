@@ -99,7 +99,17 @@ export class UsersService {
 
         const queryRunner = this.dataSource.createQueryRunner();
         try {
-            const user = await this.getUser(loginUser.id);
+            const user = await this.userRepository.selectOne<'base'>({
+                select: {
+                    columns: {
+                        id: true,
+                        created_at: true,
+                    },
+                },
+                where: {
+                    id: loginUser.id,
+                },
+            });
             await queryRunner.startTransaction();
             if (isEmpty(user)) {
                 promise1 = this.userRepository.cInsert({
