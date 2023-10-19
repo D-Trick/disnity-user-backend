@@ -10,22 +10,16 @@ import { LoginCheckGuard } from '@guards/login-check.guard';
 import { ParamIdNumberDto, ParamIdStringDto, ParamNameDto, ParamGuildIdDto } from '@common/dtos';
 import { QuerysDto, CreateDto, UpdateDto } from './dtos/routers';
 // services
-import { CacheService } from '@cache/redis/cache.service';
 import { ServersService } from '@models/servers/servers.service';
-import { UsersService } from '@models/users/users.service';
 
 // ----------------------------------------------------------------------
 
 @Controller()
-export class GuildsController {
+export class ServersController {
     /**************************************************
      * Constructor
      **************************************************/
-    constructor(
-        private readonly cacheService: CacheService,
-        private readonly usersService: UsersService,
-        private readonly serversService: ServersService,
-    ) {}
+    constructor(private readonly serversService: ServersService) {}
 
     /**************************************************
      * Public Methods
