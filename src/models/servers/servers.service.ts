@@ -568,11 +568,6 @@ export class ServersService {
                 const uniqByCreators = uniqBy(creators, 'id');
 
                 const users = await this.userRepository.selectMany({
-                    select: {
-                        sql: {
-                            base: true,
-                        },
-                    },
                     transaction: queryRunner,
                     select: {
                         sql: {
