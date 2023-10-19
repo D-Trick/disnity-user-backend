@@ -354,7 +354,6 @@ export class ServersService {
         let promise5 = undefined;
         let promise6 = undefined;
         let promise7 = undefined;
-        let promise8 = undefined;
 
         const queryRunner = this.dataSource.createQueryRunner();
         try {
@@ -369,7 +368,7 @@ export class ServersService {
                 },
             });
             if (isNotEmpty(guild)) {
-                new BadRequestException(ERROR_MESSAGES.SERVER_EXISTE);
+                throw new BadRequestException(ERROR_MESSAGES.SERVER_EXISTE);
             }
 
             if (linkType === 'invite') {
@@ -575,6 +574,11 @@ export class ServersService {
                         },
                     },
                     transaction: queryRunner,
+                    select: {
+                        sql: {
+                            base: true,
+                        },
+                    },
                     where: {
                         IN: {
                             ids: uniqUserIds,
@@ -589,7 +593,7 @@ export class ServersService {
                         values: usersValues,
                     });
                 } else {
-                    promise8 = this.userRepository.cBulkUpdate({
+                    promise7 = this.userRepository.cBulkUpdate({
                         transaction: queryRunner,
                         values: uniqByCreators,
                         where: {
@@ -601,7 +605,7 @@ export class ServersService {
                 }
             }
 
-            await Promise.all([promise1, promise2, promise3, promise4, promise5, promise6, promise7, promise8]);
+            await Promise.all([promise1, promise2, promise3, promise4, promise5, promise6, promise7]);
 
             await queryRunner.commitTransaction();
 
