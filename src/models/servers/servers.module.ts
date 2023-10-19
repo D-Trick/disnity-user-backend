@@ -7,7 +7,7 @@ import { CoreModule } from '@common/modules/core.module';
 import { UsersModule } from '@models/users/users.module';
 import { DiscordApiModule } from '@models/discord-api/discordApi.module';
 // controllers
-import { GuildsController } from './servers.controller';
+import { ServersController } from './servers.controller';
 // services
 import { ServersService } from './servers.service';
 
@@ -15,7 +15,7 @@ import { ServersService } from './servers.service';
 
 @Module({
     imports: [CoreModule, UsersModule, DiscordApiModule],
-    controllers: [GuildsController],
+    controllers: [ServersController],
     providers: [ServersService, PaginationHelper],
     exports: [ServersService],
 })
