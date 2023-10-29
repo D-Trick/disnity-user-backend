@@ -18,7 +18,7 @@ export async function cBulkUpdate(repository: Repository<Guild>, options: BulkUp
     const { IN } = where || {};
     const { ids } = IN || {};
 
-    const bulkValues = bulkUpdateQueryFormat(ids, values);
+    const { bulkValues, bulkParameters } = bulkUpdateQueryFormat(ids, values);
 
     const qb = createUpdateQueryBuilder<Guild>(Guild, TABLE_ALIAS, {
         repository,
@@ -28,7 +28,7 @@ export async function cBulkUpdate(repository: Repository<Guild>, options: BulkUp
     qb.set(bulkValues);
 
     // WHERE
-    qb.where('id IN (:ids)', { ids });
+    qb.where('id IN (:ids)');
 
-    return qb.execute();
+    return qb.setParameters({ ...bulkParameters, ids }).execute();
 }

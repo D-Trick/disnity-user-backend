@@ -16,7 +16,7 @@ export class AuthService {
     /**************************************************
      * Public Methods
      **************************************************/
-    createJwtToken(type: string, userId: string): string {
+    createJwtToken(type: 'access' | 'refresh', userId: string): string {
         const payload: { id: string } = {
             id: userId,
         };

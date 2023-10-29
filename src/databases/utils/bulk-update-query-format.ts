@@ -3,9 +3,10 @@
  * @param {any[]} ids
  * @param {object[]} values
  */
-export const bulkUpdateQueryFormat = (ids: any[], values: object[]) => {
-    const idsLength = ids.length;
-    const valuesLength = values.length;
+export const bulkUpdateQueryFormat = (ids: any[] = [], values: object[] = []) => {
+    const { length: idsLength } = ids;
+    const { length: valuesLength } = values;
+
     if (valuesLength === 0 || idsLength === 0) {
         throw new Error(`[BulkUpdate] 변경할 데이터 또는 컬럼이 없습니다. (${valuesLength} / ${idsLength})`);
     }
@@ -15,59 +16,49 @@ export const bulkUpdateQueryFormat = (ids: any[], values: object[]) => {
         );
     }
 
-    // CASE문 Formatting
     const bulkValues = {};
-    const length = valuesLength - 1;
-    for (let i = length; i >= 0; i--) {
+    const bulkParameters = {};
+
+    for (const column in values[0]) {
+        bulkValues[column] = '';
+    }
+
+    let sequence = 1;
+    const startIndex = valuesLength - 1;
+    for (let i = startIndex; i >= 0; i--) {
         const id = ids[i];
         const value = values[i];
 
         let startQuery = '';
-        let endQuery = '';
-        // 시작쿼리 문자열 삽입
-        if (i === length) {
-            // key 초기화
-            for (const key in value) {
-                bulkValues[key] = '';
-            }
+        if (i === startIndex) {
             startQuery = 'CASE id';
         }
-        // 마지막쿼리 문자열 삽입
-        if (i === 0) endQuery = ' END';
 
-        // CASE WHEN 쿼리 문자열 생성
-        for (const key in value) {
-            let conditionalData = '';
-            let data = '';
+        let endQuery = '';
+        if (i === 0) {
+            endQuery = ' END';
+        }
 
-            const typeofId = typeof id;
-            if (typeofId === 'string') {
-                conditionalData = `'${id}'`;
-            } else {
-                conditionalData = id;
-            }
+        for (const column in value) {
+            const conditionalData = id;
 
-            const originalValue = value[key];
-            const typeofValue = typeof originalValue;
-            if (typeofValue === 'string') {
-                data = `'${originalValue}'`;
-            } else if (typeofValue === 'function') {
-                data = originalValue();
-            } else if (originalValue === undefined) {
-                data = null;
-            } else {
-                data = originalValue;
-            }
+            const originalValue = value[column];
+            const isUndefined = originalValue === undefined;
+            const parameter = isUndefined ? null : originalValue;
 
-            bulkValues[key] += `${startQuery} WHEN ${conditionalData} THEN ${data}${endQuery}`;
+            bulkValues[column] += `${startQuery} WHEN ${conditionalData} THEN :data${sequence}${endQuery}`;
+            bulkParameters[`data${sequence}`] = parameter;
+            sequence++;
         }
     }
 
-    // typeorm update문에 맞게 formatting
-    for (const key in bulkValues) {
-        const rawQuery = bulkValues[key];
-        bulkValues[key] = () => rawQuery;
+    const newBulkValues = { ...bulkValues };
+    for (const column in bulkValues) {
+        newBulkValues[column] = () => bulkValues[column];
     }
 
-    return bulkValues;
+    return {
+        bulkValues: newBulkValues,
+        bulkParameters,
+    };
 };

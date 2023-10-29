@@ -509,7 +509,7 @@ export class ServersService {
                         values: usersValues,
                     });
                 } else {
-                    promise6 = this.userRepository.cBulkUpdate({
+                    promise5 = this.userRepository.cBulkUpdate({
                         transaction: queryRunner,
                         values: adminUsers,
                         where: {
