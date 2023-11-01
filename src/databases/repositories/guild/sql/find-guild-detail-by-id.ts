@@ -1,5 +1,4 @@
 // types
-import type { Config } from '@databases/utils/n-plus-1';
 import type { FindGuildDetailById, FindGuildDetailByIdOptions } from '@databases/types/guild.type';
 // lib
 import { Repository } from 'typeorm';
@@ -81,24 +80,27 @@ export async function findGuildDetailById(
     // N + 1 FORMAT
     const queryResult = await qb.getRawMany();
 
-    const config: Config = { primaryColumnName: 'id', joinGroups: [] };
-    config.joinGroups.push({
-        outputColumnName: 'tags',
-        referencedColumnName: 'tag_guild_id',
-        selectColumns: [{ originalName: 'tag_name', changeName: 'name' }],
-    });
-    config.joinGroups.push({
-        outputColumnName: 'admins',
-        referencedColumnName: 'admin_guild_id',
-        selectColumns: [
-            { originalName: 'admin_id', changeName: 'id' },
-            { originalName: 'admin_global_name', changeName: 'global_name' },
-            { originalName: 'admin_username', changeName: 'username' },
-            { originalName: 'admin_avatar', changeName: 'avatar' },
-            { originalName: 'admin_discriminator', changeName: 'discriminator' },
+    const n1 = new Nplus1<FindGuildDetailById>(queryResult, {
+        primaryColumn: 'id',
+        joinGroups: [
+            {
+                outputColumn: 'tags',
+                referenceColumn: 'tag_guild_id',
+                selectColumns: [{ originalName: 'tag_name', changeName: 'name' }],
+            },
+            {
+                outputColumn: 'admins',
+                referenceColumn: 'admin_guild_id',
+                selectColumns: [
+                    { originalName: 'admin_id', changeName: 'id' },
+                    { originalName: 'admin_global_name', changeName: 'global_name' },
+                    { originalName: 'admin_username', changeName: 'username' },
+                    { originalName: 'admin_avatar', changeName: 'avatar' },
+                    { originalName: 'admin_discriminator', changeName: 'discriminator' },
+                ],
+            },
         ],
     });
-    const n1 = new Nplus1(queryResult, config);
 
     return n1.getOne();
 }
