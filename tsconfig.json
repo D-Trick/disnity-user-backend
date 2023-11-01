@@ -20,7 +20,7 @@
         "forceConsistentCasingInFileNames": false,
         "noFallthroughCasesInSwitch": false,
         "paths": {
-            "@lib/*": ["src/lib/*"],
+            "@lib/*": ["./src/lib/*"],
             "@utils/*": ["./src/utils/*"],
             "@cache/*": ["./src/cache/*"],
             "@models/*": ["./src/models/*"],

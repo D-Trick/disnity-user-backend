@@ -1,5 +1,4 @@
 // types
-import type { Config } from '@databases/utils/n-plus-1';
 import type {
     FindGuildsByIdsOptions,
     FindGuildsByIdsSqlName,
@@ -97,16 +96,19 @@ export async function findGuildsByIds<T extends FindGuildsByIdsSqlName>(
     // N + 1 FORMAT
     const queryResult = await qb.getRawMany();
 
-    const config: Config = { primaryColumnName: 'id', joinGroups: [] };
-    config.joinGroups.push({
-        outputColumnName: 'tags',
-        referencedColumnName: 'tag_guild_id',
-        selectColumns: [
-            { originalName: 'tag_id', changeName: 'id' },
-            { originalName: 'tag_name', changeName: 'name' },
+    const n1 = new Nplus1<ReturnFindGuildsByIds[T]>(queryResult, {
+        primaryColumn: 'id',
+        joinGroups: [
+            {
+                outputColumn: 'tags',
+                referenceColumn: 'tag_guild_id',
+                selectColumns: [
+                    { originalName: 'tag_id', changeName: 'id' },
+                    { originalName: 'tag_name', changeName: 'name' },
+                ],
+            },
         ],
     });
-    const n1 = new Nplus1(queryResult, config);
 
-    return n1.getMany<ReturnFindGuildsByIds[T]>();
+    return n1.getMany();
 }
