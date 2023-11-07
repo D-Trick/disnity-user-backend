@@ -42,13 +42,16 @@ export const bulkUpdateQueryFormat = (ids: any[] = [], values: object[] = []) =>
         for (const column in value) {
             const conditionalData = id;
 
-            const originalValue = value[column];
-            const isUndefined = originalValue === undefined;
-            const parameter = isUndefined ? null : originalValue;
+            const isUndefined = value[column] === undefined;
+            const parameter = isUndefined ? null : value[column];
 
-            bulkValues[column] += `${startQuery} WHEN ${conditionalData} THEN :data${sequence}${endQuery}`;
-            bulkParameters[`data${sequence}`] = parameter;
-            sequence++;
+            if (typeof parameter === 'function') {
+                bulkValues[column] += `${startQuery} WHEN ${conditionalData} THEN ${parameter()}${endQuery}`;
+            } else {
+                bulkValues[column] += `${startQuery} WHEN ${conditionalData} THEN :data${sequence}${endQuery}`;
+                bulkParameters[`data${sequence}`] = parameter;
+                sequence++;
+            }
         }
     }
 
