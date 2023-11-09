@@ -2,6 +2,8 @@
 import winston from 'winston';
 import winstonDaily from 'winston-daily-rotate-file';
 import { utilities as nestWinstonModuleUtilities } from 'nest-winston';
+// configs
+import { ENV_CONFIG } from './env.config';
 
 // ----------------------------------------------------------------------
 
@@ -9,7 +11,7 @@ const { combine, timestamp, printf, colorize, simple, ms } = winston.format;
 
 const logFormat = (log) => {
     // 에러 레벨 표시
-    const level = `${process.env.NODE_ENV}.${log?.level}`;
+    const level = `${ENV_CONFIG.MODE}.${log?.level}`;
 
     // 에러 스택 표시
     const stack = log?.stack ? `\n${log?.stack}` : '';

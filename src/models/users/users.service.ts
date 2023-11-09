@@ -3,12 +3,14 @@ import type { CacheUser } from '@cache/types';
 import type { AdminGuild, SaveLoginInfo } from './types/users.type';
 import type { Channel } from '@models/discord-api/types/discordApi.type';
 // lib
-import { HttpException, HttpStatus, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { isEmpty } from '@lib/lodash';
 //uitls
 import { generateSnowflakeId } from '@utils/index';
 import { filterAdminGuilds } from '@utils/discord/permission';
+// cache
+import { CACHE_KEYS } from '@cache/redis/keys';
 // configs
 import { refreshTokenTTL } from '@config/jwt.config';
 // helpers
@@ -67,7 +69,7 @@ export class UsersService {
                 throw new UnauthorizedException();
             }
 
-            await this.cacheService.set<CacheUser>(`disnity-user-${userId}`, refreshUser, refreshTokenTTL);
+            await this.cacheService.set<CacheUser>(CACHE_KEYS.DISNITY_USER(userId), refreshUser, refreshTokenTTL);
 
             return refreshUser;
         }
@@ -99,7 +101,7 @@ export class UsersService {
 
         const queryRunner = this.dataSource.createQueryRunner();
         try {
-            const user = await this.userRepository.selectOne<'base'>({
+            const user = await this.userRepository.selectOne({
                 select: {
                     columns: {
                         id: true,
@@ -149,7 +151,6 @@ export class UsersService {
                     },
                 });
             }
-
             promise2 = this.accessLogRepository.cInsert({
                 transaction: queryRunner,
                 values: {
@@ -162,19 +163,25 @@ export class UsersService {
 
             await queryRunner.commitTransaction();
 
-            const reloadUser = await this.getUser(loginUser.id);
-            promise1 = this.cacheService.set(
-                `discord-user-${loginUser.id}`,
-                {
-                    ...reloadUser,
-                    guilds: loginUser.guilds,
-                    admin_guilds: loginUser.admin_guilds,
-                    access_token: loginUser.access_token,
-                    refresh_token: loginUser.refresh_token,
+            const disnityUser = await this.userRepository.selectOne<'base'>({
+                select: {
+                    sql: {
+                        base: true,
+                    },
                 },
-                refreshTokenTTL,
-            );
-            promise2 = await this.cacheService.set(`disnity-user-${loginUser.id}`, reloadUser, refreshTokenTTL);
+                where: {
+                    id: loginUser.id,
+                },
+            });
+            const discordUser = {
+                ...disnityUser,
+                guilds: loginUser.guilds,
+                admin_guilds: loginUser.admin_guilds,
+                access_token: loginUser.access_token,
+                refresh_token: loginUser.refresh_token,
+            };
+            promise1 = this.cacheService.set(CACHE_KEYS.DISCORD_USER(loginUser.id), disnityUser, refreshTokenTTL);
+            promise2 = this.cacheService.set(CACHE_KEYS.DISNITY_USER(loginUser.id), discordUser, refreshTokenTTL);
             await Promise.all([promise1, promise2]);
 
             return { result: true };
@@ -185,7 +192,7 @@ export class UsersService {
                 await queryRunner.rollbackTransaction();
             }
 
-            throw new HttpException(null, HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedException();
         } finally {
             await queryRunner.release();
         }

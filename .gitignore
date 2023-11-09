@@ -1,23 +1,17 @@
-# env
+# Env
 .env.development
 .env.production
 
-# compiled output
+# Compiled Output
 dist
-node_modules
 build
+node_modules
 
-# vscode
-.vscode
+# Tests
+/test/coverage
 
-# Yarn Berry None Zero-Installs
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+# OS
+.DS_Store
 
 # Logs
 logs
@@ -27,13 +21,6 @@ pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
-
-# OS
-.DS_Store
-
-# Tests
-/coverage
-/.nyc_output
 
 # IDEs and editors
 /.idea
