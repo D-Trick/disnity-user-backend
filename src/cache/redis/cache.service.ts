@@ -4,6 +4,8 @@ import type { CacheDiscordUser, CacheUser } from '@cache/types';
 // lib
 import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+// cache
+import { CACHE_KEYS } from './keys';
 
 // ----------------------------------------------------------------------
 
@@ -34,10 +36,10 @@ export class CacheService {
     }
 
     async getUser(userId: string) {
-        return this.get<CacheUser>(`disnity-user-${userId}`);
+        return this.get<CacheUser>(CACHE_KEYS.DISNITY_USER(userId));
     }
 
     async getDiscordUser(userId: string) {
-        return this.get<CacheDiscordUser>(`discord-user-${userId}`);
+        return this.get<CacheDiscordUser>(CACHE_KEYS.DISCORD_USER(userId));
     }
 }
