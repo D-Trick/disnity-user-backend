@@ -21,6 +21,7 @@ import { CacheService } from '@cache/redis/cache.service';
 import { DiscordApiService } from '@models/discord-api/discordApi.service';
 // repositories
 import { UserRepository } from '@databases/repositories/user';
+import { GuildRepository } from '@databases/repositories/guild';
 import { AccessLogRepository } from '@databases/repositories/access-log';
 
 // ----------------------------------------------------------------------
@@ -42,6 +43,7 @@ export class UsersService {
         private readonly discordApiService: DiscordApiService,
 
         private readonly userRepository: UserRepository,
+        private readonly guildRepository: GuildRepository,
         private readonly accessLogRepository: AccessLogRepository,
     ) {}
 
@@ -49,7 +51,7 @@ export class UsersService {
      * Public Methods
      **************************************************/
     /**
-     * 유저 가져오기
+     * 디스니티 유저 가져오기
      * @param {string} userId
      */
     async getUser(userId: string) {
@@ -78,13 +80,13 @@ export class UsersService {
     }
 
     /**
-     * 디스코드에 로그인한 유저 가져오기
+     * 디스코드 유저 가져오기
      * @param {string} userId
      */
     async getDiscordUser(userId: string) {
         const cacheDiscordUser = await this.cacheService.getDiscordUser(userId);
 
-        if (!cacheDiscordUser) {
+        if (!cacheDiscordUser || !cacheDiscordUser?.access_token) {
             throw new UnauthorizedException();
         }
 
@@ -180,8 +182,8 @@ export class UsersService {
                 access_token: loginUser.access_token,
                 refresh_token: loginUser.refresh_token,
             };
-            promise1 = this.cacheService.set(CACHE_KEYS.DISCORD_USER(loginUser.id), disnityUser, refreshTokenTTL);
-            promise2 = this.cacheService.set(CACHE_KEYS.DISNITY_USER(loginUser.id), discordUser, refreshTokenTTL);
+            promise1 = this.cacheService.set(CACHE_KEYS.DISCORD_USER(loginUser.id), discordUser, refreshTokenTTL);
+            promise2 = this.cacheService.set(CACHE_KEYS.DISNITY_USER(loginUser.id), disnityUser, refreshTokenTTL);
             await Promise.all([promise1, promise2]);
 
             return { result: true };
@@ -203,31 +205,34 @@ export class UsersService {
      * @param {string} userId
      */
     async getAdminGuilds(userId: string): Promise<AdminGuild[]> {
-        const cacheDiscordUser = await this.cacheService.getDiscordUser(userId);
+        const discordUser = await this.getDiscordUser(userId);
 
-        return this.filterHelper.filterAdminGuilds(userId, cacheDiscordUser.admin_guilds);
+        const adminGuilds = this.filterHelper.removeRegisteredGuild(discordUser.admin_guilds);
+
+        return adminGuilds;
     }
 
     /**
      * 관리자 권한이 있는 길드 목록 새로고침
      * @param {string} userId
      */
-    async refreshGuilds(userId: string): Promise<AdminGuild[]> {
-        const cacheDiscordUser = await this.cacheService.getDiscordUser(userId);
-        const guilds = await this.discordApiService.users(cacheDiscordUser.access_token).guilds;
-
-        const adminGuilds = filterAdminGuilds(guilds);
+    async refreshAdminGuilds(userId: string): Promise<AdminGuild[]> {
+        const discordUser = await this.getDiscordUser(userId);
+        const discordGuilds = await this.discordApiService.users(discordUser.access_token).guilds;
+        const discordAdminGuilds = filterAdminGuilds(discordGuilds);
 
         await this.cacheService.set(
-            `discord-user-${userId}`,
+            CACHE_KEYS.DISCORD_USER(userId),
             {
-                ...cacheDiscordUser,
-                admin_guilds: adminGuilds,
+                ...discordUser,
+                admin_guilds: discordAdminGuilds,
             },
             refreshTokenTTL,
         );
 
-        return this.filterHelper.filterAdminGuilds(userId, adminGuilds);
+        const adminGuilds = this.filterHelper.removeRegisteredGuild(discordAdminGuilds);
+
+        return adminGuilds;
     }
 
     /**
@@ -236,13 +241,13 @@ export class UsersService {
      * @param {string} userId
      */
     async channels(guildId: string, userId: string, refresh: boolean): Promise<Channel[]> {
-        await this.refreshGuilds(userId);
+        await this.refreshAdminGuilds(userId);
 
-        const cacheDiscordUser = await this.cacheService.getDiscordUser(userId);
+        const discordUser = await this.getDiscordUser(userId);
 
         let channels = [];
 
-        const adminGuild: any = this.utilHelper.getAdminGuild(guildId, cacheDiscordUser.admin_guilds);
+        const adminGuild: any = this.utilHelper.getAdminGuild(guildId, discordUser.admin_guilds);
         if (adminGuild) {
             if (refresh) {
                 channels = [];
@@ -254,7 +259,7 @@ export class UsersService {
                 channels = await this.filterHelper.inviteCodeCreatePermissionChannelsFilter(guildId);
                 adminGuild.channels = channels;
 
-                await this.cacheService.set(`discord-user-${userId}`, cacheDiscordUser, refreshTokenTTL);
+                await this.cacheService.set(CACHE_KEYS.DISCORD_USER(userId), discordUser, refreshTokenTTL);
             }
         }
 
