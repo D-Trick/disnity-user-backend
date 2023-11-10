@@ -17,7 +17,7 @@ import { cDelete } from './sql/delete';
 // ----------------------------------------------------------------------
 
 @CustomRepository(GuildScheduled)
-export class GuildsScheduledRepository extends Repository<GuildScheduled> {
+export class GuildScheduledRepository extends Repository<GuildScheduled> {
     /**
      * Select One
      * @param {SelectOptions} options

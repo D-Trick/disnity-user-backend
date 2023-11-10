@@ -31,7 +31,7 @@ import { UserRepository } from '@databases/repositories/user';
 import { GuildRepository } from '@databases/repositories/guild';
 import { EmojiRepository } from '@databases/repositories/emoji';
 import { CommonCodeRepository } from '@databases/repositories/common-code';
-import { GuildsScheduledRepository } from '@databases/repositories/guild-scheduled';
+import { GuildScheduledRepository } from '@databases/repositories/guild-scheduled';
 import { GuildAdminPermissionRepository } from '@databases/repositories/guild-admin-permission';
 
 // ----------------------------------------------------------------------
@@ -56,7 +56,7 @@ export class ServersService {
         private readonly emojiRepository: EmojiRepository,
         private readonly guildRepository: GuildRepository,
         private readonly commonCodeRepository: CommonCodeRepository,
-        private readonly guildScheduledRepository: GuildsScheduledRepository,
+        private readonly guildScheduledRepository: GuildScheduledRepository,
         private readonly guildAdminPermissionRepository: GuildAdminPermissionRepository,
     ) {}
 
