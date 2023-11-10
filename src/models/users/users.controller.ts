@@ -47,7 +47,7 @@ export class UsersController {
     @Get('/@me/guilds/refresh')
     @UseGuards(JwtAuthGuard)
     async meGuildsRefresh(@Request() req: ExpressRequest) {
-        const refreshGuilds = await this.usersServices.refreshGuilds(req.user.id);
+        const refreshGuilds = await this.usersServices.refreshAdminGuilds(req.user.id);
 
         return refreshGuilds;
     }

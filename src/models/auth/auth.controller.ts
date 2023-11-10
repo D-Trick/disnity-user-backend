@@ -6,7 +6,6 @@ import { Controller, Get, Logger, Request, Response, UseGuards } from '@nestjs/c
 import requestIp from 'request-ip';
 import dayjs from '@lib/dayjs';
 // configs
-import { refreshTokenTTL } from '@config/jwt.config';
 import { getCookieOptions } from '@config/cookie.config';
 // guards
 import { JwtAuthGuard } from '@guards/jwt-auth.guard';
@@ -14,7 +13,6 @@ import { DiscordAuthGuard } from '@guards/discord-auth.guard';
 // services
 import { AuthService } from '@models/auth/auth.service';
 import { UsersService } from '@models/users/users.service';
-import { CacheService } from '@cache/redis/cache.service';
 
 // ----------------------------------------------------------------------
 
@@ -28,7 +26,6 @@ export class AuthController {
     constructor(
         private readonly authService: AuthService,
         private readonly usersService: UsersService,
-        private readonly cacheService: CacheService,
     ) {}
 
     /**************************************************
@@ -89,17 +86,12 @@ export class AuthController {
         @Response({ passthrough: true }) res: ExpressResponse,
     ): Promise<Token> {
         const user = req.user;
-
-        const cacheUser = await this.cacheService.get(user.id);
-        if (cacheUser) {
-            await this.cacheService.set(`discord-user-${user.id}`, cacheUser, refreshTokenTTL);
-        }
-
         const expires = dayjs().add(1, 'day').toDate();
         const accessToken = this.authService.createJwtToken('access', user.id);
         const refreshToken = this.authService.createJwtToken('refresh', user.id);
         res.cookie('token', accessToken, getCookieOptions(expires));
         res.cookie('refreshToken', refreshToken, getCookieOptions(expires));
+
         return {
             accessToken,
             refreshToken,

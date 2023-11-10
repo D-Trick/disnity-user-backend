@@ -20,6 +20,8 @@ import { isEmpty, isNotEmpty, differenceBy, uniq, uniqBy } from '@lib/lodash';
 import { timePassed, generateSnowflakeId } from '@utils/index';
 // helpers
 import { PaginationHelper } from './helpers/pagination.helper';
+// cache
+import { CACHE_KEYS } from '@cache/redis/keys';
 // services
 import { CacheService } from '@cache/redis/cache.service';
 import { DiscordApiService } from '@models/discord-api/discordApi.service';
@@ -453,7 +455,7 @@ export class ServersService {
             }
 
             // 관리자 저장
-            const cacheAdmins = await this.cacheService.get(`disnity-bot-${id}-admins`);
+            const cacheAdmins = await this.cacheService.get(CACHE_KEYS.DISNITY_BOT_ADMINS(id));
             if (isNotEmpty(cacheAdmins)) {
                 const adminIds = [];
                 const adminUsers = [];

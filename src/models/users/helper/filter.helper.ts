@@ -8,8 +8,6 @@ import { isEmpty, isNotEmpty } from '@lib/lodash';
 import { permissionFlags } from '@utils/discord/flags/permission.flag';
 // services
 import { DiscordApiService } from '@models/discord-api/discordApi.service';
-// entities
-import { Guild } from '@databases/entities/guild.entity';
 // repositories
 import { GuildRepository } from '@databases/repositories/guild';
 
@@ -30,23 +28,32 @@ export class FilterHelper {
      * Public Methods
      **************************************************/
     /**
-     * 관리자 권한을 가진 길드만 가져온다.
-     * @param {string} userId
+     * 디스코드의 관리자 길드 목록 중 디스니티에 등록된 관리자 길드를 제외한다.
      * @param {AdminGuild[]} discordAdminGuilds
      */
-    async filterAdminGuilds(userId: string, discordAdminGuilds: AdminGuild[]): Promise<AdminGuild[]> {
-        const myGuilds = await this.guildRepository.selectMany<'publicList'>({
+    async removeRegisteredGuild(discordAdminGuilds: AdminGuild[]): Promise<AdminGuild[]> {
+        if (isEmpty(discordAdminGuilds)) return [];
+
+        const discordAdminGuildIds = discordAdminGuilds.map((discordAdminGuild) => discordAdminGuild.id);
+        const guilds = await this.guildRepository.selectMany<'publicList'>({
             select: {
                 sql: {
                     publicList: true,
                 },
             },
             where: {
-                user_id: userId,
+                IN: {
+                    ids: discordAdminGuildIds,
+                },
             },
         });
+        const guildIds = guilds.map((guild) => guild.id);
 
-        const newAdminGuilds = this.removeRegisteredGuild(discordAdminGuilds, myGuilds);
+        const newAdminGuilds = discordAdminGuilds.filter((discordAdminGuild) => {
+            if (!guildIds.includes(discordAdminGuild.id)) {
+                return discordAdminGuild;
+            }
+        });
 
         return newAdminGuilds;
     }
@@ -97,32 +104,4 @@ export class FilterHelper {
     /**************************************************
      * Private Methods
      **************************************************/
-    /**
-     * 이미 등록된 서버 제거
-     * @param {AdminGuild[]} adminGuilds
-     * @param {Select[]} compareServers
-     */
-    private removeRegisteredGuild(adminGuilds: AdminGuild[], compareServers: Partial<Guild>[]): AdminGuild[] {
-        const result = [];
-
-        const length = adminGuilds.length;
-        for (let i = 0; i < length; i++) {
-            const adminGuild = adminGuilds[i];
-            let isSameGuild = false;
-
-            const length2 = compareServers.length;
-            for (let j = 0; j < length2; j++) {
-                const compareServer = compareServers[j];
-
-                if (adminGuild.id === compareServer.id) {
-                    isSameGuild = true;
-                    break;
-                }
-            }
-
-            if (!isSameGuild) result.push(adminGuild);
-        }
-
-        return result;
-    }
 }
