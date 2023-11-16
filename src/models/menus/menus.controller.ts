@@ -1,8 +1,9 @@
 // lib
 import { Controller, Get, Param } from '@nestjs/common';
-import { MenusService } from '@models/menus/menus.service';
 // dtos
 import { ParamTypeDto } from './dtos/routers';
+// services
+import { MenusService } from '@models/menus/menus.service';
 
 // ----------------------------------------------------------------------
 
@@ -17,10 +18,11 @@ export class MenusController {
      * Public Methods
      **************************************************/
     @Get(':type')
-    async type(@Param() params: ParamTypeDto) {
+    async menus(@Param() params: ParamTypeDto) {
         const { type } = params;
 
-        const menus = await this.menusService.getTypeMenus(type);
-        return menus;
+        const menus = await this.menusService.getMenus(type, '디스코드 서버');
+
+        return [menus];
     }
 }

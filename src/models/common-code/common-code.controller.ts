@@ -18,11 +18,11 @@ export class CommonCodeController {
      * Public Methods
      **************************************************/
     @Get(':code')
-    async code(@Param() param: ParamCodeDto) {
+    async commonCodeList(@Param() param: ParamCodeDto) {
         const { code } = param;
 
-        const common = await this.commonCodeService.getCommonCode(code);
+        const commonCodes = await this.commonCodeService.getCommonCodes(code);
 
-        return common;
+        return commonCodes;
     }
 }

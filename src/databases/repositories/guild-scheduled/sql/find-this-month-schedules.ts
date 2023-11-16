@@ -1,6 +1,6 @@
 // types
 import type { SqlOptions } from '@common/types/sql-options.type';
-import type { FindThisMonthScheduled } from '@databases/types/guild-scheduled.type';
+import type { FindThisMonthSchedules } from '@databases/types/guild-scheduled.type';
 // lib
 import { Brackets, Repository } from 'typeorm';
 // utils
@@ -12,10 +12,10 @@ import { GuildScheduled } from '@databases/entities/guild-scheduled.entity';
 
 // ----------------------------------------------------------------------
 
-export async function findThisMonthScheduled(
+export async function findThisMonthSchedules(
     repository: Repository<GuildScheduled>,
     options: SqlOptions,
-): Promise<FindThisMonthScheduled[]> {
+): Promise<FindThisMonthSchedules[]> {
     const { transaction } = options || {};
 
     const qb = createSelectQueryBuilder<GuildScheduled>(GuildScheduled, TABLE_ALIAS, {

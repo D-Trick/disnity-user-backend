@@ -19,9 +19,9 @@ export interface SelectOptions extends SqlOptions {
 }
 
 /******************************
- * FindThisMonthScheduled
+ * FindThisMonthSchedules
  ******************************/
-export interface FindThisMonthScheduled
+export interface FindThisMonthSchedules
     extends Pick<
         GuildScheduled,
         'id' | 'name' | 'description' | 'scheduled_start_time' | 'scheduled_end_time' | 'image'

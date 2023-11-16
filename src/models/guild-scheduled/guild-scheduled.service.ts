@@ -15,7 +15,9 @@ export class GuildScheduledService {
     /**************************************************
      * Public Methods
      **************************************************/
-    async getThisMonthScheduled() {
-        return this.guildScheduledRepository.findThisMonthScheduled();
+    async getThisMonthSchedules() {
+        const thisMonthSchedules = await this.guildScheduledRepository.findThisMonthSchedules();
+
+        return thisMonthSchedules;
     }
 }

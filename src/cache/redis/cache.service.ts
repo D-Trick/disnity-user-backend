@@ -1,6 +1,6 @@
 // types
 import type { Cache } from 'cache-manager';
-import type { CacheDiscordUser, CacheUser } from '@cache/types';
+import type { CacheDiscordUser, CacheMenus, CacheUser } from '@cache/types';
 // lib
 import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -19,8 +19,8 @@ export class CacheService {
     /**************************************************
      * Public Methods
      **************************************************/
-    async get<T = any>(key: string | number): Promise<T> {
-        return this.cacheManager.get(key.toString());
+    async get<T = any>(key: string | number) {
+        return this.cacheManager.get<T>(key.toString());
     }
 
     async set<T = any>(key: string | number, value: T, ttl?: number): Promise<void> {
@@ -41,5 +41,9 @@ export class CacheService {
 
     async getDiscordUser(userId: string) {
         return this.get<CacheDiscordUser>(CACHE_KEYS.DISCORD_USER(userId));
+    }
+
+    async getMenus(type: string) {
+        return this.get<CacheMenus>(CACHE_KEYS.MENUES(type));
     }
 }

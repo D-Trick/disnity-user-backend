@@ -16,11 +16,11 @@ export class CommonCodeService {
      * Public Methods
      **************************************************/
     /**
-     * 공통코드 가져오기
+     * 공통코드 목록 가져오기
      * @param {string} code
      */
-    async getCommonCode(code: string) {
-        const common = this.commonCodeRepository.selectMany({
+    async getCommonCodes(code: string) {
+        const commonCodes = await this.commonCodeRepository.selectMany({
             select: {
                 columns: {
                     id: true,
@@ -34,6 +34,6 @@ export class CommonCodeService {
             },
         });
 
-        return common;
+        return commonCodes;
     }
 }

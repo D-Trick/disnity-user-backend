@@ -3,12 +3,9 @@ import type { FindByType } from '@databases/types/menu.type';
 import type { FindByTypeOptions } from '@databases/types/menu.type';
 // lib
 import { Repository } from 'typeorm';
-// utils
-import { createSelectQueryBuilder } from '@databases/utils/createQueryBuilder';
-// alias
-import { MENU_TABLE_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
 // entities
 import { Menu } from '@databases/entities/menu.entity';
+import { connection } from '@databases/utils/connection';
 
 // ----------------------------------------------------------------------
 
@@ -16,33 +13,62 @@ export async function findByType(repository: Repository<Menu>, options: FindByTy
     const { transaction, where } = options || {};
     const { type } = where || {};
 
-    const qb = createSelectQueryBuilder<Menu>(Menu, TABLE_ALIAS, {
+    const qb = connection<Menu>({
         repository,
         transaction,
     });
 
-    // SELECT
-    qb.select([
-        `${TABLE_ALIAS}.id         AS id`,
-        `${TABLE_ALIAS}.name       AS name`,
-        `${TABLE_ALIAS}.path       AS path`,
-        `${TABLE_ALIAS}.icon       AS icon`,
-        `${TABLE_ALIAS}.caption    AS caption`,
-        `${TABLE_ALIAS}.disabled   AS disabled`,
-        `${TABLE_ALIAS}.depth      AS depth`,
-        `${TABLE_ALIAS}.sort       AS sort`,
-    ]);
+    return qb.query(
+        `
+        WITH RECURSIVE MenuCTE AS (
+            SELECT
+                id, 
+                parent_id,
+                name, 
+                path, 
+                icon, 
+                caption, 
+                disabled, 
+                depth, 
+                sort,
+                CAST(concat(sort, name) AS CHAR(300)) AS tree_sort
+            FROM menu
+            WHERE
+                parent_id IS NULL
+                AND depth = 1
+                AND type = ?
 
-    // JOIN
-    qb.innerJoin('menu', 'menu2', `menu2.id = ${TABLE_ALIAS}.parent_id`);
+            UNION ALL
 
-    // WHERE
-    qb.where(`${TABLE_ALIAS}.type = :type`, {
-        type,
-    });
-
-    // ORDER BY
-    qb.orderBy(`${TABLE_ALIAS}.sort`);
-
-    return qb.getRawMany();
+            SELECT
+                menu.id, 
+                menu.parent_id,
+                menu.name, 
+                menu.path, 
+                menu.icon, 
+                menu.caption, 
+                menu.disabled, 
+                menu.depth, 
+                menu.sort,        
+                concat(MenuCTE.tree_sort, menu.depth, menu.sort, menu.name) AS tree_sort
+            FROM MenuCTE
+            JOIN
+                menu ON MenuCTE.id = menu.parent_id
+        )
+        SELECT
+            id, 
+            parent_id,
+            name, 
+            path, 
+            icon, 
+            caption, 
+            disabled, 
+            depth, 
+            sort
+        FROM
+            MenuCTE
+        ORDER BY tree_sort
+    `,
+        [type],
+    );
 }

@@ -21,7 +21,6 @@ import { CacheService } from '@cache/redis/cache.service';
 import { DiscordApiService } from '@models/discord-api/discordApi.service';
 // repositories
 import { UserRepository } from '@databases/repositories/user';
-import { GuildRepository } from '@databases/repositories/guild';
 import { AccessLogRepository } from '@databases/repositories/access-log';
 
 // ----------------------------------------------------------------------
@@ -43,7 +42,6 @@ export class UsersService {
         private readonly discordApiService: DiscordApiService,
 
         private readonly userRepository: UserRepository,
-        private readonly guildRepository: GuildRepository,
         private readonly accessLogRepository: AccessLogRepository,
     ) {}
 
