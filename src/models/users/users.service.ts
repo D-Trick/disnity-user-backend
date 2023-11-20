@@ -42,7 +42,6 @@ export class UsersService {
         private readonly discordApiService: DiscordApiService,
 
         private readonly userRepository: UserRepository,
-        private readonly guildRepository: GuildRepository,
         private readonly accessLogRepository: AccessLogRepository,
     ) {}
 
