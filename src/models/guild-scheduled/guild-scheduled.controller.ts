@@ -16,9 +16,9 @@ export class GuildScheduledController {
      * Public Methods
      **************************************************/
     @Get()
-    async index() {
-        const schedules = await this.guildScheduledService.getThisMonthScheduled();
+    async thisMonthSchedules() {
+        const thisMonthSchedules = await this.guildScheduledService.getThisMonthSchedules();
 
-        return schedules;
+        return thisMonthSchedules;
     }
 }

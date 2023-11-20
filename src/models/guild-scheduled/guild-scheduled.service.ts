@@ -1,7 +1,7 @@
 // lib
 import { Injectable } from '@nestjs/common';
 // repositories
-import { GuildsScheduledRepository } from '@databases/repositories/guild-scheduled';
+import { GuildScheduledRepository } from '@databases/repositories/guild-scheduled';
 
 // ----------------------------------------------------------------------
 
@@ -10,12 +10,14 @@ export class GuildScheduledService {
     /**************************************************
      * Constructor
      **************************************************/
-    constructor(private readonly guildScheduledRepository: GuildsScheduledRepository) {}
+    constructor(private readonly guildScheduledRepository: GuildScheduledRepository) {}
 
     /**************************************************
      * Public Methods
      **************************************************/
-    async getThisMonthScheduled() {
-        return this.guildScheduledRepository.findThisMonthScheduled();
+    async getThisMonthSchedules() {
+        const thisMonthSchedules = await this.guildScheduledRepository.findThisMonthSchedules();
+
+        return thisMonthSchedules;
     }
 }

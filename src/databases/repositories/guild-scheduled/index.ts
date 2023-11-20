@@ -9,7 +9,7 @@ import { GuildScheduled } from '@databases/entities/guild-scheduled.entity';
 import { CustomRepository } from '@common/modules/typeorm-custom-repository.module';
 // sql
 import { selectMany, selectOne } from './sql/select';
-import { findThisMonthScheduled } from './sql/find-this-month-scheduled';
+import { findThisMonthSchedules } from './sql/find-this-month-schedules';
 import { cInsert } from './sql/insert';
 import { cUpdate } from './sql/update';
 import { cDelete } from './sql/delete';
@@ -17,7 +17,7 @@ import { cDelete } from './sql/delete';
 // ----------------------------------------------------------------------
 
 @CustomRepository(GuildScheduled)
-export class GuildsScheduledRepository extends Repository<GuildScheduled> {
+export class GuildScheduledRepository extends Repository<GuildScheduled> {
     /**
      * Select One
      * @param {SelectOptions} options
@@ -38,8 +38,8 @@ export class GuildsScheduledRepository extends Repository<GuildScheduled> {
      * 이번달 길드 스케줄(이벤트)
      * @param {SqlOptions} options
      */
-    async findThisMonthScheduled(options?: SqlOptions) {
-        return findThisMonthScheduled(this, options);
+    async findThisMonthSchedules(options?: SqlOptions) {
+        return findThisMonthSchedules(this, options);
     }
 
     /**

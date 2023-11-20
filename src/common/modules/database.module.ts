@@ -10,7 +10,7 @@ import { EmojiRepository } from '@databases/repositories/emoji';
 import { GuildRepository } from '@databases/repositories/guild';
 import { AccessLogRepository } from '@databases/repositories/access-log';
 import { CommonCodeRepository } from '@databases/repositories/common-code';
-import { GuildsScheduledRepository } from '@databases/repositories/guild-scheduled';
+import { GuildScheduledRepository } from '@databases/repositories/guild-scheduled';
 import { GuildAdminPermissionRepository } from '@databases/repositories/guild-admin-permission';
 
 // ----------------------------------------------------------------------
@@ -23,7 +23,7 @@ const Repositories = TypeOrmCutomModule.forCustomRepository([
     EmojiRepository,
     AccessLogRepository,
     CommonCodeRepository,
-    GuildsScheduledRepository,
+    GuildScheduledRepository,
     GuildAdminPermissionRepository,
 ]);
 

@@ -1,4 +1,3 @@
-export * from './menu-tree';
 export * from './pagination';
 export * from './snowflake';
 export * from './time-passed';
