@@ -4,11 +4,22 @@ import type { User } from '@databases/entities/user.entity';
 
 // ----------------------------------------------------------------------
 
-export interface PaginateOptions {
-    listType: 'my-server' | 'category-server' | 'tag-server' | 'search-server';
-    userId?: User['id'];
+interface CommonOptions {
     filter: SelectFilter;
-    keyword?: string;
-    tagName?: string;
+}
+
+export interface CategoryServerPaginateOptions extends CommonOptions {
     categoryId?: number;
+}
+
+export interface TagServerPaginateOptions extends CommonOptions {
+    tagName: string;
+}
+
+export interface SearchServerPaginateOptions extends CommonOptions {
+    keyword: string;
+}
+
+export interface MyServerPaginateOptions extends CommonOptions {
+    userId: User['id'];
 }

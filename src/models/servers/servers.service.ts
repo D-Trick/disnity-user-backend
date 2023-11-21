@@ -63,77 +63,109 @@ export class ServersService {
     /**************************************************
      * Public Methods
      **************************************************/
+
     /**
-     * 서버 새로고침
-     * @param {string} guildId
-     * @param {string} userId
+     * 서버 전체 목록 가져오기
+     * @param {SelectFilter} filter
      */
-    async serverRefresh(guildId: string, userId: string): Promise<{ result: boolean }> {
-        try {
-            const myServer = await this.guildRepository.selectMyGuildOne({
-                select: {
-                    columns: {
-                        refresh_date: true,
-                    },
+    async getAllServers(filter: SelectFilter) {
+        const promise1 = this.commonCodeRepository.selectOne({
+            select: {
+                columns: {
+                    name: true,
                 },
-                where: {
-                    id: guildId,
-                    user_id: userId,
+            },
+            where: {
+                code: 'category',
+                value: 'all',
+            },
+        });
+        const promise2 = this.paginationHelper.categoryServerPaginate({
+            filter,
+        });
+        const [category, servers] = await Promise.all([promise1, promise2]);
+
+        return {
+            categoryName: category?.name,
+            ...servers,
+        };
+    }
+
+    /**
+     * 카테고리에 해당하는 서버 목록 가져오기
+     * @param {number} categoryId
+     * @param {SelectFilter} filter
+     */
+    async getCategoryServers(categoryId: number, filter: SelectFilter) {
+        const promise1 = this.commonCodeRepository.selectOne({
+            select: {
+                columns: {
+                    name: true,
                 },
-            });
-            if (isEmpty(myServer)) {
-                throw new NotFoundException(ERROR_MESSAGES.SERVER_NOT_FOUND);
-            }
+            },
+            where: {
+                code: 'category',
+                value: String(categoryId),
+            },
+        });
+        const promise2 = this.paginationHelper.categoryServerPaginate({
+            categoryId,
+            filter,
+        });
+        const [category, servers] = await Promise.all([promise1, promise2]);
 
-            const minutes = 60 * 10;
-            const { isTimePassed, currentDate, compareDate } = timePassed(myServer.refresh_date as string, minutes);
+        return {
+            categoryName: category?.name,
+            ...servers,
+        };
+    }
 
-            if (!isTimePassed) {
-                const minutes = dayjs.duration(dayjs(compareDate).diff(currentDate)).minutes();
-                const seconds = dayjs.duration(dayjs(compareDate).diff(currentDate)).seconds();
+    /**
+     * 태그명에 해당하는 서버 목록 가져오기
+     * @param {string} tagName
+     * @param {SelectFilter} filter
+     */
+    async getTagServers(tagName: string, filter: SelectFilter) {
+        const servers = await this.paginationHelper.tagServerPaginate({
+            tagName,
+            filter,
+        });
 
-                const timeRemainning = minutes !== 0 ? `${minutes}분` : `${seconds}초`;
-                throw new HttpException(`${timeRemainning} 후 다시 시도해주세요.`, HttpStatus.BAD_REQUEST);
-            }
+        return {
+            tagName,
+            ...servers,
+        };
+    }
 
-            const discordGuild = await this.discordApiService.guilds().detail(guildId);
+    /**
+     * 검색 키워드와 일치한 서버 목록 가져오기
+     * @param {string} keyword
+     * @param {SelectFilter} filter
+     */
+    async getSearchServers(keyword: string, filter: SelectFilter) {
+        const servers = await this.paginationHelper.searchServerPaginate({
+            keyword,
+            filter,
+        });
 
-            await this.guildRepository.cUpdate({
-                values: {
-                    name: discordGuild.name,
-                    banner: discordGuild.banner || null,
-                    splash: discordGuild.splash || null,
-                    icon: discordGuild.icon || null,
-                    member: discordGuild.approximate_member_count,
-                    online: discordGuild.approximate_presence_count,
-                    premium_tier: discordGuild.premium_tier,
-                    refresh_date: isTimePassed ? () => 'now()' : undefined,
-                    is_bot: 1,
-                },
-                where: {
-                    id: guildId,
-                },
-            });
+        return {
+            ...servers,
+            keyword,
+        };
+    }
 
-            return { result: true };
-        } catch (error: any) {
-            this.logger.error(error.message, error.stack);
+    /**
+     * 나의 서버 목록 가져오기
+     * @param {string} userId
+     * @param {SelectFilter} filter
+     */
+    async getMyServers(userId: string, filter: SelectFilter) {
+        const servers = await this.paginationHelper.myServerPaginate({
+            userId,
+            filter,
+        });
 
-            if (error.status === 403) {
-                await this.guildRepository.cUpdate({
-                    values: {
-                        is_bot: 0,
-                    },
-                    where: {
-                        id: guildId,
-                    },
-                });
-
-                throw new HttpException(error.message || ERROR_MESSAGES.BOT_NOT_FOUND, HttpStatus.FORBIDDEN);
-            } else {
-                throw new HttpException(error.message, error.status || HttpStatus.BAD_REQUEST);
-            }
-        }
+        return servers;
     }
 
     /**
@@ -218,112 +250,76 @@ export class ServersService {
     }
 
     /**
-     * 전체 서버 목록 조회
-     * @param {SelectFilter} filter
-     */
-    async allServerList(filter: SelectFilter) {
-        const promise1 = this.commonCodeRepository.selectOne({
-            select: {
-                columns: {
-                    name: true,
-                },
-            },
-            where: {
-                code: 'category',
-                value: 'all',
-            },
-        });
-        const promise2 = this.paginationHelper.paginate<'base'>({
-            listType: 'category-server',
-            filter,
-        });
-        const [category, servers] = await Promise.all([promise1, promise2]);
-
-        return {
-            ...servers,
-            categoryName: category?.name,
-        };
-    }
-
-    /**
-     * 카테고리에 해당하는 서버 목록 조회
-     * @param {number} categoryId
-     * @param {Filter} filter
-     */
-    async categoryServerList(categoryId: number, filter: SelectFilter) {
-        const promise1 = this.commonCodeRepository.selectOne({
-            select: {
-                columns: {
-                    name: true,
-                },
-            },
-            where: {
-                code: 'category',
-                value: String(categoryId),
-            },
-        });
-        const promise2 = this.paginationHelper.paginate<'base'>({
-            listType: 'category-server',
-            categoryId,
-            filter,
-        });
-        const [category, servers] = await Promise.all([promise1, promise2]);
-
-        return {
-            ...servers,
-            categoryName: category?.name,
-        };
-    }
-
-    /**
-     * 검색(키워드)에 해당하는 서버 목록 조회
-     * @param {string} keyword
-     * @param {SelectFilter} filter
-     */
-    async searchServerList(keyword: string, filter: SelectFilter) {
-        const servers = await this.paginationHelper.paginate<'base'>({
-            listType: 'search-server',
-            filter,
-            keyword,
-        });
-
-        return {
-            ...servers,
-            keyword,
-        };
-    }
-
-    /**
-     * 태그명에 해당하는 서버 목록 조회
-     * @param {string} tagName
-     * @param {Filter} filter
-     */
-    async tagServerList(tagName: string, filter: SelectFilter) {
-        const servers = await this.paginationHelper.paginate<'base'>({
-            listType: 'tag-server',
-            filter,
-            tagName,
-        });
-
-        return {
-            tagName,
-            ...servers,
-        };
-    }
-
-    /**
-     * [Mypage] 나의 서버 목록 조회
+     * 서버 새로고침
+     * @param {string} guildId
      * @param {string} userId
-     * @param {SelectFilter} filter
      */
-    async myServerList(userId: string, filter: SelectFilter) {
-        const servers = await this.paginationHelper.paginate<'myGuild'>({
-            listType: 'my-server',
-            userId,
-            filter,
-        });
+    async refresh(guildId: string, userId: string): Promise<{ result: boolean }> {
+        try {
+            const myServer = await this.guildRepository.selectMyGuildOne({
+                select: {
+                    columns: {
+                        refresh_date: true,
+                    },
+                },
+                where: {
+                    id: guildId,
+                    user_id: userId,
+                },
+            });
+            if (isEmpty(myServer)) {
+                throw new NotFoundException(ERROR_MESSAGES.SERVER_NOT_FOUND);
+            }
 
-        return servers;
+            const minutes = 60 * 10;
+            const { isTimePassed, currentDate, compareDate } = timePassed(myServer.refresh_date as string, minutes);
+
+            if (!isTimePassed) {
+                const minutes = dayjs.duration(dayjs(compareDate).diff(currentDate)).minutes();
+                const seconds = dayjs.duration(dayjs(compareDate).diff(currentDate)).seconds();
+
+                const timeRemainning = minutes !== 0 ? `${minutes}분` : `${seconds}초`;
+                throw new HttpException(`${timeRemainning} 후 다시 시도해주세요.`, HttpStatus.BAD_REQUEST);
+            }
+
+            const discordGuild = await this.discordApiService.guilds().detail(guildId);
+
+            await this.guildRepository.cUpdate({
+                values: {
+                    name: discordGuild.name,
+                    banner: discordGuild.banner || null,
+                    splash: discordGuild.splash || null,
+                    icon: discordGuild.icon || null,
+                    member: discordGuild.approximate_member_count,
+                    online: discordGuild.approximate_presence_count,
+                    premium_tier: discordGuild.premium_tier,
+                    refresh_date: isTimePassed ? () => 'now()' : undefined,
+                    is_bot: 1,
+                },
+                where: {
+                    id: guildId,
+                },
+            });
+
+            return { result: true };
+        } catch (error: any) {
+            this.logger.error(error.message, error.stack);
+
+            if (error.status === 403) {
+                await this.guildRepository.cUpdate({
+                    values: {
+                        is_bot: 0,
+                    },
+                    where: {
+                        id: guildId,
+                    },
+                });
+
+                throw new HttpException(error.message || ERROR_MESSAGES.BOT_NOT_FOUND, HttpStatus.FORBIDDEN);
+            } else {
+                throw new HttpException(error.message, error.status || HttpStatus.BAD_REQUEST);
+            }
+        }
     }
 
     /**

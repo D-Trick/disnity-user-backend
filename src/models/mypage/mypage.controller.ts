@@ -23,7 +23,7 @@ export class MypageController {
     @Get('servers')
     @UseGuards(JwtAuthGuard)
     async servers(@Request() req, @Query() query: QuerysDto) {
-        const myServers = await this.serversService.myServerList(req.user.id, query);
+        const myServers = await this.serversService.getMyServers(req.user.id, query);
 
         return myServers;
     }

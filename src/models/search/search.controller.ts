@@ -20,7 +20,7 @@ export class SearchController {
      **************************************************/
     @Get(':keyword')
     async keyword(@Param() param: ParamKeywordDto, @Query() query: QuerysDto) {
-        const servers = await this.serversService.searchServerList(param.keyword, query);
+        const servers = await this.serversService.getSearchServers(param.keyword, query);
 
         return servers;
     }
