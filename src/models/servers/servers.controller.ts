@@ -6,8 +6,8 @@ import { Controller, Get, Post, UseGuards, Request, Param, Body, Patch, Query, D
 import { JwtAuthGuard } from '@guards/jwt-auth.guard';
 import { LoginCheckGuard } from '@guards/login-check.guard';
 // dtos
-import { ParamIdNumberDto, ParamIdStringDto, ParamNameDto, ParamGuildIdDto } from '@common/dtos';
-import { QuerysDto, CreateDto, UpdateDto } from './dtos/routers';
+import { QueryStringDto, ParamIdNumberDto, ParamIdStringDto, ParamNameDto, ParamGuildIdDto } from '@common/dtos';
+import { CreateDto, UpdateDto } from './dtos/routers';
 // services
 import { ServersService } from '@models/servers/servers.service';
 
@@ -24,21 +24,21 @@ export class ServersController {
      * Public Methods
      **************************************************/
     @Get()
-    async allServerList(@Query() query: QuerysDto) {
+    async allServerList(@Query() query: QueryStringDto) {
         const allServers = await this.serversService.getAllServers(query);
 
         return allServers;
     }
 
     @Get('category/:id')
-    async categoryServerList(@Param() param: ParamIdNumberDto, @Query() query: QuerysDto) {
+    async categoryServerList(@Param() param: ParamIdNumberDto, @Query() query: QueryStringDto) {
         const categoryServers = await this.serversService.getCategoryServers(param.id, query);
 
         return categoryServers;
     }
 
     @Get('tags/:name')
-    async tagServerList(@Param() param: ParamNameDto, @Query() query: QuerysDto) {
+    async tagServerList(@Param() param: ParamNameDto, @Query() query: QueryStringDto) {
         const tagServers = await this.serversService.getTagServers(param.name, query);
 
         return tagServers;

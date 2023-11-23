@@ -8,4 +8,4 @@ import { QueryFilterDto, NextjsClientSideQueryDto } from '@common/dtos';
 
 class QueryFilterValidation extends IntersectionType(QueryFilterDto, NextjsClientSideQueryDto) {}
 
-export class QuerysDto extends PartialType(QueryFilterValidation) {}
+export class QueryStringDto extends PartialType(QueryFilterValidation) {}
