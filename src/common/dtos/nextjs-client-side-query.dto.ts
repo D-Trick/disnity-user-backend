@@ -10,12 +10,12 @@ import { ERROR_MESSAGES } from '@common/messages';
  * queryString에서도 처리가 가능하게 DTO생성
  */
 export class NextjsClientSideQueryDto {
-    @MaxLength(1000, { message: ERROR_MESSAGES.E900 })
+    @MaxLength(100, { message: ERROR_MESSAGES.E900 })
     id?: string;
 
-    @MaxLength(10000, { message: ERROR_MESSAGES.E900 })
+    @MaxLength(5000, { message: ERROR_MESSAGES.E900 })
     name?: string;
 
-    @MaxLength(10000, { message: ERROR_MESSAGES.E900 })
+    @MaxLength(5000, { message: ERROR_MESSAGES.E900 })
     keyword?: string;
 }
