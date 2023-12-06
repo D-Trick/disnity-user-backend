@@ -1,3 +1,3 @@
 export function isBooleanType(value: any) {
-    return value == true || value == false;
+    return value === true || value === false;
 }
