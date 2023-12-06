@@ -7,7 +7,6 @@ import { lastValueFrom } from 'rxjs';
 import { DISCORD_ERROR_MESSAGES } from '@common/messages';
 
 // ----------------------------------------------------------------------
-
 interface Config {
     authType: string;
     token: string;
@@ -19,6 +18,7 @@ interface Retrun {
     status?: number;
     discordMessage?: string;
 }
+// ----------------------------------------------------------------------
 
 export async function get(axios: HttpService, url: string, config?: Config): Promise<Retrun> {
     try {
