@@ -1,4 +1,4 @@
-// lib
+// @nestjs
 import { Controller, Get, Response, Param, Query, UseGuards, Request, Logger } from '@nestjs/common';
 // configs
 import { discordConfig, DISCORD_INVITE_URL } from '@config/discord.config';

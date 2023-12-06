@@ -1,27 +1,24 @@
 // @nestjs
 import { Injectable } from '@nestjs/common';
 // repositories
-import { GuildScheduledDataService } from './services/data.service';
+import { TagRepository } from '@databases/repositories/tag';
 
 // ----------------------------------------------------------------------
 
 @Injectable()
-export class GuildScheduledService {
+export class TagsDataService {
     /**************************************************
      * Constructor
      **************************************************/
-    constructor(private readonly dataService: GuildScheduledDataService) {}
+    constructor(private readonly tagRepository: TagRepository) {}
 
     /**************************************************
      * Public Methods
      **************************************************/
-    /******************************
-     * dataService
-     ******************************/
     /**
-     * 이번달 길드 이벤트 목록 가져오기
+     * 태그이름(총합계) 목록을 가져온다.
      */
-    async getThisMonthSchedules() {
-        return await this.dataService.getThisMonthSchedules();
+    async getTagNameAndTotalCount() {
+        return await this.tagRepository.findNames();
     }
 }

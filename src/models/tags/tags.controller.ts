@@ -1,4 +1,4 @@
-// lib
+// @nestjs
 import { Controller, Get } from '@nestjs/common';
 // services
 import { TagsService } from '@models/tags/tags.service';
@@ -16,8 +16,8 @@ export class TagsController {
      * Public Methods
      **************************************************/
     @Get()
-    async index() {
-        const tagNames = await this.tagsService.findNames();
+    async tagNamesAndTotalCountList() {
+        const tagNames = await this.tagsService.getTagNameAndTotalCount();
 
         return tagNames;
     }

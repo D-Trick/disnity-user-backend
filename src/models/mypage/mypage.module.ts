@@ -1,4 +1,4 @@
-// lib
+// @nestjs
 import { Module } from '@nestjs/common';
 // modules
 import { CoreModule } from '@common/modules/core.module';

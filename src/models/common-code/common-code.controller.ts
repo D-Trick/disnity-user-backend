@@ -1,4 +1,4 @@
-// lib
+// @nestjs
 import { Controller, Get, Param } from '@nestjs/common';
 // dtos
 import { ParamCodeDto } from '@common/dtos';

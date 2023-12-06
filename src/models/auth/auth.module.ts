@@ -1,4 +1,4 @@
-// lib
+// @nestjs
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
@@ -14,13 +14,14 @@ import { UsersModule } from '@models/users/users.module';
 import { AuthController } from './auth.controller';
 // services
 import { AuthService } from './auth.service';
+import { AuthTokenService } from './services/token.service';
 
 // ----------------------------------------------------------------------
 
 @Module({
-    imports: [CoreModule, UsersModule, PassportModule, JwtModule.register(jwtConfig)],
+    imports: [CoreModule, PassportModule, JwtModule.register(jwtConfig), UsersModule],
     controllers: [AuthController],
-    providers: [AuthService, DiscordStrategy, JwtStrategy],
+    providers: [JwtStrategy, DiscordStrategy, AuthService, AuthTokenService],
     exports: [AuthService],
 })
 export class AuthModule {}

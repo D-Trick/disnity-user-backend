@@ -1,4 +1,4 @@
-// lib
+// @nestjs
 import { Controller, Get, Request, UseGuards, Query, Param } from '@nestjs/common';
 // guards
 import { JwtAuthGuard } from '@guards/jwt-auth.guard';

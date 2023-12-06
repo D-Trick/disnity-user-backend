@@ -1,18 +1,19 @@
 // types
-import type { GuildScheduledEvent } from '../types/discordApi.type';
-// lib
+import type { Invite } from '../types/discordApi.type';
+// @nestjs
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+// lib
 import * as discordApi from '@utils/discord/api';
 // configs
 import { discordConfig } from '@config/discord.config';
 
 // ----------------------------------------------------------------------
-const { API_URL, AUTH_TYPE_BOT, BOT_TOKEN } = discordConfig;
+const { API_URL } = discordConfig;
 // ----------------------------------------------------------------------
 
 @Injectable()
-export class DiscordApiGuildScheduledEvent {
+export class DiscordApiInvitesService {
     /**************************************************
      * Constructor
      **************************************************/
@@ -22,17 +23,17 @@ export class DiscordApiGuildScheduledEvent {
      * Public Methods
      **************************************************/
     /**
-     * 길드 일정 이벤트 목록
+     * 초대코드 가져오기
      * @param {string} guildId
      */
-    async scheduledEvents(guildId: string): Promise<GuildScheduledEvent[]> {
-        const URL = `${API_URL}/guilds/${guildId}/scheduled-events`;
+    async detail(inviteCode: string): Promise<Invite> {
+        const URL = `${API_URL}/invites/${inviteCode}`;
 
-        const { data: guildSchedules } = await discordApi.get(this.axios, URL, {
-            authType: AUTH_TYPE_BOT,
-            token: BOT_TOKEN,
+        const { data: invite } = await discordApi.get(this.axios, URL, {
+            authType: null,
+            token: null,
         });
 
-        return guildSchedules;
+        return invite;
     }
 }

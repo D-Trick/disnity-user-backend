@@ -1,6 +1,6 @@
 // types
 import type { ExpressRequest } from '@common/types/express.type';
-// lib
+// @nestjs
 import { Controller, Get, Post, UseGuards, Request, Param, Body, Patch, Query, Delete } from '@nestjs/common';
 // guards
 import { JwtAuthGuard } from '@guards/jwt-auth.guard';

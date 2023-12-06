@@ -1,8 +1,9 @@
 // types
-import type { Guild, Channel } from '../types/discordApi.type';
-// lib
+import type { GuildScheduledEvent } from '../types/discordApi.type';
+// @nestjs
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+// lib
 import * as discordApi from '@utils/discord/api';
 // configs
 import { discordConfig } from '@config/discord.config';
@@ -12,7 +13,7 @@ const { API_URL, AUTH_TYPE_BOT, BOT_TOKEN } = discordConfig;
 // ----------------------------------------------------------------------
 
 @Injectable()
-export class DiscordApiGuilds {
+export class DiscordApiGuildScheduledEventService {
     /**************************************************
      * Constructor
      **************************************************/
@@ -22,32 +23,17 @@ export class DiscordApiGuilds {
      * Public Methods
      **************************************************/
     /**
-     * 길드 상세 정보
+     * 길드 일정 이벤트 목록
      * @param {string} guildId
      */
-    async detail(guildId: string): Promise<Guild> {
-        const URL = `${API_URL}/guilds/${guildId}?with_counts=true`;
+    async scheduledEvents(guildId: string): Promise<GuildScheduledEvent[]> {
+        const URL = `${API_URL}/guilds/${guildId}/scheduled-events`;
 
-        const { data: guild } = await discordApi.get(this.axios, URL, {
+        const { data: guildSchedules } = await discordApi.get(this.axios, URL, {
             authType: AUTH_TYPE_BOT,
             token: BOT_TOKEN,
         });
 
-        return guild;
-    }
-
-    /**
-     * 길드 채널 목록
-     * @param {string} guildId
-     */
-    async channels(guildId: string): Promise<Channel[]> {
-        const URL = `${API_URL}/guilds/${guildId}/channels`;
-
-        const { data: guilds } = await discordApi.get(this.axios, URL, {
-            authType: AUTH_TYPE_BOT,
-            token: BOT_TOKEN,
-        });
-
-        return guilds;
+        return guildSchedules;
     }
 }

@@ -1,29 +1,35 @@
 // @nestjs
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 // configs
-import { AuthTokenService } from './services/token.service';
+import { Token, accessTokenConfig, refreshTokenConfig } from '@config/jwt.config';
 
 // ----------------------------------------------------------------------
 
 @Injectable()
-export class AuthService {
+export class AuthTokenService {
     /**************************************************
      * Constructor
      **************************************************/
-    constructor(private readonly tokenService: AuthTokenService) {}
+    constructor(private jwtService: JwtService) {}
 
     /**************************************************
      * Public Methods
      **************************************************/
-    /******************************
-     * tokenService
-     ******************************/
     /**
      * JWT Token 생성
      * @param {'access' | 'refresh'} type
      * @param {string} userId
      */
-    createJwtToken(type: 'access' | 'refresh', userId: string) {
-        return this.tokenService.createJwtToken(type, userId);
+    createJwtToken(type: 'access' | 'refresh', userId: string): string {
+        const payload: { id: string } = {
+            id: userId,
+        };
+
+        const tokenConfig: Token = type === 'access' ? accessTokenConfig : refreshTokenConfig;
+
+        const token = this.jwtService.sign(payload, tokenConfig);
+
+        return token;
     }
 }
