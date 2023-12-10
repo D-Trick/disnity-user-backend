@@ -14,7 +14,7 @@ export interface SaveValues extends Pick<Guild, 'summary' | 'content'> {
     channelId: string;
     membershipUrl: string;
     tags: Pick<Tag, 'name'>[];
-    contentType: string;
+    contentType: 'basic' | 'markdown';
 }
 
 export interface Save {
