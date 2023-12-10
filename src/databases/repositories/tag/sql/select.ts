@@ -51,6 +51,9 @@ function select(qb: SelectQueryBuilder<Tag>, options: SelectOptions) {
     if (name) qb.andWhere('name = :name', { name });
     if (ids) qb.andWhere('id IN (:ids)', { ids });
 
+    // ORDER BY
+    qb.addOrderBy('sort');
+
     return qb;
 }
 // ----------------------------------------------------------------------
