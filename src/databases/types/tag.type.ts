@@ -1,10 +1,30 @@
 // types
+import type { SelectBooleanified } from './global';
 import type { SqlOptions } from '@common/types/sql-options.type';
 import type { min, max, sort } from '@common/types/select-filter.type';
 // entities
 import { Tag } from '@databases/entities/tag.entity';
 
 // ----------------------------------------------------------------------
+
+/******************************
+ * Select
+ ******************************/
+export interface SelectOptions extends SqlOptions {
+    select: {
+        columns?: SelectBooleanified<Tag>;
+    };
+
+    where: Partial<Pick<Tag, 'id' | 'guild_id' | 'name'>> & {
+        IN?: {
+            ids: Tag['id'][];
+        };
+    };
+}
+
+export interface ReturnSelect {
+    columns: Partial<Tag>;
+}
 
 /******************************
  * FindNames

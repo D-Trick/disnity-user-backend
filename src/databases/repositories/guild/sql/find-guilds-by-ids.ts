@@ -90,8 +90,8 @@ export async function findGuildsByIds<T extends FindGuildsByIdsSqlName>(
     qb.where(`${TABLE_ALIAS}.id IN (:ids)`, { ids });
 
     // ORDER BY
-    if (sort) qb.orderBy(`${TABLE_ALIAS}.${sort}`, 'DESC');
-    qb.addOrderBy('tag.id', 'ASC');
+    if (sort) qb.addOrderBy(`${TABLE_ALIAS}.${sort}`, 'DESC');
+    qb.addOrderBy('tag.sort');
 
     // N + 1 FORMAT
     const queryResult = await qb.getRawMany();

@@ -16,7 +16,7 @@ export async function findGuildAdmins(
     options: FindGuildAdminsOptions,
 ): Promise<FindGuildAdmins[]> {
     const { transaction, where } = options || {};
-    const { guild_id, user_id, server_guild_id } = where || {};
+    const { guild_id, user_id } = where || {};
 
     const qb = createSelectQueryBuilder<GuildAdminPermission>(GuildAdminPermission, TABLE_ALIAS, {
         repository,
@@ -24,19 +24,25 @@ export async function findGuildAdmins(
     });
 
     // SELECT
-    qb.select([
-        `${TABLE_ALIAS}.id              AS id`,
-        'guild.id                       AS server_guild_id',
-        `${TABLE_ALIAS}.guild_id        AS guild_id`,
-        `${TABLE_ALIAS}.user_id         AS user_id`,
+    qb.select([`${TABLE_ALIAS}.is_owner AS is_owner`]);
+    // SELECT user
+    qb.addSelect([
+        'user.id                AS id',
+        'user.global_name       AS global_name',
+        'user.username          AS username',
+        'user.avatar            AS avatar',
+        'user.discriminator     AS discriminator',
     ]);
 
     // JOIN
-    qb.leftJoin('guild', 'guild', `guild.id = ${TABLE_ALIAS}.guild_id`);
+    qb.leftJoin('user', 'user', `user.id = ${TABLE_ALIAS}.user_id`);
 
-    if (user_id) qb.andWhere(`${TABLE_ALIAS}.user_id = :user_id`, { user_id });
-    if (server_guild_id) qb.andWhere('guild.id = :server_guild_id', { server_guild_id });
+    // WHERE
     if (guild_id) qb.andWhere(`${TABLE_ALIAS}.guild_id = :guild_id`, { guild_id });
+    if (user_id) qb.andWhere(`${TABLE_ALIAS}.user_id = :user_id`, { user_id });
 
-    return qb.getRawOne();
+    // ORDER BY
+    qb.orderBy(`${TABLE_ALIAS}.is_owner`, 'DESC');
+
+    return qb.getRawMany();
 }

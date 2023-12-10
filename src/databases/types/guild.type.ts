@@ -4,7 +4,6 @@ import type { SelectBooleanified } from './global';
 import type { sort, min, max } from '@common/types/select-filter.type';
 // entities
 import { Tag } from '@databases/entities/tag.entity';
-import { User } from '@databases/entities/user.entity';
 import { Guild } from '@databases/entities/guild.entity';
 
 // ----------------------------------------------------------------------
@@ -133,8 +132,6 @@ export interface FindGuildDetailById
         | 'refresh_date'
     > {
     category_name: string;
-    tags: Pick<Tag, 'name'>[];
-    admins: Pick<User, 'id' | 'global_name' | 'username' | 'avatar' | 'discriminator'>[];
 }
 
 /******************************
@@ -165,8 +162,6 @@ export interface FindMyGuildDetailById
         | 'refresh_date'
     > {
     category_name: string;
-    tags: Pick<Tag, 'name'>[];
-    admins: Pick<User, 'id' | 'global_name' | 'username' | 'avatar' | 'discriminator'>[];
 }
 
 /******************************

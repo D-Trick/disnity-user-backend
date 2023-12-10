@@ -3,7 +3,6 @@ import type { FindMyGuildDetailById, FindMyGuildDetailByIdOptions } from '@datab
 // lib
 import { Brackets, Repository } from 'typeorm';
 // utils
-import Nplus1 from '@databases/utils/n-plus-1';
 import { createSelectQueryBuilder } from '@databases/utils/createQueryBuilder';
 // alias
 import { GUILD_TABLE_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
@@ -47,28 +46,9 @@ export async function findMyGuildDetailById(
     ]);
     // SELECT common
     qb.addSelect(['comm.name                                                    AS category_name']);
-    // SELECT tag
-    qb.addSelect([
-        `tag.guild_id                                                           AS tag_guild_id`,
-        `tag.name                                                               AS tag_name`,
-    ]);
-    // SELECT guild_admin_permission
-    qb.addSelect([
-        `admin.guild_id                                                         AS admin_guild_id`,
-        `admin.is_owner                                                         AS admin_is_owner`,
-    ]);
-    // SELECT user
-    qb.addSelect([
-        'user.id                                                                AS admin_id',
-        'user.global_name                                                       AS admin_global_name',
-        'user.username                                                          AS admin_username',
-        'user.avatar                                                            AS admin_avatar',
-        'user.discriminator                                                     AS admin_discriminator',
-    ]);
 
     // JOIN
     qb.leftJoin('common_code', 'comm', `comm.code = 'category' AND comm.value = ${TABLE_ALIAS}.category_id`);
-    qb.leftJoin('tag', 'tag', `tag.guild_id = ${TABLE_ALIAS}.id`);
     qb.leftJoin('guild_admin_permission', 'admin', `admin.guild_id = ${TABLE_ALIAS}.id`);
     qb.leftJoin('user', 'user', 'user.id = admin.user_id');
 
@@ -81,35 +61,5 @@ export async function findMyGuildDetailById(
         }),
     );
 
-    // ORDER BY
-    qb.orderBy('tag.sort');
-    qb.addOrderBy('admin.is_owner', 'DESC');
-
-    // N + 1 FORMAT
-    const queryResult = await qb.getRawMany();
-
-    const n1 = new Nplus1<FindMyGuildDetailById>(queryResult, {
-        primaryColumn: 'id',
-        joinGroups: [
-            {
-                outputColumn: 'tags',
-                referenceColumn: 'tag_guild_id',
-                selectColumns: [{ originalName: 'tag_name', changeName: 'name' }],
-            },
-            {
-                outputColumn: 'admins',
-                referenceColumn: 'admin_guild_id',
-                selectColumns: [
-                    { originalName: 'admin_id', changeName: 'id' },
-                    { originalName: 'admin_global_name', changeName: 'global_name' },
-                    { originalName: 'admin_username', changeName: 'username' },
-                    { originalName: 'admin_avatar', changeName: 'avatar' },
-                    { originalName: 'admin_discriminator', changeName: 'discriminator' },
-                    { originalName: 'admin_is_owner', changeName: 'is_owner' },
-                ],
-            },
-        ],
-    });
-
-    return n1.getOne();
+    return qb.getRawOne();
 }
