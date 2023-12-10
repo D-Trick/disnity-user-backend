@@ -1,7 +1,7 @@
-// lib
+// @nestjs
 import { Injectable } from '@nestjs/common';
 // repositories
-import { GuildScheduledRepository } from '@databases/repositories/guild-scheduled';
+import { GuildScheduledDataService } from './services/data.service';
 
 // ----------------------------------------------------------------------
 
@@ -10,14 +10,18 @@ export class GuildScheduledService {
     /**************************************************
      * Constructor
      **************************************************/
-    constructor(private readonly guildScheduledRepository: GuildScheduledRepository) {}
+    constructor(private readonly dataService: GuildScheduledDataService) {}
 
     /**************************************************
      * Public Methods
      **************************************************/
+    /******************************
+     * dataService
+     ******************************/
+    /**
+     * 이번달 길드 이벤트 목록 가져오기
+     */
     async getThisMonthSchedules() {
-        const thisMonthSchedules = await this.guildScheduledRepository.findThisMonthSchedules();
-
-        return thisMonthSchedules;
+        return await this.dataService.getThisMonthSchedules();
     }
 }

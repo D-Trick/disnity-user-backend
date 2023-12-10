@@ -1,5 +1,5 @@
 // lib
-import { IsISO8601, IsInt, Length, MaxLength } from 'class-validator';
+import { IsInt, MaxLength } from 'class-validator';
 // messages
 import { ERROR_MESSAGES } from '@common/messages';
 
@@ -52,19 +52,4 @@ export class ParamKeywordDto {
 export class ParamCodeDto {
     @MaxLength(20, { message: ERROR_MESSAGES.E900 })
     code: string;
-}
-
-/**
- * Param
- * :start
- * :end
- */
-export class ParamScheduledDateDto {
-    @IsISO8601({ strict: true }, { message: ERROR_MESSAGES.E900 })
-    @Length(10, 10, { message: ERROR_MESSAGES.E900 })
-    start: string;
-
-    @IsISO8601({ strict: true }, { message: ERROR_MESSAGES.E900 })
-    @Length(10, 10, { message: ERROR_MESSAGES.E900 })
-    end: string;
 }

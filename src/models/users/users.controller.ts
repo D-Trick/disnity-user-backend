@@ -72,7 +72,7 @@ export class UsersController {
     async meGuildsGuildIdChannels(@Request() req: ExpressRequest, @Param() param) {
         const { guildId } = param;
 
-        const channels = await this.usersServices.channels(guildId, req.user.id, false);
+        const channels = await this.usersServices.getChannels(guildId, req.user.id, false);
 
         return channels;
     }
@@ -82,7 +82,7 @@ export class UsersController {
     async meGuildsGuildIdChannelsRefresh(@Request() req: ExpressRequest, @Param() param) {
         const { guildId } = param;
 
-        const channels = await this.usersServices.channels(guildId, req.user.id, true);
+        const channels = await this.usersServices.getChannels(guildId, req.user.id, true);
 
         return channels;
     }

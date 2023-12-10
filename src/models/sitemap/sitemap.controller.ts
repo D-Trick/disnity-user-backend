@@ -1,4 +1,4 @@
-// lib
+// @nestjs
 import { Controller, Get } from '@nestjs/common';
 // services
 import { SitemapService } from './sitemap.service';
@@ -16,7 +16,7 @@ export class SitemapController {
      * Public Methods
      **************************************************/
     @Get('/disnity')
-    async disnity(): Promise<string[]> {
+    async dynamicUrl() {
         const dynamicUrls = await this.sitemapService.getDynamicUrl();
 
         return dynamicUrls;

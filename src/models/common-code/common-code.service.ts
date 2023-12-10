@@ -1,7 +1,8 @@
-// lib
+// @nestjs
 import { Injectable } from '@nestjs/common';
-// repositories
-import { CommonCodeRepository } from '@databases/repositories/common-code';
+// services
+import { CommonCodeDataService } from './services/data.service';
+import { CommonCodeDetailService } from './services/detail.service';
 
 // ----------------------------------------------------------------------
 
@@ -10,30 +11,34 @@ export class CommonCodeService {
     /**************************************************
      * Constructor
      **************************************************/
-    constructor(private readonly commonCodeRepository: CommonCodeRepository) {}
+    constructor(
+        private readonly dataService: CommonCodeDataService,
+        private readonly detailService: CommonCodeDetailService,
+    ) {}
 
     /**************************************************
      * Public Methods
      **************************************************/
+    /******************************
+     * dataService
+     ******************************/
     /**
      * 공통코드 목록 가져오기
      * @param {string} code
      */
     async getCommonCodes(code: string) {
-        const commonCodes = await this.commonCodeRepository.selectMany({
-            select: {
-                columns: {
-                    id: true,
-                    code: true,
-                    name: true,
-                    value: true,
-                },
-            },
-            where: {
-                code,
-            },
-        });
+        return await this.dataService.getCommonCodes(code);
+    }
 
-        return commonCodes;
+    /******************************
+     * detailService
+     ******************************/
+    /**
+     * 공통코드 상세 가져오기
+     * @param {string} code
+     * @param {string} value
+     */
+    async getCommonCode(code: string, value: string) {
+        return await this.detailService.commonCode(code, value);
     }
 }

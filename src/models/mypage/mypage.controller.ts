@@ -1,10 +1,9 @@
-// lib
+// @nestjs
 import { Controller, Get, Request, UseGuards, Query, Param } from '@nestjs/common';
 // guards
 import { JwtAuthGuard } from '@guards/jwt-auth.guard';
 // dtos
-import { QuerysDto } from './dtos/routers';
-import { ParamIdStringDto } from '@common/dtos';
+import { ParamIdStringDto, QueryStringDto } from '@common/dtos';
 // services
 import { ServersService } from '@models/servers/servers.service';
 
@@ -22,8 +21,8 @@ export class MypageController {
      **************************************************/
     @Get('servers')
     @UseGuards(JwtAuthGuard)
-    async servers(@Request() req, @Query() query: QuerysDto) {
-        const myServers = await this.serversService.myServerList(req.user.id, query);
+    async servers(@Request() req, @Query() query: QueryStringDto) {
+        const myServers = await this.serversService.getMyServers(req.user.id, query);
 
         return myServers;
     }

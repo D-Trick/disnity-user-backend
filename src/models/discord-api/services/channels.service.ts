@@ -1,18 +1,19 @@
 // types
 import type { Invite } from '../types/discordApi.type';
-// lib
+// @nestjs
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+// lib
 import * as discordApi from '@utils/discord/api';
 // configs
 import { discordConfig } from '@config/discord.config';
 
 // ----------------------------------------------------------------------
-const { API_URL } = discordConfig;
+const { API_URL, AUTH_TYPE_BOT, BOT_TOKEN } = discordConfig;
 // ----------------------------------------------------------------------
 
 @Injectable()
-export class DiscordApiInvites {
+export class DiscordApiChannelsService {
     /**************************************************
      * Constructor
      **************************************************/
@@ -22,17 +23,20 @@ export class DiscordApiInvites {
      * Public Methods
      **************************************************/
     /**
-     * 초대코드 가져오기
-     * @param {string} guildId
+     * 채널 초대코드 생성
+     * @param {string} channelId
      */
-    async detail(inviteCode: string): Promise<Invite> {
-        const URL = `${API_URL}/invites/${inviteCode}`;
+    async createInvites(channelId: string): Promise<Invite> {
+        const URL = `${API_URL}/channels/${channelId}/invites`;
 
-        const { data: invite } = await discordApi.get(this.axios, URL, {
-            authType: null,
-            token: null,
+        const body = {
+            max_age: 0,
+        };
+        const { data: invites } = await discordApi.post(this.axios, URL, body, {
+            authType: AUTH_TYPE_BOT,
+            token: BOT_TOKEN,
         });
 
-        return invite;
+        return invites;
     }
 }

@@ -10,13 +10,16 @@ import { DiscordApiModule } from '@models/discord-api/discordApi.module';
 import { UsersController } from './users.controller';
 // services
 import { UsersService } from './users.service';
+import { UsersDataService } from './services/data.service';
+import { UsersStoreService } from './services/store.service';
+import { UsersUpdateService } from './services/update.service';
 
 // ----------------------------------------------------------------------
 
 @Module({
     imports: [CoreModule, DiscordApiModule],
     controllers: [UsersController],
-    providers: [UsersService, UtilHelper, FilterHelper],
+    providers: [UtilHelper, FilterHelper, UsersService, UsersDataService, UsersStoreService, UsersUpdateService],
     exports: [UsersService],
 })
 export class UsersModule {}
