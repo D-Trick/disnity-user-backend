@@ -26,7 +26,7 @@ export async function findGuildAdmins(
     // SELECT
     qb.select([
         `${TABLE_ALIAS}.id              AS id`,
-        'guild.id              AS server_guild_id',
+        'guild.id                       AS server_guild_id',
         `${TABLE_ALIAS}.guild_id        AS guild_id`,
         `${TABLE_ALIAS}.user_id         AS user_id`,
     ]);
