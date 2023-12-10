@@ -53,7 +53,10 @@ export async function findMyGuildDetailById(
         `tag.name                                                               AS tag_name`,
     ]);
     // SELECT guild_admin_permission
-    qb.addSelect([`admin.guild_id                                               AS admin_guild_id`]);
+    qb.addSelect([
+        `admin.guild_id                                                         AS admin_guild_id`,
+        `admin.is_owner                                                         AS admin_is_owner`,
+    ]);
     // SELECT user
     qb.addSelect([
         'user.id                                                                AS admin_id',
@@ -80,6 +83,7 @@ export async function findMyGuildDetailById(
 
     // ORDER BY
     qb.orderBy('tag.sort');
+    qb.addOrderBy('admin.is_owner', 'DESC');
 
     // N + 1 FORMAT
     const queryResult = await qb.getRawMany();
@@ -101,6 +105,7 @@ export async function findMyGuildDetailById(
                     { originalName: 'admin_username', changeName: 'username' },
                     { originalName: 'admin_avatar', changeName: 'avatar' },
                     { originalName: 'admin_discriminator', changeName: 'discriminator' },
+                    { originalName: 'admin_is_owner', changeName: 'is_owner' },
                 ],
             },
         ],
