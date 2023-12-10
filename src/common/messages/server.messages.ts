@@ -16,7 +16,7 @@ export const SERVER_MESSAGES = {
     MEMBERSHIP_URL_EMPTY: '사이트 주소를 입력해주세요.',
     MEMBERSHIP_URL_NOT_FORM: 'URL 주소 형식이 아닙니다.',
     MEMBERSHIP_MAX_LENGTH: '사이트 주소는 최대 100글자 입니다.',
-    TAG_NAME_FILTER: '#,/,&,?,,공백,*,@,%,+ 문자는 사용 할 수 없습니다.',
+    TAG_NAME_FILTER: '#,/,&,?,\\,공백,*,@,%,+ 문자는 사용 할 수 없습니다.',
     TAG_NAME_MAX_LENGTH: '태그는 최대 10글자 입니다.',
     INVITE_EMPTY: '초대코드를 입력해주세요.',
     INVITE_MAX_LENGTH: '초대코드는 최대 15글자 입니다.',
