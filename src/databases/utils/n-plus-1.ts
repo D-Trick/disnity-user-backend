@@ -148,6 +148,7 @@ export default class Nplus1<T> {
         for (let i = 0; i < length; i++) {
             const column = selectColumns[i];
             const columnName = column.changeName || column.originalName;
+
             filterColumns[columnName] = row[column.originalName];
         }
 
@@ -178,7 +179,14 @@ export default class Nplus1<T> {
         const newGroupData = { ...groupData };
 
         for (const column in newGroupData) {
-            const jsonArrayStringify = newGroupData[column].map((group) => JSON.stringify(group));
+            const jsonArrayStringify = newGroupData[column].map((group) => {
+                const jsonString = JSON.stringify(group);
+                if (jsonString === '{}') {
+                    throw new Error('undefined, function, symbol은 값으로 사용할 수 없습니다.');
+                }
+
+                return jsonString;
+            });
 
             const setJsonArray = [...new Set(jsonArrayStringify)];
 
