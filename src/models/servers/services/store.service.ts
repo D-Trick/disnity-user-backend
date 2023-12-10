@@ -206,6 +206,7 @@ export class ServersStoreService {
                         id: generateSnowflakeId(),
                         user_id: admin.id,
                         guild_id: discordGuild.id,
+                        is_owner: admin.is_owner,
                     });
                 }
 

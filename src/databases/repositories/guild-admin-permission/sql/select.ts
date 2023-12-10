@@ -23,6 +23,9 @@ function getSelectColumns(columns: SelectOptions['select']['columns']) {
     if (columns?.user_id) {
         selectColumns.push(`user_id`);
     }
+    if (columns?.is_owner) {
+        selectColumns.push(`is_owner`);
+    }
 
     return selectColumns;
 }
