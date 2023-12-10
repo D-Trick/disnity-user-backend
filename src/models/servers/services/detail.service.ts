@@ -123,7 +123,7 @@ export class ServersDetailService {
             throw new NotFoundException(ERROR_MESSAGES.E404);
         }
 
-        const tags = this.tagRepository.selectMany({
+        const tags = await this.tagRepository.selectMany({
             select: {
                 columns: {
                     name: true,
