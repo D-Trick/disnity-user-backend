@@ -9,6 +9,8 @@ import { ERROR_MESSAGES } from '@common/messages';
 // repositories
 import { GuildRepository } from '@databases/repositories/guild';
 import { EmojiRepository } from '@databases/repositories/emoji';
+import { TagRepository } from '@databases/repositories/tag';
+import { GuildAdminPermissionRepository } from '@databases/repositories/guild-admin-permission';
 
 // ----------------------------------------------------------------------
 
@@ -18,8 +20,10 @@ export class ServersDetailService {
      * Constructor
      **************************************************/
     constructor(
+        private readonly tagRepository: TagRepository,
         private readonly emojiRepository: EmojiRepository,
         private readonly guildRepository: GuildRepository,
+        private readonly guildAdminPermissionRepository: GuildAdminPermissionRepository,
     ) {}
 
     /**************************************************
@@ -47,12 +51,26 @@ export class ServersDetailService {
                 },
             });
         }
-
         if (isEmpty(server)) {
             throw new NotFoundException(ERROR_MESSAGES.E404);
         }
 
-        const promise1 = this.emojiRepository.selectMany({
+        const promise1 = this.tagRepository.selectMany({
+            select: {
+                columns: {
+                    name: true,
+                },
+            },
+            where: {
+                guild_id: id,
+            },
+        });
+        const promise2 = this.guildAdminPermissionRepository.findGuildAdmins({
+            where: {
+                guild_id: id,
+            },
+        });
+        const promise3 = this.emojiRepository.selectMany({
             select: {
                 columns: {
                     id: true,
@@ -62,10 +80,10 @@ export class ServersDetailService {
             },
             where: {
                 guild_id: id,
-                animated: 0,
+                animated: false,
             },
         });
-        const promise2 = this.emojiRepository.selectMany({
+        const promise4 = this.emojiRepository.selectMany({
             select: {
                 columns: {
                     id: true,
@@ -75,13 +93,15 @@ export class ServersDetailService {
             },
             where: {
                 guild_id: id,
-                animated: 1,
+                animated: true,
             },
         });
-        const [emojis, animate_emojis] = await Promise.all([promise1, promise2]);
+        const [tags, admins, emojis, animate_emojis] = await Promise.all([promise1, promise2, promise3, promise4]);
 
         return {
             ...server,
+            tags,
+            admins,
             emojis,
             animate_emojis,
         };
@@ -99,11 +119,24 @@ export class ServersDetailService {
                 user_id: userId,
             },
         });
-
         if (isEmpty(server)) {
             throw new NotFoundException(ERROR_MESSAGES.E404);
         }
 
-        return server;
+        const tags = this.tagRepository.selectMany({
+            select: {
+                columns: {
+                    name: true,
+                },
+            },
+            where: {
+                guild_id: id,
+            },
+        });
+
+        return {
+            ...server,
+            tags,
+        };
     }
 }

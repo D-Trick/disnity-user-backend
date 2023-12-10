@@ -2,7 +2,7 @@
 import type { SqlOptions } from '@common/types/sql-options.type';
 import type { SelectBooleanified } from './global';
 // entities
-import { Guild } from '@databases/entities/guild.entity';
+import { User } from '@databases/entities/user.entity';
 import { GuildAdminPermission } from '@databases/entities/guild-admin-permission.entity';
 
 // ----------------------------------------------------------------------
@@ -22,16 +22,11 @@ export interface SelectOptions extends SqlOptions {
  * FindGuildAdmins
  ******************************/
 export interface FindGuildAdminsOptions extends SqlOptions {
-    where: Partial<Pick<GuildAdminPermission, 'guild_id' | 'user_id'>> & {
-        server_guild_id?: Guild['id'];
-    };
+    where: Partial<Pick<GuildAdminPermission, 'guild_id' | 'user_id'>>;
 }
 
-export interface FindGuildAdmins extends Partial<GuildAdminPermission> {
-    where: Partial<Pick<GuildAdminPermission, 'guild_id' | 'user_id'>> & {
-        server_guild_id?: Guild['id'];
-    };
-}
+export type FindGuildAdmins = Pick<GuildAdminPermission, 'is_owner'> &
+    Pick<User, 'id' | 'global_name' | 'username' | 'avatar' | 'discriminator'>;
 
 /******************************
  * DML

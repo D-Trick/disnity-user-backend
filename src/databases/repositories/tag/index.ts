@@ -6,6 +6,7 @@ import type {
     InsertOptions,
     UpdateOptions,
     DeleteOptions,
+    SelectOptions,
 } from '@databases/types/tag.type';
 // lib
 import { Repository } from 'typeorm';
@@ -21,6 +22,7 @@ import { findNames } from './sql/find-names';
 import { cInsert } from './sql/insert';
 import { cUpdate } from './sql/update';
 import { cDelete } from './sql/delete';
+import { selectMany, selectOne } from './sql/select';
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +34,21 @@ export class TagRepository extends Repository<Tag> {
      */
     async totalTagGuildsCount(options: TotalTagGuildsCountOptions) {
         return totalTagGuildsCount(this, options);
+    }
+
+    /**
+     * Select One
+     * @param {SelectOptions} options
+     */
+    async selectOne(options: SelectOptions) {
+        return selectOne(this, options);
+    }
+    /**
+     * Select Many
+     * @param {SelectOptions} options
+     */
+    async selectMany(options: SelectOptions) {
+        return selectMany(this, options);
     }
 
     /**
