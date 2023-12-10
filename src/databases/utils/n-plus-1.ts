@@ -17,6 +17,7 @@ interface SelectColumns {
     originalName: string;
     changeName?: string;
 }
+
 interface DynamicObject {
     [key: string]: any;
 }
@@ -147,6 +148,7 @@ export default class Nplus1<T> {
         for (let i = 0; i < length; i++) {
             const column = selectColumns[i];
             const columnName = column.changeName || column.originalName;
+
             filterColumns[columnName] = row[column.originalName];
         }
 

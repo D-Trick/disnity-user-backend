@@ -14,8 +14,6 @@ import { ServersDetailService } from './services/detail.service';
 
 @Injectable()
 export class ServersService {
-    private readonly logger = new Logger(ServersService.name);
-
     /**************************************************
      * Constructor
      **************************************************/

@@ -24,20 +24,4 @@ export class SitemapService {
     async getDynamicUrl() {
         return await this.dataService.getDynamicUrl();
     }
-
-    /**************************************************
-     * Private Methods
-     **************************************************/
-    private urlJsonArrayToArray(urlJsonArray: { url: string }[]) {
-        const urlArray = [];
-
-        const { length = 0 } = urlJsonArray;
-        for (let i = 0; i < length; i++) {
-            const json = urlJsonArray[i];
-
-            urlArray.push(json.url);
-        }
-
-        return urlArray;
-    }
 }
