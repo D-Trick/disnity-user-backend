@@ -6,7 +6,7 @@ import { discordConfig, DISCORD_INVITE_URL } from '@config/discord.config';
 import { LoginCheckGuard } from '@guards/login-check.guard';
 // dtos
 import { ParamIdStringDto, ParamTypeAndGuildIdDto } from '@common/dtos';
-import { RedirectQueryDto } from './dtos/routers/querys.dto';
+import { RedirectQueryStringDto } from './dtos/routers/index';
 // repositories
 import { GuildRepository } from '@databases/repositories/guild';
 
@@ -44,7 +44,7 @@ export class RedirectController {
 
     @Get('bot-add/callback')
     @UseGuards(LoginCheckGuard)
-    async botAddCallback(@Request() req, @Response() res, @Query() query: RedirectQueryDto) {
+    async botAddCallback(@Request() req, @Response() res, @Query() query: RedirectQueryStringDto) {
         if (!req.user?.isLogin) return res.redirect('/auth/login');
 
         const { redirect, guild_id, error } = query;

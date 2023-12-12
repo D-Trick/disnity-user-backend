@@ -1,1 +1,1 @@
-export * from './params.dto';
+export * from './query-string.dto';
