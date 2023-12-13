@@ -177,12 +177,16 @@ export class ServersUpdateService {
                 throw new NotFoundException(ERROR_MESSAGES.SERVER_NOT_FOUND);
             }
 
-            const minutes = 60 * 10;
-            const { isTimePassed, currentDate, compareDate } = timePassed(myServer.refresh_date as string, minutes);
+            const { isTimePassed, currentDateTime, afterDateTime } = timePassed({
+                dateTime: myServer.refresh_date as string,
+                unit: 'minute',
+                afterTime: 10,
+            });
 
             if (!isTimePassed) {
-                const minutes = dayjs.duration(dayjs(compareDate).diff(currentDate)).minutes();
-                const seconds = dayjs.duration(dayjs(compareDate).diff(currentDate)).seconds();
+                const diff = dayjs(afterDateTime).diff(currentDateTime);
+                const minutes = dayjs.duration(diff).minutes();
+                const seconds = dayjs.duration(diff).seconds();
 
                 const timeRemainning = minutes !== 0 ? `${minutes}분` : `${seconds}초`;
                 throw new HttpException(`${timeRemainning} 후 다시 시도해주세요.`, HttpStatus.BAD_REQUEST);
