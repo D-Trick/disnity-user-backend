@@ -1,11 +1,10 @@
 // lib
 import { Module } from '@nestjs/common';
-// helpers
-import { PaginationHelper } from './helpers/pagination.helper';
 // modules
 import { CoreModule } from '@common/modules/core.module';
 import { UsersModule } from '@models/users/users.module';
 import { DiscordApiModule } from '@models/discord-api/discordApi.module';
+import { ServersPaginationModule } from '@models/pagination/servers/servers-pagination.module';
 // controllers
 import { ServersController } from './servers.controller';
 // services
@@ -19,7 +18,7 @@ import { ServersDetailService } from './services/detail.service';
 // ----------------------------------------------------------------------
 
 @Module({
-    imports: [CoreModule, UsersModule, DiscordApiModule],
+    imports: [CoreModule, UsersModule, DiscordApiModule, ServersPaginationModule],
     controllers: [ServersController],
     providers: [
         ServersService,
@@ -28,7 +27,6 @@ import { ServersDetailService } from './services/detail.service';
         ServersUpdateService,
         ServersDeleteService,
         ServersDetailService,
-        PaginationHelper,
     ],
     exports: [ServersService],
 })

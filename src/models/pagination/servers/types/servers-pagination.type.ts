@@ -1,12 +1,15 @@
 // types
-import type { SelectFilter } from '@common/types/select-filter.type';
+import type { MemberCountRangeQuery, PaginationQuery, SortQuery } from '@common/types/filter-query.type';
+// entities
 import type { User } from '@databases/entities/user.entity';
 
 // ----------------------------------------------------------------------
 
 interface CommonOptions {
-    filter: SelectFilter;
+    filterQuery: ServersFilterQuery;
 }
+
+export type ServersFilterQuery = PaginationQuery & SortQuery & MemberCountRangeQuery;
 
 export interface CategoryServerPaginateOptions extends CommonOptions {
     categoryId?: number;

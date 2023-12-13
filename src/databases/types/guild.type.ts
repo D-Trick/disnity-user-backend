@@ -1,7 +1,6 @@
 // types
 import type { SqlOptions } from '@common/types/sql-options.type';
 import type { SelectBooleanified } from './global';
-import type { sort, min, max } from '@common/types/select-filter.type';
 // entities
 import { Tag } from '@databases/entities/tag.entity';
 import { Guild } from '@databases/entities/guild.entity';
@@ -14,16 +13,16 @@ import { Guild } from '@databases/entities/guild.entity';
 export interface TotalCategoryGuildsCountOptions extends SqlOptions {
     where?: Partial<Pick<Guild, 'category_id'>> & {
         keyword?: string;
-        min?: min;
-        max?: max;
+        min?: number;
+        max?: number;
     };
 }
 
 export interface TotalSearchGuildsCountOptions extends SqlOptions {
     where: {
         keyword?: string;
-        min?: min;
-        max?: max;
+        min?: number;
+        max?: number;
     };
 }
 
@@ -178,8 +177,8 @@ export interface FindGuildsByIdsOptions extends SqlOptions {
     };
     where: Partial<Pick<Guild, 'category_id'>> & {
         keyword?: string;
-        min?: min;
-        max?: max;
+        min?: number;
+        max?: number;
 
         IN: {
             ids: number[];
@@ -187,7 +186,7 @@ export interface FindGuildsByIdsOptions extends SqlOptions {
     };
 
     orderBy?: {
-        sort?: sort;
+        sort?: string;
     };
 }
 export interface ReturnFindGuildsByIds {
@@ -228,12 +227,12 @@ export interface ReturnFindGuildsByIds {
 export interface FindCategoryGuildIdsOptions extends SqlOptions {
     where?: Partial<Pick<Guild, 'category_id'>> & {
         keyword?: string;
-        min?: min;
-        max?: max;
+        min?: number;
+        max?: number;
     };
 
     orderBy?: {
-        sort?: sort;
+        sort?: string;
     };
 }
 
@@ -243,12 +242,12 @@ export interface FindCategoryGuildIdsOptions extends SqlOptions {
 export interface FindSearchGuildIdsOptions extends SqlOptions {
     where: {
         keyword: string;
-        min?: min;
-        max?: max;
+        min?: number;
+        max?: number;
     };
 
     orderBy?: {
-        sort?: sort;
+        sort?: string;
     };
 }
 
@@ -261,7 +260,7 @@ export interface FindMyGuildIdsOptions extends SqlOptions {
     };
 
     orderBy?: {
-        sort?: sort;
+        sort?: string;
     };
 }
 
