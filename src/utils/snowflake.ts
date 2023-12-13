@@ -1,5 +1,16 @@
-const EPOCH = 1577836800000; // 표준시 기준 2020년 1월 1일 0시 0분 0초를 밀리초로 만듬
+/**
+ * Create Discord Snowflake id
+ * https://discord.com/developers/docs/reference#snowflakes
+ * /
 
+/**
+ * 특정 시간 기준
+ */
+const EPOCH = 1577836800000; // 한국시간 기준 2020년 1월 1일 0시 0분 0초를 밀리초로 만듬
+
+/**
+ * snoflaske id 생성
+ */
 export function generateSnowflakeId() {
     const TIMESTAMP_BITS = 42;
     const WORKER_ID_BITS = 5;
@@ -27,9 +38,51 @@ export function generateSnowflakeId() {
     return snowflakeId;
 }
 
-export function getTimestamp(snowflakeId: number) {
-    const timestamp = EPOCH + snowflakeId / 4194304;
-    const date = new Date(timestamp);
+/**
+ * snowflake id를 decode해서 timestamp를 가져온다.
+ * @param {string} snowflakeId
+ */
+export function getTimestamp(snowflakeId: string) {
+    const milliseconds = BigInt(snowflakeId) >> 22n;
+    const timestamp = milliseconds + BigInt(EPOCH);
 
-    return date;
+    return Number(timestamp);
+}
+
+/**
+ * snowflake id를 decode해서 date를 가져온다.
+ * @param {string} snowflakeId
+ */
+export function getDate(snowflakeId: string) {
+    return new Date(getTimestamp(snowflakeId));
+}
+
+/**
+ * snowflake id를 decode해서 workerId를 가져온다.
+ * @param {string} snowflakeId
+ */
+export function getWorkerId(snowflakeId: string) {
+    const workerId = (BigInt(snowflakeId) & BigInt(0x3e0000)) >> 17n;
+
+    return Number(workerId);
+}
+
+/**
+ * snowflake id를 decode해서 processId를 가져온다.
+ * @param {string} snowflakeId
+ */
+export function getProcessId(snowflakeId: string) {
+    const processId = (BigInt(snowflakeId) & BigInt(0x1f000)) >> 12n;
+
+    return Number(processId);
+}
+
+/**
+ * snowflake id를 decode해서 increment를 가져온다.
+ * @param {string} snowflakeId
+ */
+export function getIncrement(snowflakeId: string) {
+    const increment = BigInt(snowflakeId) & BigInt(0xfff);
+
+    return Number(increment);
 }
