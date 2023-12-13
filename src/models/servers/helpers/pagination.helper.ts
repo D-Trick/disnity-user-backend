@@ -10,8 +10,6 @@ import type {
 import { Injectable } from '@nestjs/common';
 // lib
 import { isEmpty } from '@lib/lodash';
-// utils
-import { pagination } from '@utils/index';
 // repositories
 import { TagRepository } from '@databases/repositories/tag';
 import { GuildRepository } from '@databases/repositories/guild';
@@ -253,20 +251,73 @@ export class PaginationHelper {
     private filterFormat(filter: SelectFilter): SelectFilter {
         const { page, itemSize, sort, min = 0, max = 0 } = filter || {};
 
-        const pageFormat = pagination(page, itemSize);
+        const paginationFormat = this.paginationQueryStringFormat(page, itemSize);
+        const sortFormat = this.sortQueryStringFormat(sort);
+        const minAndMaxFormat = this.minAndMaxQueryStringFormat(min, max);
 
-        let tempSort = sort;
-        if (sort === 'create') {
-            tempSort = 'created_at';
-        } else if (sort === 'member') {
-            tempSort = 'member';
+        return {
+            page: paginationFormat.page,
+            itemSize: paginationFormat.itemSize,
+
+            sort: sortFormat,
+
+            min: minAndMaxFormat.min,
+            max: minAndMaxFormat.max,
+        };
+    }
+
+    /**
+     * pagination을 위한 querystring format
+     * @param {number} page
+     * @param {number} itemSize
+     * @param {number} defaultItemSize?
+     */
+    private paginationQueryStringFormat(page: number = 0, itemSize: number, defaultItemSize: number = 30) {
+        let currentPage = page;
+        let currentItemSize = itemSize || defaultItemSize;
+
+        const MIN_ITEM_SIZE = 1;
+        const MAX_ITEM_SIZE = 100;
+
+        // 표시 목록 수
+        if (currentItemSize < MIN_ITEM_SIZE || currentItemSize > MAX_ITEM_SIZE) {
+            currentItemSize = defaultItemSize;
+        }
+
+        // 현재 페이지
+        if (currentPage > 1) {
+            currentPage = (page - 1) * currentItemSize;
         } else {
-            tempSort = 'refresh_date';
+            currentPage = 0;
         }
 
         return {
-            ...pageFormat,
-            sort: tempSort,
+            page,
+            itemSize,
+        };
+    }
+
+    /**
+     * 정렬을 위한 querystring format
+     * @param {string} sort
+     */
+    private sortQueryStringFormat(sort: string = 'refresh') {
+        if (sort === 'create') {
+            return 'created_at';
+        } else if (sort === 'member') {
+            return 'member';
+        } else {
+            return 'refresh_date';
+        }
+    }
+
+    /**
+     * 멤버수 범위 querystring format
+     * @param {number} min
+     * @param {number} max
+     */
+    private minAndMaxQueryStringFormat(min: number = 0, max: number = 0) {
+        return {
             min,
             max,
         };
