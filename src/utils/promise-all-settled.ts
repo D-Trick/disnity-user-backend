@@ -8,7 +8,7 @@ export async function promiseAllSettled(promises: any[]) {
     }
 
     const resultValues = result.map((r: any) => {
-        return r?.value ? r?.value : undefined;
+        return r?.value || undefined;
     });
 
     return resultValues;
