@@ -1,4 +1,4 @@
-export function isBooleanType(value: any) {
+export function isBoolean(value: any) {
     if (value === true || value === 1) {
         return true;
     }

@@ -4,7 +4,7 @@ import type { SelectOptions } from '@databases/types/emoji.type';
 // lib
 import { Repository } from 'typeorm';
 // utils
-import { isBooleanType } from '@utils/is-boolean-type';
+import { isBoolean } from '@utils/is-boolean';
 import { createSelectQueryBuilder } from '@databases/utils/createQueryBuilder';
 // alias
 import { EMOJI_TABLE_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
@@ -50,7 +50,7 @@ function select(qb: SelectQueryBuilder<Emoji>, options: SelectOptions) {
 
     // WHERE
     if (guild_id) qb.where('guild_id = :guild_id', { guild_id });
-    if (isBooleanType(animated)) qb.andWhere('animated = :animated', { animated });
+    if (isBoolean(animated)) qb.andWhere('animated = :animated', { animated });
 
     return qb;
 }

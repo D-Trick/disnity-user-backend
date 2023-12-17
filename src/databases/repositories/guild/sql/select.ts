@@ -4,7 +4,7 @@ import type { ReturnSelect, SelectOptions, SelectSqlName } from '@databases/type
 // lib
 import { Repository } from 'typeorm';
 // utils
-import { isBooleanType } from '@utils/index';
+import { isBoolean } from '@utils/index';
 import { createSelectQueryBuilder } from '@databases/utils/createQueryBuilder';
 // alias
 import { GUILD_TABLE_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
@@ -141,9 +141,9 @@ function select(qb: SelectQueryBuilder<Guild>, options: SelectOptions) {
     // WHERE
     if (id) qb.andWhere(`${TABLE_ALIAS}.id = :id`, { id });
     if (user_id) qb.andWhere(`${TABLE_ALIAS}.user_id = :user_id`, { user_id });
-    if (isBooleanType(is_open)) qb.andWhere(`${TABLE_ALIAS}.is_open = :is_open`, { is_open });
-    if (isBooleanType(is_bot)) qb.andWhere(`${TABLE_ALIAS}.is_bot = :is_bot`, { is_bot });
-    if (isBooleanType(is_admin_open)) qb.andWhere(`${TABLE_ALIAS}.is_admin_open = :is_admin_open`, { is_admin_open });
+    if (isBoolean(is_open)) qb.andWhere(`${TABLE_ALIAS}.is_open = :is_open`, { is_open });
+    if (isBoolean(is_bot)) qb.andWhere(`${TABLE_ALIAS}.is_bot = :is_bot`, { is_bot });
+    if (isBoolean(is_admin_open)) qb.andWhere(`${TABLE_ALIAS}.is_admin_open = :is_admin_open`, { is_admin_open });
     if (ids) qb.andWhere(`${TABLE_ALIAS}.id IN (:ids)`, { ids });
 
     return qb;
