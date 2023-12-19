@@ -3,10 +3,11 @@ import type { AdminGuild } from '@models/users/types/users.type';
 // configs
 import { permissionFlags } from './flags/permission.flag';
 
+// ----------------------------------------------------------------------
+
 /**
  * 관리자권한이 있는 길드 목록 가져오기
  * @param {AdminGuild} guilds
- * @returns 관리자권한이 있는 길드목록
  */
 export function filterAdminGuilds(guilds: AdminGuild[]): AdminGuild[] {
     const adminGuilds = [];
@@ -24,7 +25,6 @@ export function filterAdminGuilds(guilds: AdminGuild[]): AdminGuild[] {
 /**
  * 관리자, 서버관리자 인지 검사
  * @param permissions
- * @returns true or false
  */
 export function isGuildAdminPermission(permissions: number) {
     const { ADMINISTRATOR, MANAGE_GUILD } = permissionFlags;
