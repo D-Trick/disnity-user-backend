@@ -23,7 +23,7 @@ export async function cDelete(
     const { guild_id, user_id, IN } = where || {};
     const { user_ids } = IN || {};
 
-    const checkValues = [guild_id, user_id, user_ids];
+    const checkValues = [guild_id, user_id, ...(user_ids || [])];
     if (isAllEmpty(checkValues)) throw Error(ERROR_MESSAGES.PRAMITER_REQUIRED);
 
     const qb = createDeleteQueryBuilder<GuildAdminPermission>(GuildAdminPermission, TABLE_ALIAS, {

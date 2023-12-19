@@ -193,6 +193,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
             message = defaultMessage;
         }
 
+        if (message === defaultResponse.error) {
+            message = defaultMessage;
+        }
+
         const httpExceptionResponseJson = isJson(httpExceptionResponse)
             ? (httpExceptionResponse as unknown as object)
             : {};
