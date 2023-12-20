@@ -1,7 +1,7 @@
 // @nestjs
 import { Controller, Get, Param } from '@nestjs/common';
 // dtos
-import { ParamTypeDto } from './dtos/routers';
+import { ParamTypeDto } from '@common/dtos';
 // services
 import { MenusService } from '@models/menus/menus.service';
 

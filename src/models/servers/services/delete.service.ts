@@ -95,7 +95,8 @@ export class ServersDeleteService {
                     user_id: user.id,
                 },
             });
-            if (serversDelete.affected === 0) {
+            const isNotServer = serversDelete.affected === 0;
+            if (isNotServer) {
                 throw new BadRequestException(ERROR_MESSAGES.DELETE_SERVER_NOT_FOUND);
             }
 
@@ -138,7 +139,8 @@ export class ServersDeleteService {
                 await queryRunner.rollbackTransaction();
             }
 
-            throw new HttpException(error.message, error.status || HttpStatus.BAD_REQUEST);
+            const errorMessage = error?.name === 'Error' ? null : error.message;
+            throw new HttpException(errorMessage, error.status || HttpStatus.BAD_REQUEST);
         } finally {
             await queryRunner.release();
         }

@@ -23,6 +23,15 @@ export class ParamGuildIdDto {
 
 // Param - :type
 export class ParamTypeDto {
+    @MaxLength(20, { message: ERROR_MESSAGES.E900 })
+    type: string;
+}
+
+// Param - :type/:guildId
+export class ParamTypeAndGuildIdDto {
+    @MaxLength(20, { message: ERROR_MESSAGES.E900 })
+    guildId: string;
+
     @MaxLength(10, { message: ERROR_MESSAGES.E900 })
     type: string;
 }

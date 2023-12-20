@@ -1,4 +1,8 @@
-export async function promiseAllSettled(promises: any[]) {
+/**
+ * Promise.allSettled를 Promise.all처럼 값을 반환하게 변경
+ * @param {Promise<any>} promises
+ */
+export async function promiseAllSettled(promises: Promise<any>[]) {
     const result = await Promise.allSettled(promises);
 
     const errors: any = result.filter((r) => r.status === 'rejected');
@@ -8,7 +12,11 @@ export async function promiseAllSettled(promises: any[]) {
     }
 
     const resultValues = result.map((r: any) => {
-        return r?.value ? r?.value : undefined;
+        if (!!r?.value) {
+            return r?.value;
+        }
+
+        return undefined;
     });
 
     return resultValues;

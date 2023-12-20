@@ -1,6 +1,6 @@
 // types
-import type { SelectFilter } from '@common/types/select-filter.type';
 import type { SaveValues } from './types/save.type';
+import type { ServersFilterQuery } from '@models/pagination/servers/types/servers-pagination.type';
 // @nestjs
 import { Injectable } from '@nestjs/common';
 // services
@@ -33,46 +33,46 @@ export class ServersService {
      ******************************/
     /**
      * 서버 전체 목록 가져오기
-     * @param {SelectFilter} filter
+     * @param {ServersFilterQuery} filterQuery
      */
-    async getAllServers(filter: SelectFilter) {
-        return await this.dataService.getAllServers(filter);
+    async getAllServers(filterQuery: ServersFilterQuery) {
+        return await this.dataService.getAllServers(filterQuery);
     }
 
     /**
      * 카테고리에 해당하는 서버 목록 가져오기
      * @param {number} categoryId
-     * @param {SelectFilter} filter
+     * @param {ServersFilterQuery} filterQuery
      */
-    async getCategoryServers(categoryId: number, filter: SelectFilter) {
-        return await this.dataService.getCategoryServers(categoryId, filter);
+    async getCategoryServers(categoryId: number, filterQuery: ServersFilterQuery) {
+        return await this.dataService.getCategoryServers(categoryId, filterQuery);
     }
 
     /**
      * 태그명에 해당하는 서버 목록 가져오기
      * @param {string} tagName
-     * @param {SelectFilter} filter
+     * @param {ServersFilterQuery} filterQuery
      */
-    async getTagServers(tagName: string, filter: SelectFilter) {
-        return await this.dataService.getTagServers(tagName, filter);
+    async getTagServers(tagName: string, filterQuery: ServersFilterQuery) {
+        return await this.dataService.getTagServers(tagName, filterQuery);
     }
 
     /**
      * 검색 키워드와 일치한 서버 목록 가져오기
      * @param {string} keyword
-     * @param {SelectFilter} filter
+     * @param {ServersFilterQuery} filterQuery
      */
-    async getSearchServers(keyword: string, filter: SelectFilter) {
-        return await this.dataService.getSearchServers(keyword, filter);
+    async getSearchServers(keyword: string, filterQuery: ServersFilterQuery) {
+        return await this.dataService.getSearchServers(keyword, filterQuery);
     }
 
     /**
      * 나의 서버 목록 가져오기
      * @param {string} userId
-     * @param {SelectFilter} filter
+     * @param {ServersFilterQuery} filterQuery
      */
-    async getMyServers(userId: string, filter: SelectFilter) {
-        return await this.dataService.getMyServers(userId, filter);
+    async getMyServers(userId: string, filterQuery: ServersFilterQuery) {
+        return await this.dataService.getMyServers(userId, filterQuery);
     }
 
     /******************************

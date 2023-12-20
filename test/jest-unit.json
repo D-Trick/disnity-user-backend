@@ -1,0 +1,30 @@
+{
+    "rootDir": "../",
+    "preset": "ts-jest",
+    "moduleFileExtensions": ["js", "json", "ts"],
+    "testRegex": "unit/.*\\.spec\\.ts$",
+    "transform": {
+        "^.+\\.(t|j)s$": "ts-jest"
+    },
+
+    "coverageDirectory": "<rootDir>/test/coverage/unit",
+    "collectCoverageFrom": ["<rootDir>/src/utils/**/*.ts"],
+
+    "verbose": true,
+    "testEnvironment": "node",
+
+    "moduleNameMapper": {
+        "^test/(.*)$": "<rootDir>/test/$1",
+        "^@lib/(.*)$": "<rootDir>/src/lib/$1",
+        "^@utils/(.*)$": "<rootDir>/src/utils/$1",
+        "^@cache/(.*)$": "<rootDir>/src/cache/$1",
+        "^@models/(.*)$": "<rootDir>/src/models/$1",
+        "^@guards/(.*)$": "<rootDir>/src/guards/$1",
+        "^@config/(.*)$": "<rootDir>/src/config/$1",
+        "^@common/(.*)$": "<rootDir>/src/common/$1",
+        "^@routers/(.*)$": "<rootDir>/src/routers/$1",
+        "^@databases/(.*)$": "<rootDir>/src/databases/$1",
+        "^@exceptions/(.*)$": "<rootDir>/src/exceptions/$1",
+        "^@middlewares/(.*)$": "<rootDir>/src/middlewares/$1"
+    }
+}

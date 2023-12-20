@@ -1,5 +1,5 @@
 // @nestjs
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 // lib
 import { lastValueFrom } from 'rxjs';
@@ -21,6 +21,8 @@ interface Retrun {
 // ----------------------------------------------------------------------
 
 export async function get(axios: HttpService, url: string, config?: Config): Promise<Retrun> {
+    const logger = new Logger('utils/discord/api/get function');
+
     try {
         const { authType, token } = config;
 
@@ -36,13 +38,17 @@ export async function get(axios: HttpService, url: string, config?: Config): Pro
         const { data } = await lastValueFrom(axios.get(url, options));
 
         return { data };
-    } catch (error) {
+    } catch (error: any) {
+        logger.error(error.message, error.stack);
+
         const errorFormat = errorHandler(error, 'get', url);
         throw new HttpException(errorFormat.customMessage, errorFormat.status);
     }
 }
 
 export async function post(axios: HttpService, url: string, body: object, config: Config): Promise<Retrun> {
+    const logger = new Logger('utils/discord/api/post function');
+
     try {
         const { authType, token } = config;
 
@@ -56,7 +62,9 @@ export async function post(axios: HttpService, url: string, body: object, config
         const { data } = await lastValueFrom(axios.post(url, body, options));
 
         return { data };
-    } catch (error) {
+    } catch (error: any) {
+        logger.error(error.message, error.stack);
+
         const errorFormat = errorHandler(error, 'post', url);
         throw new HttpException(errorFormat.customMessage, errorFormat.status);
     }
@@ -85,42 +93,89 @@ async function refreshToken(axios: HttpService, token: string): Promise<Retrun> 
 }
 */
 
+/**
+ * Error Handler
+ * @param {any} error
+ * @param {string} method
+ * @param {string} url
+ */
 function errorHandler(error: any, method: string, url: string) {
     const response = error?.response;
+
+    // Http 요청 에러
     if (response) {
         const status = response?.status;
-        const data = response?.data;
 
         if (status === 429) {
-            if (data === 'error code: 1015') {
-                return {
-                    method,
-                    url,
-                    status,
-                    customMessage: `요청이 제한되었습니다.`,
-                };
-            } else {
-                const seconds = (data.retry_after / 1000) % 60;
-
-                return {
-                    method,
-                    url,
-                    status,
-                    customMessage: `${seconds}초 이후 다시 시도해주세요.`,
-                };
-            }
+            return exception429Response(response, method, url);
         } else {
-            return {
-                url,
-                status: status,
-                customMessage: DISCORD_ERROR_MESSAGES[`E${data.code}`] || data.message,
-            };
+            return exceptionAllResponse(response, method, url);
         }
-    } else {
+    }
+
+    // 그외 에러
+    return exceptionEtcResponse(method, url);
+}
+
+/**
+ * Http Status 492 예외처리
+ * @param {any} response
+ * @param {string} method
+ * @param {string} url
+ */
+function exception429Response(response: any, method: string, url: string) {
+    const status = response?.status;
+    const data = response?.data;
+
+    const common = {
+        url,
+        status,
+        method,
+    };
+
+    if (data === 'error code: 1015') {
         return {
-            url,
-            status: HttpStatus.BAD_REQUEST,
-            customMessage: '잘못된 요청입니다.',
+            ...common,
+            customMessage: `요청이 제한되었습니다.`,
+        };
+    } else {
+        const seconds = (data.retry_after / 1000) % 60;
+
+        return {
+            ...common,
+            customMessage: `${seconds}초 이후 다시 시도해주세요.`,
         };
     }
+}
+
+/**
+ * 모든 Http Status 예외처리
+ * @param {any} response
+ * @param {string} method
+ * @param {string} url
+ */
+function exceptionAllResponse(response: any, method: string, url: string) {
+    const status = response?.status;
+    const data = response?.data;
+
+    return {
+        url,
+        status,
+        method,
+        customMessage: DISCORD_ERROR_MESSAGES[`E${data.code}`] || data.message,
+    };
+}
+
+/**
+ * Http 요청에 의한 예외가 아닌 다른 예외일 경우
+ * @param {string} method
+ * @param {string} url
+ */
+function exceptionEtcResponse(method: string, url: string) {
+    return {
+        url,
+        method,
+        status: HttpStatus.BAD_REQUEST,
+        customMessage: '잘못된 요청입니다.',
+    };
 }

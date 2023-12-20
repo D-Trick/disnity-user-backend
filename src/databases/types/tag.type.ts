@@ -1,7 +1,6 @@
 // types
 import type { SelectBooleanified } from './global';
 import type { SqlOptions } from '@common/types/sql-options.type';
-import type { min, max, sort } from '@common/types/select-filter.type';
 // entities
 import { Tag } from '@databases/entities/tag.entity';
 
@@ -39,8 +38,8 @@ export interface FindNames extends Pick<Tag, 'name'> {
 export interface TotalTagGuildsCountOptions extends SqlOptions {
     where: {
         tag_name: Tag['name'];
-        min?: min;
-        max?: max;
+        min?: number;
+        max?: number;
     };
 }
 
@@ -50,12 +49,12 @@ export interface TotalTagGuildsCountOptions extends SqlOptions {
 export interface FindTagGuildIdsOptions extends SqlOptions {
     where?: {
         tag_name: Tag['name'];
-        min?: min;
-        max?: max;
+        min?: number;
+        max?: number;
     };
 
     orderBy?: {
-        sort?: sort;
+        sort?: string;
     };
 }
 

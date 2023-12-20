@@ -1,9 +1,9 @@
 // types
-import type { SelectFilter } from '@common/types/select-filter.type';
+import type { ServersFilterQuery } from '@models/pagination/servers/types/servers-pagination.type';
 // @nestjs
 import { Injectable } from '@nestjs/common';
-// helpers
-import { PaginationHelper } from '../helpers/pagination.helper';
+// services
+import { ServersPaginationService } from '@models/pagination/servers/servers-pagination.service';
 // repositories
 import { CommonCodeRepository } from '@databases/repositories/common-code';
 
@@ -15,7 +15,8 @@ export class ServersDataService {
      * Constructor
      **************************************************/
     constructor(
-        private readonly paginationHelper: PaginationHelper,
+        private readonly serversPaginationService: ServersPaginationService,
+
         private readonly commonCodeRepository: CommonCodeRepository,
     ) {}
 
@@ -24,9 +25,9 @@ export class ServersDataService {
      **************************************************/
     /**
      * 서버 전체 목록 가져오기
-     * @param {SelectFilter} filter
+     * @param {ServersFilterQuery} filterQuery
      */
-    async getAllServers(filter: SelectFilter) {
+    async getAllServers(filterQuery: ServersFilterQuery) {
         const promise1 = this.commonCodeRepository.selectOne({
             select: {
                 columns: {
@@ -38,8 +39,8 @@ export class ServersDataService {
                 value: 'all',
             },
         });
-        const promise2 = this.paginationHelper.categoryServerPaginate({
-            filter,
+        const promise2 = this.serversPaginationService.categoryServerPaginate({
+            filterQuery,
         });
         const [category, servers] = await Promise.all([promise1, promise2]);
 
@@ -52,9 +53,9 @@ export class ServersDataService {
     /**
      * 카테고리에 해당하는 서버 목록 가져오기
      * @param {number} categoryId
-     * @param {SelectFilter} filter
+     * @param {ServersFilterQuery} filterQuery
      */
-    async getCategoryServers(categoryId: number, filter: SelectFilter) {
+    async getCategoryServers(categoryId: number, filterQuery: ServersFilterQuery) {
         const promise1 = this.commonCodeRepository.selectOne({
             select: {
                 columns: {
@@ -66,9 +67,9 @@ export class ServersDataService {
                 value: String(categoryId),
             },
         });
-        const promise2 = this.paginationHelper.categoryServerPaginate({
+        const promise2 = this.serversPaginationService.categoryServerPaginate({
             categoryId,
-            filter,
+            filterQuery,
         });
         const [category, servers] = await Promise.all([promise1, promise2]);
 
@@ -81,12 +82,12 @@ export class ServersDataService {
     /**
      * 태그명에 해당하는 서버 목록 가져오기
      * @param {string} tagName
-     * @param {SelectFilter} filter
+     * @param {ServersFilterQuery} filterQuery
      */
-    async getTagServers(tagName: string, filter: SelectFilter) {
-        const servers = await this.paginationHelper.tagServerPaginate({
+    async getTagServers(tagName: string, filterQuery: ServersFilterQuery) {
+        const servers = await this.serversPaginationService.tagServerPaginate({
             tagName,
-            filter,
+            filterQuery,
         });
 
         return {
@@ -98,12 +99,12 @@ export class ServersDataService {
     /**
      * 검색 키워드와 일치한 서버 목록 가져오기
      * @param {string} keyword
-     * @param {SelectFilter} filter
+     * @param {ServersFilterQuery} filterQuery
      */
-    async getSearchServers(keyword: string, filter: SelectFilter) {
-        const servers = await this.paginationHelper.searchServerPaginate({
+    async getSearchServers(keyword: string, filterQuery: ServersFilterQuery) {
+        const servers = await this.serversPaginationService.searchServerPaginate({
             keyword,
-            filter,
+            filterQuery,
         });
 
         return {
@@ -115,12 +116,12 @@ export class ServersDataService {
     /**
      * 나의 서버 목록 가져오기
      * @param {string} userId
-     * @param {SelectFilter} filter
+     * @param {ServersFilterQuery} filterQuery
      */
-    async getMyServers(userId: string, filter: SelectFilter) {
-        const servers = await this.paginationHelper.myServerPaginate({
+    async getMyServers(userId: string, filterQuery: ServersFilterQuery) {
+        const servers = await this.serversPaginationService.myServerPaginate({
             userId,
-            filter,
+            filterQuery,
         });
 
         return servers;

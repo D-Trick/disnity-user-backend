@@ -3,7 +3,7 @@ import type { Save, SaveValues } from '../types/save.type';
 // @nestjs
 import { Injectable, HttpException, HttpStatus, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
 // lib
-import { DataSource } from 'typeorm';
+import { DataSource, QueryRunner } from 'typeorm';
 import dayjs from '@lib/dayjs';
 import { isEmpty } from '@lib/lodash';
 // utils
@@ -43,21 +43,7 @@ export class ServersUpdateService {
      * @param {SaveValues} saveValues
      */
     async edit(serverId: string, userId: string, saveValues: Partial<SaveValues>): Promise<Save> {
-        const {
-            serverOpen,
-            categoryId,
-            linkType,
-            inviteAuto,
-            inviteCode,
-            channelId,
-            membershipUrl,
-            tags,
-            summary,
-            content,
-            contentType,
-        } = saveValues;
-
-        let newInviteCode = inviteCode;
+        const { tags } = saveValues;
 
         const queryRunner = this.dataSource.createQueryRunner();
         try {
@@ -76,67 +62,15 @@ export class ServersUpdateService {
                 throw new BadRequestException(ERROR_MESSAGES.SERVER_NOT_FOUND_OR_NOT_PERMISSION);
             }
 
-            /**
-             * - 자동으로 초대코드를 생성하는거면 코드를 생성한다.
-             * - 초대코드가 유효한지 검사한다.
-             */
-            if (linkType === 'invite') {
-                if (inviteAuto === 'auto') {
-                    const invites = await this.discordApiService.channels().createInvites(channelId);
-
-                    newInviteCode = invites.code;
-                }
-
-                await this.discordApiService.invites().detail(newInviteCode);
-            }
-
             await queryRunner.startTransaction();
 
             // 서버 수정
-            await this.guildRepository.cUpdate({
-                transaction: queryRunner,
-                values: {
-                    category_id: categoryId,
-                    summary,
-                    content,
-                    is_markdown: contentType === 'markdown',
-                    link_type: linkType,
-                    invite_code: linkType === 'invite' ? newInviteCode : null,
-                    membership_url: linkType === 'membership' ? membershipUrl : null,
-                    is_open: serverOpen === 'public',
-                },
-                where: {
-                    id: serverId,
-                },
-            });
+            await this.guildUpdate(queryRunner, serverId, saveValues);
 
-            // 이전 태그 삭제
-            await this.tagRepository.cDelete({
-                transaction: queryRunner,
-                where: {
-                    guild_id: serverId,
-                },
-            });
-
-            // 현재 태그 추가
+            // 이전 태그 목록을 삭제후 현재 태그 목록 추가
             const tagsLength = tags.length;
             if (tagsLength > 0) {
-                const formatTags = [];
-
-                for (let i = 0; i < tagsLength; i++) {
-                    const tag = tags[i];
-
-                    formatTags.push({
-                        id: generateSnowflakeId(),
-                        guild_id: serverId,
-                        name: tag.name,
-                        sort: i,
-                    });
-                }
-                await this.tagRepository.cInsert({
-                    transaction: queryRunner,
-                    values: formatTags,
-                });
+                await this.tagsDeleteAndInsert(queryRunner, serverId, tags);
             }
 
             await queryRunner.commitTransaction();
@@ -177,12 +111,16 @@ export class ServersUpdateService {
                 throw new NotFoundException(ERROR_MESSAGES.SERVER_NOT_FOUND);
             }
 
-            const minutes = 60 * 10;
-            const { isTimePassed, currentDate, compareDate } = timePassed(myServer.refresh_date as string, minutes);
+            const { isTimePassed, currentDateTime, afterDateTime } = timePassed({
+                dateTime: myServer.refresh_date as string,
+                unit: 'minute',
+                afterTime: 10,
+            });
 
             if (!isTimePassed) {
-                const minutes = dayjs.duration(dayjs(compareDate).diff(currentDate)).minutes();
-                const seconds = dayjs.duration(dayjs(compareDate).diff(currentDate)).seconds();
+                const diff = dayjs(afterDateTime).diff(currentDateTime);
+                const minutes = dayjs.duration(diff).minutes();
+                const seconds = dayjs.duration(diff).seconds();
 
                 const timeRemainning = minutes !== 0 ? `${minutes}분` : `${seconds}초`;
                 throw new HttpException(`${timeRemainning} 후 다시 시도해주세요.`, HttpStatus.BAD_REQUEST);
@@ -226,5 +164,87 @@ export class ServersUpdateService {
                 throw new HttpException(error.message, error.status || HttpStatus.BAD_REQUEST);
             }
         }
+    }
+
+    /**************************************************
+     * Public Methods
+     **************************************************/
+    /**
+     * 서버 수정
+     * @param {QueryRunner} transaction
+     * @param {string} guildId
+     * @param {Partial<SaveValues>} saveValues
+     */
+    private async guildUpdate(transaction: QueryRunner, guildId: string, saveValues: Partial<SaveValues>) {
+        const {
+            serverOpen,
+            categoryId,
+            linkType,
+            inviteAuto,
+            channelId,
+            inviteCode,
+            membershipUrl,
+            summary,
+            content,
+            contentType,
+        } = saveValues;
+
+        let newInviteCode = inviteCode;
+        if (linkType === 'invite') {
+            if (inviteAuto === 'auto') {
+                const invites = await this.discordApiService.channels().createInvites(channelId);
+
+                newInviteCode = invites.code;
+            }
+
+            // 초대코드가 유효하지 않으면 예외를 던진다.
+            await this.discordApiService.invites().detail(newInviteCode);
+        }
+
+        await this.guildRepository.cUpdate({
+            transaction,
+            values: {
+                category_id: categoryId,
+                summary,
+                content,
+                is_markdown: contentType === 'markdown',
+                link_type: linkType,
+                invite_code: linkType === 'invite' ? newInviteCode : null,
+                membership_url: linkType === 'membership' ? membershipUrl : null,
+                is_open: serverOpen === 'public',
+            },
+            where: {
+                id: guildId,
+            },
+        });
+    }
+
+    /**
+     * 태그 목록 저장
+     * @param {QueryRunner} transaction
+     * @param {string} guildId
+     * @param {SaveValues['tags']} tags
+     */
+    private async tagsDeleteAndInsert(transaction: QueryRunner, guildId: string, tags: SaveValues['tags']) {
+        const tagList = [...tags];
+
+        await this.tagRepository.cDelete({
+            transaction,
+            where: {
+                guild_id: guildId,
+            },
+        });
+
+        const insertValues = tagList.map((tag, index) => ({
+            id: generateSnowflakeId(),
+            guild_id: guildId,
+            name: tag.name,
+            sort: index,
+        }));
+
+        await this.tagRepository.cInsert({
+            transaction,
+            values: insertValues,
+        });
     }
 }

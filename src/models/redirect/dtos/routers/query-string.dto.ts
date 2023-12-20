@@ -6,7 +6,7 @@ import { ERROR_MESSAGES } from '@common/messages';
 
 // ----------------------------------------------------------------------
 
-class QueryFilterValidation {
+class QueryStringFilterValidation {
     @MaxLength(10, { message: ERROR_MESSAGES.E900 })
     @IsString({ message: ERROR_MESSAGES.E900 })
     redirect: string;
@@ -26,4 +26,4 @@ class QueryFilterValidation {
     permissions: string;
 }
 
-export class RedirectQueryDto extends PartialType(QueryFilterValidation) {}
+export class RedirectQueryStringDto extends PartialType(QueryStringFilterValidation) {}

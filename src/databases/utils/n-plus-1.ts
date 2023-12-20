@@ -95,8 +95,8 @@ export default class Nplus1<T> {
         for (let currentIndex = 0; currentIndex < queryResultLength; currentIndex++) {
             const currentRow = this.queryResult[currentIndex];
 
-            const isGreaterThanOrEqualTo = currentIndex >= lastIndex;
-            const nextIndex = isGreaterThanOrEqualTo ? lastIndex : currentIndex + 1;
+            const greaterThanOrEqual = currentIndex >= lastIndex;
+            const nextIndex = greaterThanOrEqual ? lastIndex : currentIndex + 1;
             const nextRow = this.queryResult[nextIndex];
 
             outputGroups = this.joinRowGrouping(currentRow, outputGroups);

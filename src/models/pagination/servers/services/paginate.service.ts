@@ -1,17 +1,16 @@
 // types
-import type { SelectFilter } from '@common/types/select-filter.type';
 import type {
-    CategoryServerPaginateOptions,
     MyServerPaginateOptions,
-    SearchServerPaginateOptions,
     TagServerPaginateOptions,
-} from '../types/pagination.type';
+    SearchServerPaginateOptions,
+    CategoryServerPaginateOptions,
+} from '../types/servers-pagination.type';
 // @nestjs
 import { Injectable } from '@nestjs/common';
 // lib
 import { isEmpty } from '@lib/lodash';
 // utils
-import { pagination } from '@utils/index';
+import { filterQueryFormat } from '../utils/query-format';
 // repositories
 import { TagRepository } from '@databases/repositories/tag';
 import { GuildRepository } from '@databases/repositories/guild';
@@ -19,7 +18,7 @@ import { GuildRepository } from '@databases/repositories/guild';
 // ----------------------------------------------------------------------
 
 @Injectable()
-export class PaginationHelper {
+export class PaginateService {
     /**************************************************
      * Constructor
      **************************************************/
@@ -31,9 +30,13 @@ export class PaginationHelper {
     /**************************************************
      * Public Methods
      **************************************************/
+    /**
+     * 카테고리와 일치한 서버 목록 페이지네이션
+     * @param {CategoryServerPaginateOptions} options
+     */
     async categoryServerPaginate(options: CategoryServerPaginateOptions) {
-        const { categoryId, filter } = options;
-        const { itemSize, page, min, max, sort } = this.filterFormat(filter);
+        const { categoryId, filterQuery } = options;
+        const { itemSize, page, min, max, sort } = filterQueryFormat(filterQuery);
 
         const serverIds = await this.guildRepository.findCategoryGuildIds({
             where: {
@@ -83,9 +86,13 @@ export class PaginationHelper {
         };
     }
 
+    /**
+     * 태그와 일치한 서버 목록 페이지네이션
+     * @param {TagServerPaginateOptions} options
+     */
     async tagServerPaginate(options: TagServerPaginateOptions) {
-        const { tagName, filter } = options;
-        const { itemSize, page, min, max, sort } = this.filterFormat(filter);
+        const { tagName, filterQuery } = options;
+        const { itemSize, page, min, max, sort } = filterQueryFormat(filterQuery);
 
         const serverIds = await this.tagRepository.findTagGuildIds({
             where: {
@@ -140,8 +147,8 @@ export class PaginationHelper {
      * @param {searchServerPaginateOptions} options
      */
     async searchServerPaginate(options: SearchServerPaginateOptions) {
-        const { keyword, filter } = options;
-        const { itemSize, page, min, max, sort } = this.filterFormat(filter);
+        const { keyword, filterQuery } = options;
+        const { itemSize, page, min, max, sort } = filterQueryFormat(filterQuery);
 
         const serverIds = await this.guildRepository.findSearchGuildIds({
             where: {
@@ -193,11 +200,11 @@ export class PaginationHelper {
 
     /**
      * 나의 서버 목록 페이지네이션
-     * @param {myServerPaginateOptions} options
+     * @param {MyServerPaginateOptions} options
      */
     async myServerPaginate(options: MyServerPaginateOptions) {
-        const { userId, filter } = options;
-        const { itemSize, page, sort } = this.filterFormat(filter);
+        const { userId, filterQuery } = options;
+        const { itemSize, page, sort } = filterQueryFormat(filterQuery);
 
         const serverIds = await this.guildRepository.findMyGuildIds({
             where: {
@@ -246,29 +253,4 @@ export class PaginationHelper {
     /**************************************************
      * Private Methods
      **************************************************/
-    /**
-     * QueryString(page,itemSize, sort, min, max)를 가져와서 DB에 SELECT가능한 포맷형태로 변경
-     * @param {SelectFilter} filter
-     */
-    private filterFormat(filter: SelectFilter): SelectFilter {
-        const { page, itemSize, sort, min = 0, max = 0 } = filter || {};
-
-        const pageFormat = pagination(page, itemSize);
-
-        let tempSort = sort;
-        if (sort === 'create') {
-            tempSort = 'created_at';
-        } else if (sort === 'member') {
-            tempSort = 'member';
-        } else {
-            tempSort = 'refresh_date';
-        }
-
-        return {
-            ...pageFormat,
-            sort: tempSort,
-            min,
-            max,
-        };
-    }
 }
