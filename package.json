@@ -1,10 +1,11 @@
 {
     "name": "disnity-user-backend",
-    "version": "4.3.5",
+    "version": "4.3.6",
     "description": "Disnity User Backend",
     "author": "Trick",
-    "private": true,
     "license": "UNLICENSED",
+    "private": true,
+    "repository": "https://github.com/D-Trick/disnity-user-backend",
     "scripts": {
         "start": "NODE_ENV=production nest start",
         "start:dev": "rm -rf ./dist && NODE_ENV=development nest start --watch",
@@ -17,6 +18,7 @@
         "reload": "NODE_ENV=production pm2 reload pm2.config.js",
         "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
         "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+        "test:clear": "jest --clearCache",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
         "test:unit": "NODE_ENV=test jest --config ./test/jest-unit.json",
         "test:unit:watch": "NODE_ENV=test jest --watch --config ./test/jest-unit.json",
