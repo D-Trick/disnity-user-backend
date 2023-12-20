@@ -1,13 +1,19 @@
 # Disnity-User-Backend V4
 
-<div align="center">
+<div align="center" style="font-size: 20px">
     디스코드 커뮤니티 서비스
 </div>
 
 <br/><br/>
 
-**이전 버전 Private Repository**  
-https://github.com/D-Trick/disnity-user-backend-old
+**Previous version**  
+[Current Private Repository](https://github.com/D-Trick/disnity-user-backend-old)
+
+---
+
+### ERD
+
+[Disnity ERD](https://github.com/D-Trick/disnity-user-backend/blob/main/ERD.md)
 
 ---
 
@@ -20,4 +26,4 @@ https://github.com/D-Trick/disnity-user-backend-old
 
 ### Histroy
 
-Express -> NestJS
+Express -> Express(Typescript) -> NestJS
