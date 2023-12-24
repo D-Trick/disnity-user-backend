@@ -52,7 +52,7 @@ export class RedirectController {
         switch (redirect) {
             case 'create':
                 const redirectUrl =
-                    error === 'access_denied' ? `/servers/create` : `/servers/${guild_id}/create?botAdded=true`;
+                    error === 'access_denied' ? `/mypage/servers/create` : `/servers/${guild_id}/create?botAdded=true`;
 
                 return res.redirect(redirectUrl);
 
