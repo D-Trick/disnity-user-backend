@@ -1,5 +1,7 @@
 // @nestjs
 import { Controller, Get } from '@nestjs/common';
+// utils
+import { controllerThrow } from '@utils/response/controller-throw';
 // services
 import { SitemapService } from './sitemap.service';
 
@@ -17,8 +19,12 @@ export class SitemapController {
      **************************************************/
     @Get('/disnity')
     async dynamicUrl() {
-        const dynamicUrls = await this.sitemapService.getDynamicUrl();
+        try {
+            const dynamicUrls = await this.sitemapService.getDynamicUrl();
 
-        return dynamicUrls;
+            return dynamicUrls;
+        } catch (error: any) {
+            controllerThrow(error);
+        }
     }
 }

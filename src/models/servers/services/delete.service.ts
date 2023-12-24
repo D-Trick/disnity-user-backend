@@ -1,20 +1,12 @@
 // @nestjs
-import {
-    Injectable,
-    HttpException,
-    HttpStatus,
-    BadRequestException,
-    NotFoundException,
-    ForbiddenException,
-    Logger,
-} from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
 // lib
 import { DataSource } from 'typeorm';
 import { isEmpty } from '@lib/lodash';
 // utils
 import { promiseAllSettled } from '@utils/index';
 // messages
-import { ERROR_MESSAGES } from '@common/messages';
+import { SERVER_ERROR_MESSAGES, HTTP_ERROR_MESSAGES } from '@common/messages';
 // repositories
 import { TagRepository } from '@databases/repositories/tag';
 import { UserRepository } from '@databases/repositories/user';
@@ -27,8 +19,6 @@ import { GuildAdminPermissionRepository } from '@databases/repositories/guild-ad
 
 @Injectable()
 export class ServersDeleteService {
-    private readonly logger = new Logger(ServersDeleteService.name);
-
     /**************************************************
      * Constructor
      **************************************************/
@@ -54,6 +44,7 @@ export class ServersDeleteService {
      */
     async delete(userId: string, serverId: string): Promise<{ result: boolean }> {
         const queryRunner = this.dataSource.createQueryRunner();
+
         try {
             const user = await this.userRepository.selectOne({
                 select: {
@@ -79,11 +70,11 @@ export class ServersDeleteService {
                 },
             });
             if (isEmpty(guild)) {
-                throw new NotFoundException(ERROR_MESSAGES.SERVER_NOT_FOUND);
+                throw new NotFoundException(SERVER_ERROR_MESSAGES.SERVER_NOT_FOUND);
             }
 
             if (guild.is_admin_open === 0) {
-                throw new ForbiddenException(ERROR_MESSAGES.E403);
+                throw new ForbiddenException(HTTP_ERROR_MESSAGES['403']);
             }
 
             await queryRunner.startTransaction();
@@ -97,7 +88,7 @@ export class ServersDeleteService {
             });
             const isNotServer = serversDelete.affected === 0;
             if (isNotServer) {
-                throw new BadRequestException(ERROR_MESSAGES.DELETE_SERVER_NOT_FOUND);
+                throw new BadRequestException(SERVER_ERROR_MESSAGES.DELETE_FAILED_SERVER_NOT_FOUND);
             }
 
             const promise1 = this.tagRepository.cDelete({
@@ -132,15 +123,12 @@ export class ServersDeleteService {
             await queryRunner.commitTransaction();
 
             return { result: true };
-        } catch (error: any) {
-            this.logger.error(error.message, error.stack);
-
+        } catch (error) {
             if (queryRunner.isTransactionActive) {
                 await queryRunner.rollbackTransaction();
             }
 
-            const errorMessage = error?.name === 'Error' ? null : error.message;
-            throw new HttpException(errorMessage, error.status || HttpStatus.BAD_REQUEST);
+            throw error;
         } finally {
             await queryRunner.release();
         }

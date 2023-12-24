@@ -1,6 +1,8 @@
 // @nestjs
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+// messages
+import { AUTH_ERROR_MESSAGES } from '@common/messages';
 
 // ----------------------------------------------------------------------
 
@@ -14,7 +16,7 @@ export class DiscordAuthGuard extends AuthGuard('discord') {
         }
 
         if (err || !user) {
-            throw err || new UnauthorizedException('로그인을 해주세요.');
+            throw err || new UnauthorizedException(AUTH_ERROR_MESSAGES.LOGIN_PLEASE);
         }
 
         return user;

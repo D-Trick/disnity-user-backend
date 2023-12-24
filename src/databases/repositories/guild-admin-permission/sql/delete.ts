@@ -7,7 +7,7 @@ import { Repository } from 'typeorm';
 import { isAllEmpty } from '@utils/index';
 import { createDeleteQueryBuilder } from '@databases/utils/createQueryBuilder';
 // messages
-import { ERROR_MESSAGES } from '@common/messages';
+import { COMMON_ERROR_MESSAGES } from '@common/messages';
 // alias
 import { GUILD_ADMIN_PERMISSION_TABLE_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
 // entities
@@ -24,7 +24,7 @@ export async function cDelete(
     const { user_ids } = IN || {};
 
     const checkValues = [guild_id, user_id, ...(user_ids || [])];
-    if (isAllEmpty(checkValues)) throw Error(ERROR_MESSAGES.PRAMITER_REQUIRED);
+    if (isAllEmpty(checkValues)) throw Error(COMMON_ERROR_MESSAGES.PRAMITER_REQUIRED);
 
     const qb = createDeleteQueryBuilder<GuildAdminPermission>(GuildAdminPermission, TABLE_ALIAS, {
         repository,

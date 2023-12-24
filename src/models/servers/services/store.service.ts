@@ -2,16 +2,17 @@
 import type { Save, SaveValues } from '../types/save.type';
 import type { Emoji, Guild, GuildScheduledEvent } from '@models/discord-api/types/discordApi.type';
 // @nestjs
-import { Injectable, HttpException, HttpStatus, BadRequestException, Logger } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 // lib
 import { DataSource, QueryRunner } from 'typeorm';
-import { ERROR_MESSAGES } from '@common/messages';
 import dayjs from '@lib/dayjs';
 import { isNotEmpty, differenceBy, uniq, uniqBy } from '@lib/lodash';
 // utils
 import { generateSnowflakeId, promiseAllSettled } from '@utils/index';
 // cache
 import { CACHE_KEYS } from '@cache/redis/keys';
+// messages
+import { SERVER_ERROR_MESSAGES } from '@common/messages';
 // services
 import { CacheService } from '@cache/redis/cache.service';
 import { DiscordApiService } from '@models/discord-api/discordApi.service';
@@ -27,8 +28,6 @@ import { GuildAdminPermissionRepository } from '@databases/repositories/guild-ad
 
 @Injectable()
 export class ServersStoreService {
-    private readonly logger = new Logger(ServersStoreService.name);
-
     /**************************************************
      * Constructor
      **************************************************/
@@ -79,7 +78,7 @@ export class ServersStoreService {
                 },
             });
             if (isNotEmpty(guild)) {
-                throw new BadRequestException(ERROR_MESSAGES.SERVER_EXISTE);
+                throw new BadRequestException(SERVER_ERROR_MESSAGES.SERVER_EXISTE);
             }
 
             const discordGuild = await this.discordApiService.guilds().detail(id);
@@ -119,14 +118,12 @@ export class ServersStoreService {
             await queryRunner.commitTransaction();
 
             return { id: discordGuild.id };
-        } catch (error: any) {
-            this.logger.error(error.message, error.stack);
-
+        } catch (error) {
             if (queryRunner.isTransactionActive) {
                 await queryRunner.rollbackTransaction();
             }
 
-            throw new HttpException(error.message || ERROR_MESSAGES.E400, error.status || HttpStatus.BAD_REQUEST);
+            throw error;
         } finally {
             await queryRunner.release();
         }

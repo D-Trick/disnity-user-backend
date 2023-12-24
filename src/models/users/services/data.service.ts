@@ -10,6 +10,8 @@ import { isEmpty } from '@lib/lodash';
 import { CACHE_KEYS } from '@cache/redis/keys';
 // configs
 import { refreshTokenTTL } from '@config/jwt.config';
+// messages
+import { AUTH_ERROR_MESSAGES, DISCORD_ERROR_MESSAGES } from '@common/messages';
 // helpers
 import { UtilHelper } from '../helper/util.helper';
 import { FilterHelper } from '../helper/filter.helper';
@@ -55,7 +57,7 @@ export class UsersDataService {
                 },
             });
             if (!refreshUser) {
-                throw new UnauthorizedException();
+                throw new UnauthorizedException(AUTH_ERROR_MESSAGES.LOGIN_PLEASE);
             }
 
             await this.cacheService.set<CacheUser>(CACHE_KEYS.DISNITY_USER(userId), refreshUser, refreshTokenTTL);
@@ -74,7 +76,7 @@ export class UsersDataService {
         const cacheDiscordUser = await this.cacheService.getDiscordUser(userId);
 
         if (!cacheDiscordUser || !cacheDiscordUser?.access_token) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException(DISCORD_ERROR_MESSAGES.LOGIN_PLEASE);
         }
 
         return cacheDiscordUser;

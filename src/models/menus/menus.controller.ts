@@ -2,6 +2,8 @@
 import { Controller, Get, Param } from '@nestjs/common';
 // dtos
 import { ParamTypeDto } from '@common/dtos';
+// utils
+import { controllerThrow } from '@utils/response/controller-throw';
 // services
 import { MenusService } from '@models/menus/menus.service';
 
@@ -19,10 +21,14 @@ export class MenusController {
      **************************************************/
     @Get(':type')
     async menus(@Param() params: ParamTypeDto) {
-        const { type } = params;
+        try {
+            const { type } = params;
 
-        const menus = await this.menusService.getMenus(type, '디스코드 서버');
+            const menus = await this.menusService.getMenus(type, '디스코드 서버');
 
-        return [menus];
+            return [menus];
+        } catch (error: any) {
+            controllerThrow(error);
+        }
     }
 }

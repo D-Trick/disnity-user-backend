@@ -7,7 +7,7 @@ import { Repository } from 'typeorm';
 import { isAllEmpty } from '@utils/index';
 import { createDeleteQueryBuilder } from '@databases/utils/createQueryBuilder';
 // messages
-import { ERROR_MESSAGES } from '@common/messages';
+import { COMMON_ERROR_MESSAGES } from '@common/messages';
 // alias
 import { GUILD_SCHEDULED_TABLE_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
 // entities
@@ -20,7 +20,7 @@ export async function cDelete(repository: Repository<GuildScheduled>, options: D
     const { id, guild_id } = where || {};
 
     const checkValues = [id, guild_id];
-    if (isAllEmpty(checkValues)) throw Error(ERROR_MESSAGES.PRAMITER_REQUIRED);
+    if (isAllEmpty(checkValues)) throw Error(COMMON_ERROR_MESSAGES.PRAMITER_REQUIRED);
 
     const qb = createDeleteQueryBuilder<GuildScheduled>(GuildScheduled, TABLE_ALIAS, {
         repository,
