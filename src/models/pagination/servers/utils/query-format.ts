@@ -51,8 +51,8 @@ export function paginationQueryStringFormat(page: number = 0, itemSize: number, 
     }
 
     return {
-        page,
-        itemSize,
+        page: currentPage,
+        itemSize: currentItemSize,
     };
 }
 
