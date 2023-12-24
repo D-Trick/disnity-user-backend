@@ -1,10 +1,11 @@
 // @nestjs
-import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 // lib
 import { lastValueFrom } from 'rxjs';
+// exceptions
+import { DiscordApiException } from '@exceptions/discord-api.exception';
 // messages
-import { DISCORD_ERROR_MESSAGES } from '@common/messages';
+import { DISCORD_API_ERROR_MESSAGES, DISCORD_ERROR_MESSAGES } from '@common/messages';
 
 // ----------------------------------------------------------------------
 interface Config {
@@ -21,8 +22,6 @@ interface Retrun {
 // ----------------------------------------------------------------------
 
 export async function get(axios: HttpService, url: string, config?: Config): Promise<Retrun> {
-    const logger = new Logger('utils/discord/api/get function');
-
     try {
         const { authType, token } = config;
 
@@ -39,16 +38,11 @@ export async function get(axios: HttpService, url: string, config?: Config): Pro
 
         return { data };
     } catch (error: any) {
-        logger.error(error.message, error.stack);
-
-        const errorFormat = errorHandler(error, 'get', url);
-        throw new HttpException(errorFormat.customMessage, errorFormat.status);
+        errorHandler(url, error);
     }
 }
 
 export async function post(axios: HttpService, url: string, body: object, config: Config): Promise<Retrun> {
-    const logger = new Logger('utils/discord/api/post function');
-
     try {
         const { authType, token } = config;
 
@@ -63,11 +57,55 @@ export async function post(axios: HttpService, url: string, body: object, config
 
         return { data };
     } catch (error: any) {
-        logger.error(error.message, error.stack);
-
-        const errorFormat = errorHandler(error, 'post', url);
-        throw new HttpException(errorFormat.customMessage, errorFormat.status);
+        errorHandler(url, error);
     }
+}
+
+/**
+ * Error Handler
+ * @param {any} error
+ */
+function errorHandler(url: string, error: any) {
+    const response = error?.response;
+
+    if (response) {
+        const { status, data } = response;
+
+        let message = DISCORD_API_ERROR_MESSAGES[`${data?.code}`];
+
+        if (status === 429) {
+            if (!!data?.retry_after) {
+                const seconds = (data.retry_after / 1000) % 60;
+
+                message = `${seconds}초 이후 다시 시도해주세요.`;
+            } else {
+                message = '요청이 제한되었습니다.';
+            }
+        } else if (status === 403) {
+            message = format403Message(url, data?.code);
+        }
+
+        throw new DiscordApiException(status, url, message || data?.message);
+    }
+
+    throw error;
+}
+
+/**
+ * Error Handler
+ * @param {string} url
+ * @param {number} errorCode
+ */
+function format403Message(url: string, errorCode: number) {
+    let message = DISCORD_API_ERROR_MESSAGES[`${errorCode}`];
+
+    if (errorCode === 50013) {
+        if (url.includes('/channels') && url.includes('/invites')) {
+            message = DISCORD_ERROR_MESSAGES.CHANNEL_INVITE_CODE_NO_CREATE_PERMISSION;
+        }
+    }
+
+    return message;
 }
 
 /*
@@ -92,90 +130,3 @@ async function refreshToken(axios: HttpService, token: string): Promise<Retrun> 
     }
 }
 */
-
-/**
- * Error Handler
- * @param {any} error
- * @param {string} method
- * @param {string} url
- */
-function errorHandler(error: any, method: string, url: string) {
-    const response = error?.response;
-
-    // Http 요청 에러
-    if (response) {
-        const status = response?.status;
-
-        if (status === 429) {
-            return exception429Response(response, method, url);
-        } else {
-            return exceptionAllResponse(response, method, url);
-        }
-    }
-
-    // 그외 에러
-    return exceptionEtcResponse(method, url);
-}
-
-/**
- * Http Status 492 예외처리
- * @param {any} response
- * @param {string} method
- * @param {string} url
- */
-function exception429Response(response: any, method: string, url: string) {
-    const status = response?.status;
-    const data = response?.data;
-
-    const common = {
-        url,
-        status,
-        method,
-    };
-
-    if (data === 'error code: 1015') {
-        return {
-            ...common,
-            customMessage: `요청이 제한되었습니다.`,
-        };
-    } else {
-        const seconds = (data.retry_after / 1000) % 60;
-
-        return {
-            ...common,
-            customMessage: `${seconds}초 이후 다시 시도해주세요.`,
-        };
-    }
-}
-
-/**
- * 모든 Http Status 예외처리
- * @param {any} response
- * @param {string} method
- * @param {string} url
- */
-function exceptionAllResponse(response: any, method: string, url: string) {
-    const status = response?.status;
-    const data = response?.data;
-
-    return {
-        url,
-        status,
-        method,
-        customMessage: DISCORD_ERROR_MESSAGES[`E${data.code}`] || data.message,
-    };
-}
-
-/**
- * Http 요청에 의한 예외가 아닌 다른 예외일 경우
- * @param {string} method
- * @param {string} url
- */
-function exceptionEtcResponse(method: string, url: string) {
-    return {
-        url,
-        method,
-        status: HttpStatus.BAD_REQUEST,
-        customMessage: '잘못된 요청입니다.',
-    };
-}

@@ -1,5 +1,7 @@
 // @nestjs
 import { Controller, Get, Query, Param } from '@nestjs/common';
+// utils
+import { controllerThrow } from '@utils/response/controller-throw';
 // dtos
 import { QueryStringDto, ParamKeywordDto } from '@common/dtos';
 // services
@@ -19,8 +21,12 @@ export class SearchController {
      **************************************************/
     @Get(':keyword')
     async keyword(@Param() param: ParamKeywordDto, @Query() query: QueryStringDto) {
-        const servers = await this.serversService.getSearchServers(param.keyword, query);
+        try {
+            const servers = await this.serversService.getSearchServers(param.keyword, query);
 
-        return servers;
+            return servers;
+        } catch (error: any) {
+            controllerThrow(error);
+        }
     }
 }

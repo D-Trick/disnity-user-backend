@@ -1,5 +1,7 @@
 // @nestjs
 import { Controller, Get } from '@nestjs/common';
+// utils
+import { controllerThrow } from '@utils/response/controller-throw';
 // services
 import { GuildScheduledService } from '@models/guild-scheduled/guild-scheduled.service';
 
@@ -17,8 +19,12 @@ export class GuildScheduledController {
      **************************************************/
     @Get()
     async thisMonthSchedules() {
-        const thisMonthSchedules = await this.guildScheduledService.getThisMonthSchedules();
+        try {
+            const thisMonthSchedules = await this.guildScheduledService.getThisMonthSchedules();
 
-        return thisMonthSchedules;
+            return thisMonthSchedules;
+        } catch (error: any) {
+            controllerThrow(error);
+        }
     }
 }

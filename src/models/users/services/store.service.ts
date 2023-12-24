@@ -1,7 +1,8 @@
 // types
 import type { SaveLoginInfo } from '../types/users.type';
+// @nestjs
+import { Injectable } from '@nestjs/common';
 // lib
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { isEmpty } from '@lib/lodash';
 //uitls
@@ -20,8 +21,6 @@ import { AccessLogRepository } from '@databases/repositories/access-log';
 
 @Injectable()
 export class UsersStoreService {
-    private readonly logger = new Logger(UsersStoreService.name);
-
     /**************************************************
      * Constructor
      **************************************************/
@@ -133,14 +132,12 @@ export class UsersStoreService {
             await Promise.all([promise1, promise2]);
 
             return { result: true };
-        } catch (error: any) {
-            this.logger.error(error.message, error.stack);
-
+        } catch (error) {
             if (queryRunner.isTransactionActive) {
                 await queryRunner.rollbackTransaction();
             }
 
-            throw new UnauthorizedException();
+            throw error;
         } finally {
             await queryRunner.release();
         }

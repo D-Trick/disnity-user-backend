@@ -52,22 +52,22 @@ export class RedirectController {
         switch (redirect) {
             case 'create':
                 const redirectUrl =
-                    error === 'access_denied'
-                        ? `/servers/${guild_id}/create`
-                        : `/servers/${guild_id}/create?botAdded=true`;
+                    error === 'access_denied' ? `/servers/create` : `/servers/${guild_id}/create?botAdded=true`;
 
                 return res.redirect(redirectUrl);
 
             case 'mypage':
                 try {
-                    await this.guildRepository.cUpdate({
-                        values: {
-                            is_bot: 1,
-                        },
-                        where: {
-                            id: guild_id,
-                        },
-                    });
+                    if (!!guild_id) {
+                        await this.guildRepository.cUpdate({
+                            values: {
+                                is_bot: 1,
+                            },
+                            where: {
+                                id: guild_id,
+                            },
+                        });
+                    }
 
                     return res.redirect(`/mypage/servers`);
                 } catch (error: any) {

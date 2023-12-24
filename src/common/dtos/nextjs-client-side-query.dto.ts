@@ -1,7 +1,7 @@
 // lib
 import { MaxLength } from 'class-validator';
 // messages
-import { ERROR_MESSAGES } from '@common/messages';
+import { HTTP_ERROR_MESSAGES } from '@common/messages';
 
 // ----------------------------------------------------------------------
 
@@ -10,12 +10,12 @@ import { ERROR_MESSAGES } from '@common/messages';
  * queryString에서도 처리가 가능하게 DTO생성
  */
 export class NextjsClientSideQueryDto {
-    @MaxLength(100, { message: ERROR_MESSAGES.E900 })
+    @MaxLength(100, { message: HTTP_ERROR_MESSAGES['900'] })
     id?: string;
 
-    @MaxLength(5000, { message: ERROR_MESSAGES.E900 })
+    @MaxLength(5000, { message: HTTP_ERROR_MESSAGES['900'] })
     name?: string;
 
-    @MaxLength(5000, { message: ERROR_MESSAGES.E900 })
+    @MaxLength(5000, { message: HTTP_ERROR_MESSAGES['900'] })
     keyword?: string;
 }

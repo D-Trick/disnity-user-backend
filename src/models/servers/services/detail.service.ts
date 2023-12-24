@@ -5,7 +5,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 // lib
 import { isEmpty } from '@lib/lodash';
 // messages
-import { ERROR_MESSAGES } from '@common/messages';
+import { HTTP_ERROR_MESSAGES } from '@common/messages';
 // repositories
 import { GuildRepository } from '@databases/repositories/guild';
 import { EmojiRepository } from '@databases/repositories/emoji';
@@ -52,7 +52,7 @@ export class ServersDetailService {
             });
         }
         if (isEmpty(server)) {
-            throw new NotFoundException(ERROR_MESSAGES.E404);
+            throw new NotFoundException(HTTP_ERROR_MESSAGES['404']);
         }
 
         const promise1 = this.tagRepository.selectMany({
@@ -120,7 +120,7 @@ export class ServersDetailService {
             },
         });
         if (isEmpty(server)) {
-            throw new NotFoundException(ERROR_MESSAGES.E404);
+            throw new NotFoundException(HTTP_ERROR_MESSAGES['404']);
         }
 
         const tags = await this.tagRepository.selectMany({

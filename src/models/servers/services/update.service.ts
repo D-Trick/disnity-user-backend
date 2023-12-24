@@ -1,15 +1,17 @@
 // types
 import type { Save, SaveValues } from '../types/save.type';
 // @nestjs
-import { Injectable, HttpException, HttpStatus, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, BadRequestException, NotFoundException } from '@nestjs/common';
 // lib
 import { DataSource, QueryRunner } from 'typeorm';
 import dayjs from '@lib/dayjs';
 import { isEmpty } from '@lib/lodash';
 // utils
 import { timePassed, generateSnowflakeId } from '@utils/index';
+// exceptions
+import { DiscordApiException } from '@exceptions/discord-api.exception';
 // messages
-import { ERROR_MESSAGES } from '@common/messages';
+import { DISCORD_ERROR_MESSAGES, SERVER_ERROR_MESSAGES } from '@common/messages';
 // services
 import { DiscordApiService } from '@models/discord-api/discordApi.service';
 // repositories
@@ -20,8 +22,6 @@ import { GuildRepository } from '@databases/repositories/guild';
 
 @Injectable()
 export class ServersUpdateService {
-    private readonly logger = new Logger(ServersUpdateService.name);
-
     /**************************************************
      * Constructor
      **************************************************/
@@ -59,7 +59,7 @@ export class ServersUpdateService {
                 },
             });
             if (!myGuild) {
-                throw new BadRequestException(ERROR_MESSAGES.SERVER_NOT_FOUND_OR_NOT_PERMISSION);
+                throw new BadRequestException(SERVER_ERROR_MESSAGES.SERVER_NOT_FOUND_OR_NO_PERMISSION);
             }
 
             await queryRunner.startTransaction();
@@ -76,14 +76,12 @@ export class ServersUpdateService {
             await queryRunner.commitTransaction();
 
             return { id: serverId };
-        } catch (error: any) {
-            this.logger.error(error.message, error.stack);
-
+        } catch (error) {
             if (queryRunner.isTransactionActive) {
                 await queryRunner.rollbackTransaction();
             }
 
-            throw new HttpException(error.message || ERROR_MESSAGES.E400, error.status || HttpStatus.BAD_REQUEST);
+            throw error;
         } finally {
             await queryRunner.release();
         }
@@ -108,7 +106,7 @@ export class ServersUpdateService {
                 },
             });
             if (isEmpty(myServer)) {
-                throw new NotFoundException(ERROR_MESSAGES.SERVER_NOT_FOUND);
+                throw new NotFoundException(SERVER_ERROR_MESSAGES.SERVER_NOT_FOUND);
             }
 
             const { isTimePassed, currentDateTime, afterDateTime } = timePassed({
@@ -123,7 +121,7 @@ export class ServersUpdateService {
                 const seconds = dayjs.duration(diff).seconds();
 
                 const timeRemainning = minutes !== 0 ? `${minutes}분` : `${seconds}초`;
-                throw new HttpException(`${timeRemainning} 후 다시 시도해주세요.`, HttpStatus.BAD_REQUEST);
+                throw new BadRequestException(`${timeRemainning} 후 다시 시도해주세요.`);
             }
 
             const discordGuild = await this.discordApiService.guilds().detail(guildId);
@@ -146,23 +144,23 @@ export class ServersUpdateService {
             });
 
             return { result: true };
-        } catch (error: any) {
-            this.logger.error(error.message, error.stack);
+        } catch (error) {
+            if (error instanceof DiscordApiException) {
+                if (error.statusCode === 403 || error.statusCode === 404) {
+                    await this.guildRepository.cUpdate({
+                        values: {
+                            is_bot: 0,
+                        },
+                        where: {
+                            id: guildId,
+                        },
+                    });
 
-            if (error.status === 403) {
-                await this.guildRepository.cUpdate({
-                    values: {
-                        is_bot: 0,
-                    },
-                    where: {
-                        id: guildId,
-                    },
-                });
-
-                throw new HttpException(error.message || ERROR_MESSAGES.BOT_NOT_FOUND, HttpStatus.FORBIDDEN);
-            } else {
-                throw new HttpException(error.message, error.status || HttpStatus.BAD_REQUEST);
+                    error.message = DISCORD_ERROR_MESSAGES.BOT_NOT_FOUND;
+                }
             }
+
+            throw error;
         }
     }
 

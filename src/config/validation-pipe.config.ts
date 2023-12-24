@@ -1,7 +1,11 @@
 // @nestjs
-import { ValidationPipeOptions } from '@nestjs/common';
+import { BadRequestException, ValidationError, ValidationPipeOptions } from '@nestjs/common';
+// lib
+import { isEmpty } from '@lib/lodash';
 // configs
 import { ENV_CONFIG } from './env.config';
+// messages
+import { COMMON_ERROR_MESSAGES } from '@common/messages';
 
 // ----------------------------------------------------------------------
 
@@ -14,4 +18,37 @@ export const validationPipeConfig: ValidationPipeOptions = {
     },
     whitelist: true,
     forbidNonWhitelisted: true,
+
+    exceptionFactory: (validationErrors: ValidationError[] = []) => {
+        try {
+            const message = getErrorMessage(validationErrors);
+
+            return new BadRequestException(message);
+        } catch (error) {
+            return error;
+        }
+    },
 };
+
+/**
+ * 유효성 검사에서 실패한 메시지 가져오기
+ * @param {ValidationError[]} validationErrors
+ */
+function getErrorMessage(validationErrors: ValidationError[] = []) {
+    const { length } = validationErrors;
+    for (let i = 0; i < length; i++) {
+        const error = validationErrors[i];
+
+        if (isEmpty(error.children)) {
+            const message = Object.values(error.constraints)[0];
+
+            if (message.includes('should not exist')) {
+                return COMMON_ERROR_MESSAGES.NOT_ALLOWED_REQUEST;
+            }
+
+            return message;
+        }
+
+        return getErrorMessage(error.children);
+    }
+}

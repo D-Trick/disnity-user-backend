@@ -6,6 +6,8 @@ import { Controller, Get, Logger, Request, Response, UseGuards } from '@nestjs/c
 // lib
 import requestIp from 'request-ip';
 import dayjs from '@lib/dayjs';
+// utils
+import { controllerThrow } from '@utils/response/controller-throw';
 // configs
 import { getCookieOptions } from '@config/cookie.config';
 // guards
@@ -86,16 +88,20 @@ export class AuthController {
         @Request() req: ExpressRequest,
         @Response({ passthrough: true }) res: ExpressResponse,
     ): Promise<Token> {
-        const user = req.user;
-        const expires = dayjs().add(1, 'day').toDate();
-        const accessToken = this.authService.createJwtToken('access', user.id);
-        const refreshToken = this.authService.createJwtToken('refresh', user.id);
-        res.cookie('token', accessToken, getCookieOptions(expires));
-        res.cookie('refreshToken', refreshToken, getCookieOptions(expires));
+        try {
+            const user = req.user;
+            const expires = dayjs().add(1, 'day').toDate();
+            const accessToken = this.authService.createJwtToken('access', user.id);
+            const refreshToken = this.authService.createJwtToken('refresh', user.id);
+            res.cookie('token', accessToken, getCookieOptions(expires));
+            res.cookie('refreshToken', refreshToken, getCookieOptions(expires));
 
-        return {
-            accessToken,
-            refreshToken,
-        };
+            return {
+                accessToken,
+                refreshToken,
+            };
+        } catch (error: any) {
+            controllerThrow(error);
+        }
     }
 }

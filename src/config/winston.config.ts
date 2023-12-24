@@ -13,19 +13,16 @@ const logFormat = (log) => {
     // 에러 레벨 표시
     const level = `${ENV_CONFIG.MODE}.${log?.level}`;
 
+    // 에러 핸들러 표시
+    const context = log?.context ? `[${log?.context}]` : '';
+
+    // 에러 메시지 표시
+    const message = log?.message;
+
     // 에러 스택 표시
     const stack = log?.stack ? `\n${log?.stack}` : '';
 
-    // 에러 메시지 표시
-    let message = log?.message;
-    if (!message) {
-        message = `${log?.status || ''} ${log?.method || ''} ${log?.url || ''} - ${log?.customMessage}`;
-    }
-
-    // 에러 핸들러 표시
-    const context = log?.context || 'CustomHandler';
-
-    return `[${log?.timestamp}] ${level} ${context}: ${message}${stack}`;
+    return `[${log?.timestamp}] ${level} ${context} ${message}${stack}`;
 };
 
 export const prodConfig = {
