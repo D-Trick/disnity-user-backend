@@ -12,6 +12,7 @@ export const ENV_CONFIG = {
     MODE: process.env.NODE_ENV,
     IS_DEV_MODE: process.env.NODE_ENV === 'development',
     IS_PROD_MODE: process.env.NODE_ENV === 'production',
+    DOMAIN: process.env.DOMAIN,
 
     // Redis
     REDIS_HOST: process.env.REDIS_HOST,

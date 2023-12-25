@@ -7,7 +7,7 @@ interface config {
 }
 // ----------------------------------------------------------------------
 
-export const DOMAIN = ENV_CONFIG.IS_DEV_MODE ? 'devtest1.ddns.net' : 'disnity.com';
+export const DOMAIN = ENV_CONFIG.DOMAIN;
 export const baseConfig: config = {
     url: ENV_CONFIG.IS_DEV_MODE ? `http://${DOMAIN}` : `https://${DOMAIN}`,
 };

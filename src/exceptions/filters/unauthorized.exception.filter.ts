@@ -24,7 +24,9 @@ export class UnauthorizedExceptionFilter implements ExceptionFilter {
             this.logger.error(`${statusCode} - ${request.url} | ${exception.message}`, exception.stack);
         }
 
-        response.status(statusCode).json(instanceToPlain(ErrorResponse.create(statusCode, message)));
+        response
+            .status(statusCode)
+            .json(instanceToPlain(ErrorResponse.create(statusCode, message, exception.getResponse())));
     }
 
     private shouldLogMessage(message: string) {
