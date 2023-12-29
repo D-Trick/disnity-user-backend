@@ -1,24 +1,23 @@
 // @nestjs
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 // messages
-import { AUTH_ERROR_MESSAGES } from '@common/messages';
+import { AuthDiscordUserDto } from '@models/auth/dtos/auth-discord-user.dto';
 
 // ----------------------------------------------------------------------
 
 @Injectable()
-export class DiscordAuthGuard extends AuthGuard('discord') {
-    handleRequest(err: any, user: any, info: any, context: any) {
+export class AuthGuardDiscord extends AuthGuard('discord') {
+    override handleRequest(error: any, user: any, info: any, context: any): any {
+        let aUser: AuthDiscordUserDto | false = user;
         const request = context.switchToHttp().getRequest();
 
-        if (request.query.error === 'access_denied') {
-            return { accessDenied: true };
+        if (error || !aUser) {
+            aUser = AuthDiscordUserDto.create({ isReLogin: true });
+        } else if (request.query.error === 'access_denied') {
+            aUser = AuthDiscordUserDto.create({ isReLogin: true });
         }
 
-        if (err || !user) {
-            throw err || new UnauthorizedException(AUTH_ERROR_MESSAGES.LOGIN_PLEASE);
-        }
-
-        return user;
+        return aUser;
     }
 }

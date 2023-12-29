@@ -1,8 +1,10 @@
 // types
-import type { AdminGuild, SaveLoginInfo } from './types/users.type';
+import type { AdminGuild } from './types/users.type';
 import type { Channel } from '@models/discord-api/types/discordApi.type';
 // @nestjs
 import { Injectable } from '@nestjs/common';
+// dtos
+import { AuthDiscordUserDto } from '@models/auth/dtos/auth-discord-user.dto';
 // services
 import { UsersDataService } from './services/data.service';
 import { UsersStoreService } from './services/store.service';
@@ -70,8 +72,8 @@ export class UsersService {
      * 로그인 유저 정보 저장
      * @param user
      */
-    async saveLoginInfo(loginUser: SaveLoginInfo) {
-        return await this.storeService.saveLoginInfo(loginUser);
+    async saveLoginInfo(discordUser: AuthDiscordUserDto, ip: string) {
+        return await this.storeService.saveLoginInfo(discordUser, ip);
     }
 
     /******************************

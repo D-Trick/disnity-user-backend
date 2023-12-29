@@ -1,12 +1,17 @@
+// types
+import type { Response as ExpressResponse } from 'express';
 // @nestjs
-import { Controller, Get, Response, Param, Query, UseGuards, Request, Logger } from '@nestjs/common';
+import { Controller, Get, Response, Param, Query, Logger, UseGuards } from '@nestjs/common';
 // configs
 import { discordConfig, DISCORD_INVITE_URL } from '@config/discord.config';
-// guards
-import { LoginCheckGuard } from '@guards/login-check.guard';
+// decorators
+import { AuthUser } from '@decorators/auth-user.decorator';
 // dtos
 import { ParamIdStringDto, ParamTypeAndGuildIdDto } from '@common/dtos';
 import { RedirectQueryStringDto } from './dtos/routers/index';
+import { AuthUserDto } from '@models/auth/dtos/auth-user.dto';
+// guards
+import { AuthGuardLoginCheck } from '@guards/login-check.guard';
 // repositories
 import { GuildRepository } from '@databases/repositories/guild';
 
@@ -27,7 +32,7 @@ export class RedirectController {
      * Public Methods
      **************************************************/
     @Get('bot-add/:type/:guildId')
-    async botAddTypeGuildId(@Response() res, @Param() param: ParamTypeAndGuildIdDto) {
+    async botAddTypeGuildId(@Response() res: ExpressResponse, @Param() param: ParamTypeAndGuildIdDto) {
         const { type, guildId } = param;
 
         switch (type) {
@@ -43,9 +48,13 @@ export class RedirectController {
     }
 
     @Get('bot-add/callback')
-    @UseGuards(LoginCheckGuard)
-    async botAddCallback(@Request() req, @Response() res, @Query() query: RedirectQueryStringDto) {
-        if (!req.user?.isLogin) return res.redirect('/auth/login');
+    @UseGuards(AuthGuardLoginCheck)
+    async botAddCallback(
+        @AuthUser() user: AuthUserDto,
+        @Response() res: ExpressResponse,
+        @Query() query: RedirectQueryStringDto,
+    ) {
+        if (!user.isLogin) return res.redirect('/auth/login');
 
         const { redirect, guild_id, error } = query;
 
@@ -82,7 +91,7 @@ export class RedirectController {
     }
 
     @Get('invite/:id')
-    async inviteId(@Response() res, @Param() param: ParamIdStringDto) {
+    async inviteId(@Response() res: ExpressResponse, @Param() param: ParamIdStringDto) {
         const { id } = param;
 
         const server = await this.guildRepository.selectOne({

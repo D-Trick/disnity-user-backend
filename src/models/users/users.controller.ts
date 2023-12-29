@@ -1,18 +1,20 @@
-// types
-import type { ExpressRequest } from '@common/types/express.type';
 // lib
-import { Controller, Get, NotFoundException, Param, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param, UseGuards } from '@nestjs/common';
 // utils
 import { controllerThrow } from '@utils/response/controller-throw';
 // dtos
 import { ParamGuildIdDto } from '@common/dtos';
 // guards
-import { JwtAuthGuard } from '@guards/jwt-auth.guard';
-import { JwtAuth2Guard } from '@guards/jwt-auth2.guard';
+import { AuthGuardJwt } from '@guards/jwt-auth.guard';
+import { AuthGuardUserMe } from '@guards/user-me.guard';
 // helpers
 import { UtilHelper } from './helper/util.helper';
 // messages
 import { SERVER_ERROR_MESSAGES } from '@common/messages';
+// decorators
+import { AuthUser } from '@decorators/auth-user.decorator';
+// dtos
+import { AuthUserDto } from '@models/auth/dtos/auth-user.dto';
 // services
 import { UsersService } from './users.service';
 
@@ -33,10 +35,10 @@ export class UsersController {
      * Public Methods
      **************************************************/
     @Get('@me')
-    @UseGuards(JwtAuth2Guard)
-    async me(@Request() req: ExpressRequest) {
+    @UseGuards(AuthGuardUserMe)
+    async me(@AuthUser() aUser: AuthUserDto) {
         try {
-            const user = await this.usersServices.getUser(req.user.id);
+            const user = await this.usersServices.getUser(aUser.id);
 
             return user;
         } catch (error: any) {
@@ -45,10 +47,10 @@ export class UsersController {
     }
 
     @Get('/@me/guilds')
-    @UseGuards(JwtAuthGuard)
-    async meGuilds(@Request() req: ExpressRequest) {
+    @UseGuards(AuthGuardJwt)
+    async meGuilds(@AuthUser() user: AuthUserDto) {
         try {
-            const adminGuilds = await this.usersServices.getAdminGuilds(req.user.id);
+            const adminGuilds = await this.usersServices.getAdminGuilds(user.id);
 
             return adminGuilds;
         } catch (error: any) {
@@ -57,10 +59,10 @@ export class UsersController {
     }
 
     @Get('/@me/guilds/refresh')
-    @UseGuards(JwtAuthGuard)
-    async meGuildsRefresh(@Request() req: ExpressRequest) {
+    @UseGuards(AuthGuardJwt)
+    async meGuildsRefresh(@AuthUser() user: AuthUserDto) {
         try {
-            const refreshGuilds = await this.usersServices.refreshAdminGuilds(req.user.id);
+            const refreshGuilds = await this.usersServices.refreshAdminGuilds(user.id);
 
             return refreshGuilds;
         } catch (error: any) {
@@ -69,12 +71,12 @@ export class UsersController {
     }
 
     @Get('/@me/guilds/:guildId')
-    @UseGuards(JwtAuthGuard)
-    async meGuildsGuildId(@Request() req: ExpressRequest, @Param() param: ParamGuildIdDto) {
+    @UseGuards(AuthGuardJwt)
+    async meGuildsGuildId(@AuthUser() user: AuthUserDto, @Param() param: ParamGuildIdDto) {
         try {
             const { guildId } = param;
 
-            const adminGuilds = await this.usersServices.getAdminGuilds(req.user.id);
+            const adminGuilds = await this.usersServices.getAdminGuilds(user.id);
             const adminGuild = this.utilHelper.getAdminGuild(guildId, adminGuilds);
 
             if (!adminGuild) {
@@ -88,12 +90,12 @@ export class UsersController {
     }
 
     @Get('/@me/guilds/:guildId/channels')
-    @UseGuards(JwtAuthGuard)
-    async meGuildsGuildIdChannels(@Request() req: ExpressRequest, @Param() param) {
+    @UseGuards(AuthGuardJwt)
+    async meGuildsGuildIdChannels(@AuthUser() user: AuthUserDto, @Param() param: ParamGuildIdDto) {
         try {
             const { guildId } = param;
 
-            const channels = await this.usersServices.getChannels(guildId, req.user.id, false);
+            const channels = await this.usersServices.getChannels(guildId, user.id, false);
 
             return channels;
         } catch (error: any) {
@@ -102,12 +104,12 @@ export class UsersController {
     }
 
     @Get('/@me/guilds/:guildId/channels/refresh')
-    @UseGuards(JwtAuthGuard)
-    async meGuildsGuildIdChannelsRefresh(@Request() req: ExpressRequest, @Param() param) {
+    @UseGuards(AuthGuardJwt)
+    async meGuildsGuildIdChannelsRefresh(@AuthUser() user: AuthUserDto, @Param() param: ParamGuildIdDto) {
         try {
             const { guildId } = param;
 
-            const channels = await this.usersServices.getChannels(guildId, req.user.id, true);
+            const channels = await this.usersServices.getChannels(guildId, user.id, true);
 
             return channels;
         } catch (error: any) {

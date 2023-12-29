@@ -1,15 +1,16 @@
-// types
-import type { ExpressRequest } from '@common/types/express.type';
 // @nestjs
-import { Controller, Get, Post, UseGuards, Request, Param, Body, Patch, Query, Delete } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards, Param, Body, Patch, Query, Delete } from '@nestjs/common';
 // utils
 import { controllerThrow } from '@utils/response/controller-throw';
 // guards
-import { JwtAuthGuard } from '@guards/jwt-auth.guard';
-import { LoginCheckGuard } from '@guards/login-check.guard';
+import { AuthGuardJwt } from '@guards/jwt-auth.guard';
+import { AuthGuardLoginCheck } from '@guards/login-check.guard';
+// decorators
+import { AuthUser } from '@decorators/auth-user.decorator';
 // dtos
 import { QueryStringDto, ParamIdNumberDto, ParamIdStringDto, ParamNameDto, ParamGuildIdDto } from '@common/dtos';
 import { CreateDto, UpdateDto } from './dtos/routers';
+import { AuthUserDto } from '@models/auth/dtos/auth-user.dto';
 // services
 import { ServersService } from '@models/servers/servers.service';
 
@@ -58,11 +59,11 @@ export class ServersController {
         }
     }
 
-    @UseGuards(JwtAuthGuard)
     @Get('refresh/:guildId')
-    async refresh(@Request() req: ExpressRequest, @Param() param: ParamGuildIdDto) {
+    @UseGuards(AuthGuardJwt)
+    async refresh(@AuthUser() user: AuthUserDto, @Param() param: ParamGuildIdDto) {
         try {
-            const serverRefreshResult = await this.serversService.refresh(param.guildId, req.user?.id);
+            const serverRefreshResult = await this.serversService.refresh(param.guildId, user.id);
 
             return serverRefreshResult;
         } catch (error: any) {
@@ -70,11 +71,11 @@ export class ServersController {
         }
     }
 
-    @UseGuards(LoginCheckGuard)
     @Get(':id')
-    async detail(@Request() req: ExpressRequest, @Param() param: ParamIdStringDto) {
+    @UseGuards(AuthGuardLoginCheck)
+    async detail(@AuthUser() user: AuthUserDto, @Param() param: ParamIdStringDto) {
         try {
-            const server = await this.serversService.detail(param.id, req.user.id);
+            const server = await this.serversService.detail(param.id, user.id);
 
             return server;
         } catch (error: any) {
@@ -82,11 +83,11 @@ export class ServersController {
         }
     }
 
-    @UseGuards(JwtAuthGuard)
     @Post()
-    async store(@Request() req: ExpressRequest, @Body() body: CreateDto) {
+    @UseGuards(AuthGuardJwt)
+    async store(@AuthUser() user: AuthUserDto, @Body() body: CreateDto) {
         try {
-            const result = await this.serversService.store(req.user.id, body);
+            const result = await this.serversService.store(user.id, body);
 
             return result;
         } catch (error: any) {
@@ -94,11 +95,11 @@ export class ServersController {
         }
     }
 
-    @UseGuards(JwtAuthGuard)
     @Patch(':id')
-    async update(@Request() req: ExpressRequest, @Param() param: ParamIdStringDto, @Body() body: UpdateDto) {
+    @UseGuards(AuthGuardJwt)
+    async update(@AuthUser() user: AuthUserDto, @Param() param: ParamIdStringDto, @Body() body: UpdateDto) {
         try {
-            const result = await this.serversService.edit(param.id, req.user.id, body);
+            const result = await this.serversService.edit(param.id, user.id, body);
 
             return result;
         } catch (error: any) {
@@ -106,11 +107,11 @@ export class ServersController {
         }
     }
 
-    @UseGuards(JwtAuthGuard)
     @Delete(':id')
-    async delete(@Request() req: ExpressRequest, @Param() param: ParamIdStringDto) {
+    @UseGuards(AuthGuardJwt)
+    async delete(@AuthUser() user: AuthUserDto, @Param() param: ParamIdStringDto) {
         try {
-            const result = await this.serversService.delete(req.user.id, param.id);
+            const result = await this.serversService.delete(user.id, param.id);
 
             return result;
         } catch (error: any) {

@@ -1,3 +1,5 @@
+// types
+import type { AuthDiscordUser } from '@models/auth/types/auth.type';
 // lib
 import { Injectable } from '@nestjs/common';
 // strategys
@@ -5,6 +7,8 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from '../OAuth2/discord-strategy';
 // configs
 import { discordConfig } from '@config/discord.config';
+// dtos
+import { AuthDiscordUserDto } from '@models/auth/dtos/auth-discord-user.dto';
 
 // ----------------------------------------------------------------------
 const { CLIENT_ID, CLIENT_SECRET, SCOPE, AUTH_URL, TOKEN_URL, LOGIN_REDIRECT_URL } = discordConfig;
@@ -23,11 +27,13 @@ export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {
         });
     }
 
-    async validate(accessToken: string, refreshToken: string, profile: any): Promise<any> {
-        return {
+    async validate(accessToken: string, refreshToken: string, profile: any): Promise<AuthDiscordUserDto> {
+        const user: AuthDiscordUser = {
             ...profile,
             access_token: accessToken,
             refresh_token: refreshToken,
         };
+
+        return AuthDiscordUserDto.create(user);
     }
 }

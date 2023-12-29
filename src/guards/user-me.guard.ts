@@ -7,12 +7,12 @@ import { AUTH_ERROR_MESSAGES } from '@common/messages';
 // ----------------------------------------------------------------------
 
 @Injectable()
-export class AuthGuardJwt extends AuthGuard('jwt') {
+export class AuthGuardUserMe extends AuthGuard('jwt') {
     override handleRequest(error: any, user: any) {
         if (error || !user) {
             const information = {
                 auth: 'jwt',
-                isRedirect: true,
+                isRedirect: false,
                 message: AUTH_ERROR_MESSAGES.LOGIN_PLEASE,
             };
 

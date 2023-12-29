@@ -1,16 +1,16 @@
-// types
-import type { SaveLoginInfo } from '../types/users.type';
 // @nestjs
 import { Injectable } from '@nestjs/common';
 // lib
 import { DataSource } from 'typeorm';
 import { isEmpty } from '@lib/lodash';
-//uitls
+// uitls
 import { generateSnowflakeId, promiseAllSettled } from '@utils/index';
 // cache
 import { CACHE_KEYS } from '@cache/redis/keys';
 // configs
 import { refreshTokenTTL } from '@config/jwt.config';
+// dtos
+import { AuthDiscordUserDto } from '@models/auth/dtos/auth-discord-user.dto';
 // services
 import { CacheService } from '@cache/redis/cache.service';
 // repositories
@@ -41,7 +41,7 @@ export class UsersStoreService {
      * 로그인 유저 정보 저장
      * @param user
      */
-    async saveLoginInfo(loginUser: SaveLoginInfo): Promise<{ result: boolean }> {
+    async saveLoginInfo(discordUser: AuthDiscordUserDto, ip: string): Promise<{ result: boolean }> {
         let promise1 = undefined;
         let promise2 = undefined;
 
@@ -55,7 +55,7 @@ export class UsersStoreService {
                     },
                 },
                 where: {
-                    id: loginUser.id,
+                    id: discordUser.id,
                 },
             });
 
@@ -64,16 +64,16 @@ export class UsersStoreService {
                 promise1 = this.userRepository.cInsert({
                     transaction: queryRunner,
                     values: {
-                        id: loginUser.id,
-                        global_name: loginUser.global_name,
-                        username: loginUser.username,
-                        discriminator: loginUser.discriminator,
-                        email: loginUser.email,
-                        verified: loginUser.verified,
-                        avatar: loginUser.avatar,
-                        banner: loginUser.banner,
-                        locale: loginUser.locale,
-                        premium_type: loginUser.premium_type,
+                        id: discordUser.id,
+                        global_name: discordUser.globalName,
+                        username: discordUser.username,
+                        discriminator: discordUser.discriminator,
+                        email: discordUser.email,
+                        verified: discordUser.verified,
+                        avatar: discordUser.avatar,
+                        banner: discordUser.banner,
+                        locale: discordUser.locale,
+                        premium_type: discordUser.premiumType,
                         created_at: () => 'now()',
                     },
                 });
@@ -81,20 +81,20 @@ export class UsersStoreService {
                 promise1 = this.userRepository.cUpdate({
                     transaction: queryRunner,
                     values: {
-                        global_name: loginUser.global_name,
-                        username: loginUser.username,
-                        discriminator: loginUser.discriminator,
-                        email: loginUser.email,
-                        verified: loginUser.verified,
-                        avatar: loginUser.avatar,
-                        banner: loginUser.banner,
-                        locale: loginUser.locale,
-                        premium_type: loginUser.premium_type,
+                        global_name: discordUser.globalName,
+                        username: discordUser.username,
+                        discriminator: discordUser.discriminator,
+                        email: discordUser.email,
+                        verified: discordUser.verified,
+                        avatar: discordUser.avatar,
+                        banner: discordUser.banner,
+                        locale: discordUser.locale,
+                        premium_type: discordUser.premiumType,
                         created_at: isEmpty(user.created_at) ? () => 'now()' : undefined,
                         updated_at: () => 'now()',
                     },
                     where: {
-                        id: loginUser.id,
+                        id: discordUser.id,
                     },
                 });
             }
@@ -102,8 +102,8 @@ export class UsersStoreService {
                 transaction: queryRunner,
                 values: {
                     id: generateSnowflakeId(),
-                    user_id: loginUser.id,
-                    ip: loginUser.ip,
+                    user_id: discordUser.id,
+                    ip,
                 },
             });
             await promiseAllSettled([promise1, promise2]);
@@ -117,18 +117,22 @@ export class UsersStoreService {
                     },
                 },
                 where: {
-                    id: loginUser.id,
+                    id: discordUser.id,
                 },
             });
-            const discordUser = {
+            const cacheDiscordUser = {
                 ...disnityUser,
-                guilds: loginUser.guilds,
-                admin_guilds: loginUser.admin_guilds,
-                access_token: loginUser.access_token,
-                refresh_token: loginUser.refresh_token,
+                guilds: discordUser.guilds,
+                admin_guilds: discordUser.admin_guilds,
+                access_token: discordUser.access_token,
+                refresh_token: discordUser.refresh_token,
             };
-            promise1 = this.cacheService.set(CACHE_KEYS.DISCORD_USER(loginUser.id), discordUser, refreshTokenTTL);
-            promise2 = this.cacheService.set(CACHE_KEYS.DISNITY_USER(loginUser.id), disnityUser, refreshTokenTTL);
+            promise1 = this.cacheService.set(
+                CACHE_KEYS.DISCORD_USER(discordUser.id),
+                cacheDiscordUser,
+                refreshTokenTTL,
+            );
+            promise2 = this.cacheService.set(CACHE_KEYS.DISNITY_USER(discordUser.id), disnityUser, refreshTokenTTL);
             await Promise.all([promise1, promise2]);
 
             return { result: true };
