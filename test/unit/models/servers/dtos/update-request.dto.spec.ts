@@ -7,13 +7,13 @@ import { createFakeString } from 'test/mock/utils/createFakeString';
 // configs
 import { validationPipeConfig } from '@config/validation-pipe.config';
 // dtos
-import { TagsDto } from '@models/servers/dtos/routers';
-import { UpdateDto } from '@models/servers/dtos/routers/update.dto';
+import { TagsRequestDto } from '@models/servers/dtos';
+import { UpdateRequestDto } from '@models/servers/dtos/update-request.dto';
 
 // ----------------------------------------------------------------------
 
-describe('서버 수정 유효성 검사', () => {
-    const dto = new UpdateDto();
+describe('Create Request DTO - 서버 수정', () => {
+    const dto = new UpdateRequestDto();
 
     beforeEach(() => {
         dto.serverOpen = 'public';
@@ -270,7 +270,7 @@ describe('서버 수정 유효성 검사', () => {
     describe('Param - tags 유효성 검사', () => {
         it(`서버 태그 목록에서 태그가 [ #, /, &, ?, \, *, @, %, +, 공백 ]이 없고 10글자 이하이면 유효성 검사 통과`, async () => {
             const ERROR_COUNT = 0;
-            const tag = plainToInstance(TagsDto, { name: createFakeString('a', 10) });
+            const tag = plainToInstance(TagsRequestDto, { name: createFakeString('a', 10) });
             dto.tags = [tag];
 
             const validateErrors = await validate(dto, validationPipeConfig);
@@ -283,7 +283,7 @@ describe('서버 수정 유효성 검사', () => {
             const testSpecialCharacters = ['# ', '/', '&', '?', '\\', '*', '@', '%', '+', ' '];
 
             testSpecialCharacters.map(async (sc) => {
-                const tag = plainToInstance(TagsDto, { name: sc });
+                const tag = plainToInstance(TagsRequestDto, { name: sc });
                 dto.tags = [tag];
 
                 const validateErrors = await validate(dto, validationPipeConfig);
@@ -294,7 +294,7 @@ describe('서버 수정 유효성 검사', () => {
 
         it(`서버 태그 목록에서 태그가 11글자 이상이면 유효성 검사 실패`, async () => {
             const ERROR_COUNT = 1;
-            const tag = plainToInstance(TagsDto, { name: createFakeString('a', 11) });
+            const tag = plainToInstance(TagsRequestDto, { name: createFakeString('a', 11) });
             dto.tags = [tag];
 
             const validateErrors = await validate(dto, validationPipeConfig);
