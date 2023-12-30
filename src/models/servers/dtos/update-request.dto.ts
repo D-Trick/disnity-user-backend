@@ -1,6 +1,5 @@
 // lib
 import {
-    IsString,
     MaxLength,
     Max,
     Min,
@@ -16,11 +15,11 @@ import { Type } from 'class-transformer';
 // messages
 import { SERVER_ERROR_MESSAGES, HTTP_ERROR_MESSAGES } from '@common/messages';
 // dtos
-import { TagsDto } from './tags.dto';
+import { TagsRequestDto } from './tags-request.dto';
 
 // ----------------------------------------------------------------------
 
-export class UpdateDto {
+export class UpdateRequestDto {
     @IsIn(['public', 'private'], { message: SERVER_ERROR_MESSAGES.BAD_SERVER_OPEN })
     serverOpen: 'public' | 'private';
 
@@ -35,7 +34,6 @@ export class UpdateDto {
     inviteAuto: 'auto' | 'manual';
 
     @MaxLength(15, { message: SERVER_ERROR_MESSAGES.INVITE_MAX_LENGTH })
-    @IsString({ message: SERVER_ERROR_MESSAGES.INVITE_EMPTY })
     @IsNotEmpty({ message: SERVER_ERROR_MESSAGES.INVITE_EMPTY })
     @ValidateIf((o) => {
         return o.linkType === 'invite' && o.inviteAuto === 'manual';
@@ -60,8 +58,8 @@ export class UpdateDto {
     membershipUrl: string;
 
     @ValidateNested({ message: HTTP_ERROR_MESSAGES['900'] })
-    @Type(() => TagsDto)
-    tags: TagsDto[];
+    @Type(() => TagsRequestDto)
+    tags: TagsRequestDto[];
 
     @MaxLength(250, { message: SERVER_ERROR_MESSAGES.SUMMARY_MAX_LENGTH })
     summary: string;

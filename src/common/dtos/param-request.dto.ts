@@ -6,29 +6,29 @@ import { HTTP_ERROR_MESSAGES } from '@common/messages';
 // ----------------------------------------------------------------------
 
 // Param - :id
-export class ParamIdStringDto {
+export class ParamIdStringRequestDto {
     @MaxLength(20, { message: HTTP_ERROR_MESSAGES['900'] })
     id: string;
 }
-export class ParamIdNumberDto {
+export class ParamIdNumberRequestDto {
     @IsInt({ message: HTTP_ERROR_MESSAGES['900'] })
     id: number;
 }
 
 // Param - :guildId
-export class ParamGuildIdDto {
+export class ParamGuildIdRequestDto {
     @MaxLength(20, { message: HTTP_ERROR_MESSAGES['900'] })
     guildId: string;
 }
 
 // Param - :type
-export class ParamTypeDto {
+export class ParamTypeRequestDto {
     @MaxLength(20, { message: HTTP_ERROR_MESSAGES['900'] })
     type: string;
 }
 
 // Param - :type/:guildId
-export class ParamTypeAndGuildIdDto {
+export class ParamTypeAndGuildIdRequestDto {
     @MaxLength(20, { message: HTTP_ERROR_MESSAGES['900'] })
     guildId: string;
 
@@ -37,19 +37,19 @@ export class ParamTypeAndGuildIdDto {
 }
 
 // Param - :name
-export class ParamNameDto {
+export class ParamNameRequestDto {
     @MaxLength(20, { message: HTTP_ERROR_MESSAGES['900'] })
     name: string;
 }
 
 // Param - :keyword
-export class ParamKeywordDto {
+export class ParamKeywordRequestDto {
     @MaxLength(50, { message: HTTP_ERROR_MESSAGES['900'] })
     keyword: string;
 }
 
 // Param - :code
-export class ParamCodeDto {
+export class ParamCodeRequestDto {
     @MaxLength(20, { message: HTTP_ERROR_MESSAGES['900'] })
     code: string;
 }

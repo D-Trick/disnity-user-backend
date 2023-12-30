@@ -1,6 +1,5 @@
 // lib
 import {
-    IsString,
     MaxLength,
     Max,
     Min,
@@ -16,11 +15,11 @@ import { Type } from 'class-transformer';
 // messages
 import { SERVER_ERROR_MESSAGES, HTTP_ERROR_MESSAGES } from '@common/messages';
 // dtos
-import { TagsDto } from './tags.dto';
+import { TagsRequestDto } from './tags-request.dto';
 
 // ----------------------------------------------------------------------
 
-export class CreateDto {
+export class CreateRequestDto {
     @MaxLength(22, { message: SERVER_ERROR_MESSAGES.SERVER_NOT_FOUND })
     @IsNumberString({ no_symbols: true }, { message: SERVER_ERROR_MESSAGES.SERVER_NOT_FOUND })
     id: string;
@@ -39,7 +38,6 @@ export class CreateDto {
     inviteAuto: 'auto' | 'manual';
 
     @MaxLength(15, { message: SERVER_ERROR_MESSAGES.INVITE_MAX_LENGTH })
-    @IsString({ message: SERVER_ERROR_MESSAGES.INVITE_EMPTY })
     @IsNotEmpty({ message: SERVER_ERROR_MESSAGES.INVITE_EMPTY })
     @ValidateIf((o) => {
         return o.linkType === 'invite' && o.inviteAuto === 'manual';
@@ -64,8 +62,8 @@ export class CreateDto {
     membershipUrl: string;
 
     @ValidateNested({ message: HTTP_ERROR_MESSAGES['900'] })
-    @Type(() => TagsDto)
-    tags: TagsDto[];
+    @Type(() => TagsRequestDto)
+    tags: TagsRequestDto[];
 
     @MaxLength(250, { message: SERVER_ERROR_MESSAGES.SUMMARY_MAX_LENGTH })
     summary: string;

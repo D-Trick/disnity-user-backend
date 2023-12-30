@@ -27,7 +27,7 @@ export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {
         });
     }
 
-    async validate(accessToken: string, refreshToken: string, profile: any): Promise<AuthDiscordUserDto> {
+    validate(accessToken: string, refreshToken: string, profile: any): AuthDiscordUserDto {
         const user: AuthDiscordUser = {
             ...profile,
             access_token: accessToken,

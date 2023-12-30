@@ -1,7 +1,7 @@
 // @nestjs
 import { Controller, Get, Param } from '@nestjs/common';
 // dtos
-import { ParamTypeDto } from '@common/dtos';
+import { ParamTypeRequestDto } from '@common/dtos';
 // utils
 import { controllerThrow } from '@utils/response/controller-throw';
 // services
@@ -20,7 +20,7 @@ export class MenusController {
      * Public Methods
      **************************************************/
     @Get(':type')
-    async menus(@Param() params: ParamTypeDto) {
+    async menus(@Param() params: ParamTypeRequestDto) {
         try {
             const { type } = params;
 

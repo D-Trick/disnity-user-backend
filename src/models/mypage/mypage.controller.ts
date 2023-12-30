@@ -7,7 +7,8 @@ import { AuthGuardJwt } from '@guards/jwt-auth.guard';
 // docorators
 import { AuthUser } from '@decorators/auth-user.decorator';
 // dtos
-import { ParamIdStringDto, QueryStringDto } from '@common/dtos';
+import { ParamIdStringRequestDto } from '@common/dtos';
+import { ServerFilterRequestDto } from '@models/servers/dtos';
 import { AuthUserDto } from '@models/auth/dtos/auth-user.dto';
 // services
 import { ServersService } from '@models/servers/servers.service';
@@ -26,7 +27,7 @@ export class MypageController {
      **************************************************/
     @Get('servers')
     @UseGuards(AuthGuardJwt)
-    async servers(@AuthUser() user: AuthUserDto, @Query() query: QueryStringDto) {
+    async servers(@AuthUser() user: AuthUserDto, @Query() query: ServerFilterRequestDto) {
         try {
             const myServers = await this.serversService.getMyServers(user.id, query);
 
@@ -38,7 +39,7 @@ export class MypageController {
 
     @Get('servers/:id')
     @UseGuards(AuthGuardJwt)
-    async serversId(@AuthUser() user: AuthUserDto, @Param() param: ParamIdStringDto) {
+    async serversId(@AuthUser() user: AuthUserDto, @Param() param: ParamIdStringRequestDto) {
         try {
             const myServer = await this.serversService.myServerDetail(param.id, user.id);
 

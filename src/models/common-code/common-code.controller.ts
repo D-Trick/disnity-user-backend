@@ -3,7 +3,7 @@ import { Controller, Get, Param } from '@nestjs/common';
 // utils
 import { controllerThrow } from '@utils/response/controller-throw';
 // dtos
-import { ParamCodeDto } from '@common/dtos';
+import { ParamCodeRequestDto } from '@common/dtos';
 // services
 import { CommonCodeService } from './common-code.service';
 
@@ -20,7 +20,7 @@ export class CommonCodeController {
      * Public Methods
      **************************************************/
     @Get(':code')
-    async commonCodeList(@Param() param: ParamCodeDto) {
+    async commonCodeList(@Param() param: ParamCodeRequestDto) {
         try {
             const { code } = param;
 

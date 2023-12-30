@@ -3,7 +3,7 @@ import { Controller, Get, NotFoundException, Param, UseGuards } from '@nestjs/co
 // utils
 import { controllerThrow } from '@utils/response/controller-throw';
 // dtos
-import { ParamGuildIdDto } from '@common/dtos';
+import { ParamGuildIdRequestDto } from '@common/dtos';
 // guards
 import { AuthGuardJwt } from '@guards/jwt-auth.guard';
 import { AuthGuardUserMe } from '@guards/user-me.guard';
@@ -72,7 +72,7 @@ export class UsersController {
 
     @Get('/@me/guilds/:guildId')
     @UseGuards(AuthGuardJwt)
-    async meGuildsGuildId(@AuthUser() user: AuthUserDto, @Param() param: ParamGuildIdDto) {
+    async meGuildsGuildId(@AuthUser() user: AuthUserDto, @Param() param: ParamGuildIdRequestDto) {
         try {
             const { guildId } = param;
 
@@ -91,7 +91,7 @@ export class UsersController {
 
     @Get('/@me/guilds/:guildId/channels')
     @UseGuards(AuthGuardJwt)
-    async meGuildsGuildIdChannels(@AuthUser() user: AuthUserDto, @Param() param: ParamGuildIdDto) {
+    async meGuildsGuildIdChannels(@AuthUser() user: AuthUserDto, @Param() param: ParamGuildIdRequestDto) {
         try {
             const { guildId } = param;
 
@@ -105,7 +105,7 @@ export class UsersController {
 
     @Get('/@me/guilds/:guildId/channels/refresh')
     @UseGuards(AuthGuardJwt)
-    async meGuildsGuildIdChannelsRefresh(@AuthUser() user: AuthUserDto, @Param() param: ParamGuildIdDto) {
+    async meGuildsGuildIdChannelsRefresh(@AuthUser() user: AuthUserDto, @Param() param: ParamGuildIdRequestDto) {
         try {
             const { guildId } = param;
 

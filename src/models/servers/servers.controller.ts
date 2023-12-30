@@ -8,8 +8,13 @@ import { AuthGuardLoginCheck } from '@guards/login-check.guard';
 // decorators
 import { AuthUser } from '@decorators/auth-user.decorator';
 // dtos
-import { QueryStringDto, ParamIdNumberDto, ParamIdStringDto, ParamNameDto, ParamGuildIdDto } from '@common/dtos';
-import { CreateDto, UpdateDto } from './dtos/routers';
+import {
+    ParamIdNumberRequestDto,
+    ParamIdStringRequestDto,
+    ParamNameRequestDto,
+    ParamGuildIdRequestDto,
+} from '@common/dtos';
+import { CreateRequestDto, UpdateRequestDto, ServerFilterRequestDto } from './dtos';
 import { AuthUserDto } from '@models/auth/dtos/auth-user.dto';
 // services
 import { ServersService } from '@models/servers/servers.service';
@@ -27,7 +32,7 @@ export class ServersController {
      * Public Methods
      **************************************************/
     @Get()
-    async allServerList(@Query() query: QueryStringDto) {
+    async allServerList(@Query() query: ServerFilterRequestDto) {
         try {
             const allServers = await this.serversService.getAllServers(query);
 
@@ -38,7 +43,7 @@ export class ServersController {
     }
 
     @Get('category/:id')
-    async categoryServerList(@Param() param: ParamIdNumberDto, @Query() query: QueryStringDto) {
+    async categoryServerList(@Param('id') param: ParamIdNumberRequestDto, @Query() query: ServerFilterRequestDto) {
         try {
             const categoryServers = await this.serversService.getCategoryServers(param.id, query);
 
@@ -49,7 +54,7 @@ export class ServersController {
     }
 
     @Get('tags/:name')
-    async tagServerList(@Param() param: ParamNameDto, @Query() query: QueryStringDto) {
+    async tagServerList(@Param() param: ParamNameRequestDto, @Query() query: ServerFilterRequestDto) {
         try {
             const tagServers = await this.serversService.getTagServers(param.name, query);
 
@@ -61,7 +66,7 @@ export class ServersController {
 
     @Get('refresh/:guildId')
     @UseGuards(AuthGuardJwt)
-    async refresh(@AuthUser() user: AuthUserDto, @Param() param: ParamGuildIdDto) {
+    async refresh(@AuthUser() user: AuthUserDto, @Param() param: ParamGuildIdRequestDto) {
         try {
             const serverRefreshResult = await this.serversService.refresh(param.guildId, user.id);
 
@@ -73,7 +78,7 @@ export class ServersController {
 
     @Get(':id')
     @UseGuards(AuthGuardLoginCheck)
-    async detail(@AuthUser() user: AuthUserDto, @Param() param: ParamIdStringDto) {
+    async detail(@AuthUser() user: AuthUserDto, @Param() param: ParamIdStringRequestDto) {
         try {
             const server = await this.serversService.detail(param.id, user.id);
 
@@ -85,7 +90,7 @@ export class ServersController {
 
     @Post()
     @UseGuards(AuthGuardJwt)
-    async store(@AuthUser() user: AuthUserDto, @Body() body: CreateDto) {
+    async store(@AuthUser() user: AuthUserDto, @Body() body: CreateRequestDto) {
         try {
             const result = await this.serversService.store(user.id, body);
 
@@ -97,7 +102,11 @@ export class ServersController {
 
     @Patch(':id')
     @UseGuards(AuthGuardJwt)
-    async update(@AuthUser() user: AuthUserDto, @Param() param: ParamIdStringDto, @Body() body: UpdateDto) {
+    async update(
+        @AuthUser() user: AuthUserDto,
+        @Param() param: ParamIdStringRequestDto,
+        @Body() body: UpdateRequestDto,
+    ) {
         try {
             const result = await this.serversService.edit(param.id, user.id, body);
 
@@ -109,7 +118,7 @@ export class ServersController {
 
     @Delete(':id')
     @UseGuards(AuthGuardJwt)
-    async delete(@AuthUser() user: AuthUserDto, @Param() param: ParamIdStringDto) {
+    async delete(@AuthUser() user: AuthUserDto, @Param() param: ParamIdStringRequestDto) {
         try {
             const result = await this.serversService.delete(user.id, param.id);
 

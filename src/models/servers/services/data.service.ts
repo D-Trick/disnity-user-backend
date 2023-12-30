@@ -1,7 +1,7 @@
-// types
-import type { ServersFilterQuery } from '@models/pagination/servers/types/servers-pagination.type';
 // @nestjs
 import { Injectable } from '@nestjs/common';
+// dtos
+import { ServerFilterRequestDto } from '../dtos';
 // services
 import { ServersPaginationService } from '@models/pagination/servers/servers-pagination.service';
 // repositories
@@ -25,9 +25,9 @@ export class ServersDataService {
      **************************************************/
     /**
      * 서버 전체 목록 가져오기
-     * @param {ServersFilterQuery} filterQuery
+     * @param {ServerFilterRequestDto} request
      */
-    async getAllServers(filterQuery: ServersFilterQuery) {
+    async getAllServers(request: ServerFilterRequestDto) {
         const promise1 = this.commonCodeRepository.selectOne({
             select: {
                 columns: {
@@ -39,9 +39,7 @@ export class ServersDataService {
                 value: 'all',
             },
         });
-        const promise2 = this.serversPaginationService.categoryServerPaginate({
-            filterQuery,
-        });
+        const promise2 = this.serversPaginationService.categoryServerPaginate(0, request);
         const [category, servers] = await Promise.all([promise1, promise2]);
 
         return {
@@ -53,9 +51,9 @@ export class ServersDataService {
     /**
      * 카테고리에 해당하는 서버 목록 가져오기
      * @param {number} categoryId
-     * @param {ServersFilterQuery} filterQuery
+     * @param {ServerFilterRequestDto} request
      */
-    async getCategoryServers(categoryId: number, filterQuery: ServersFilterQuery) {
+    async getCategoryServers(categoryId: number, request: ServerFilterRequestDto) {
         const promise1 = this.commonCodeRepository.selectOne({
             select: {
                 columns: {
@@ -67,10 +65,7 @@ export class ServersDataService {
                 value: String(categoryId),
             },
         });
-        const promise2 = this.serversPaginationService.categoryServerPaginate({
-            categoryId,
-            filterQuery,
-        });
+        const promise2 = this.serversPaginationService.categoryServerPaginate(categoryId, request);
         const [category, servers] = await Promise.all([promise1, promise2]);
 
         return {
@@ -82,13 +77,10 @@ export class ServersDataService {
     /**
      * 태그명에 해당하는 서버 목록 가져오기
      * @param {string} tagName
-     * @param {ServersFilterQuery} filterQuery
+     * @param {ServerFilterRequestDto} request
      */
-    async getTagServers(tagName: string, filterQuery: ServersFilterQuery) {
-        const servers = await this.serversPaginationService.tagServerPaginate({
-            tagName,
-            filterQuery,
-        });
+    async getTagServers(tagName: string, request: ServerFilterRequestDto) {
+        const servers = await this.serversPaginationService.tagServerPaginate(tagName, request);
 
         return {
             tagName,
@@ -99,13 +91,10 @@ export class ServersDataService {
     /**
      * 검색 키워드와 일치한 서버 목록 가져오기
      * @param {string} keyword
-     * @param {ServersFilterQuery} filterQuery
+     * @param {ServerFilterRequestDto} request
      */
-    async getSearchServers(keyword: string, filterQuery: ServersFilterQuery) {
-        const servers = await this.serversPaginationService.searchServerPaginate({
-            keyword,
-            filterQuery,
-        });
+    async getSearchServers(keyword: string, request: ServerFilterRequestDto) {
+        const servers = await this.serversPaginationService.searchServerPaginate(keyword, request);
 
         return {
             ...servers,
@@ -116,13 +105,10 @@ export class ServersDataService {
     /**
      * 나의 서버 목록 가져오기
      * @param {string} userId
-     * @param {ServersFilterQuery} filterQuery
+     * @param {ServerFilterRequestDto} request
      */
-    async getMyServers(userId: string, filterQuery: ServersFilterQuery) {
-        const servers = await this.serversPaginationService.myServerPaginate({
-            userId,
-            filterQuery,
-        });
+    async getMyServers(userId: string, request: ServerFilterRequestDto) {
+        const servers = await this.serversPaginationService.myServerPaginate(userId, request);
 
         return servers;
     }

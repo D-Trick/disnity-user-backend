@@ -7,8 +7,8 @@ import { discordConfig, DISCORD_INVITE_URL } from '@config/discord.config';
 // decorators
 import { AuthUser } from '@decorators/auth-user.decorator';
 // dtos
-import { ParamIdStringDto, ParamTypeAndGuildIdDto } from '@common/dtos';
-import { RedirectQueryStringDto } from './dtos/routers/index';
+import { ParamIdStringRequestDto, ParamTypeAndGuildIdRequestDto } from '@common/dtos';
+import { DiscordCallbackRequestDto } from './dtos/index';
 import { AuthUserDto } from '@models/auth/dtos/auth-user.dto';
 // guards
 import { AuthGuardLoginCheck } from '@guards/login-check.guard';
@@ -32,7 +32,7 @@ export class RedirectController {
      * Public Methods
      **************************************************/
     @Get('bot-add/:type/:guildId')
-    async botAddTypeGuildId(@Response() res: ExpressResponse, @Param() param: ParamTypeAndGuildIdDto) {
+    async botAddTypeGuildId(@Response() res: ExpressResponse, @Param() param: ParamTypeAndGuildIdRequestDto) {
         const { type, guildId } = param;
 
         switch (type) {
@@ -52,7 +52,7 @@ export class RedirectController {
     async botAddCallback(
         @AuthUser() user: AuthUserDto,
         @Response() res: ExpressResponse,
-        @Query() query: RedirectQueryStringDto,
+        @Query() query: DiscordCallbackRequestDto,
     ) {
         if (!user.isLogin) return res.redirect('/auth/login');
 
@@ -91,7 +91,7 @@ export class RedirectController {
     }
 
     @Get('invite/:id')
-    async inviteId(@Response() res: ExpressResponse, @Param() param: ParamIdStringDto) {
+    async inviteId(@Response() res: ExpressResponse, @Param() param: ParamIdStringRequestDto) {
         const { id } = param;
 
         const server = await this.guildRepository.selectOne({

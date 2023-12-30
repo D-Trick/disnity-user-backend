@@ -3,7 +3,8 @@ import { Controller, Get, Query, Param } from '@nestjs/common';
 // utils
 import { controllerThrow } from '@utils/response/controller-throw';
 // dtos
-import { QueryStringDto, ParamKeywordDto } from '@common/dtos';
+import { ParamKeywordRequestDto } from '@common/dtos';
+import { ServerFilterRequestDto } from '@models/servers/dtos';
 // services
 import { ServersService } from '@models/servers/servers.service';
 
@@ -20,7 +21,7 @@ export class SearchController {
      * Public Methods
      **************************************************/
     @Get(':keyword')
-    async keyword(@Param() param: ParamKeywordDto, @Query() query: QueryStringDto) {
+    async keyword(@Param() param: ParamKeywordRequestDto, @Query() query: ServerFilterRequestDto) {
         try {
             const servers = await this.serversService.getSearchServers(param.keyword, query);
 
