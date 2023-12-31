@@ -2,8 +2,8 @@
 import type { ServerDetail } from '../types/servers.type';
 // @nestjs
 import { Injectable, NotFoundException } from '@nestjs/common';
-// lib
-import { isEmpty } from '@lib/lodash';
+// lodash
+import isEmpty from 'lodash/isEmpty';
 // messages
 import { HTTP_ERROR_MESSAGES } from '@common/messages';
 // repositories

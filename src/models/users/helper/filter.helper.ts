@@ -1,9 +1,10 @@
 // types
 import type { AdminGuild } from '../types/users.type';
 import type { Channel } from '@models/discord-api/types/discordApi.type';
+// lodash
+import isEmpty from 'lodash/isEmpty';
 // lib
 import { Injectable } from '@nestjs/common';
-import { isEmpty, isNotEmpty } from '@lib/lodash';
 // flags
 import { permissionFlags } from '@utils/discord/flags/permission.flag';
 // services
@@ -78,7 +79,7 @@ export class FilterHelper {
                 channel.type === 13 ||
                 channel.type === 15
             ) {
-                if (isNotEmpty(channel?.permission_overwrites)) {
+                if (!isEmpty(channel?.permission_overwrites)) {
                     const permissionLength = channel?.permission_overwrites.length;
 
                     for (let j = 0; j < permissionLength; j++) {

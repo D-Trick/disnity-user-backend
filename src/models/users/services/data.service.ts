@@ -4,8 +4,8 @@ import type { AdminGuild } from '../types/users.type';
 import type { Channel } from '@models/discord-api/types/discordApi.type';
 // @nestjs
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-// lib
-import { isEmpty } from '@lib/lodash';
+// lodash
+import isEmpty from 'lodash/isEmpty';
 // cache
 import { CACHE_KEYS } from '@cache/redis/keys';
 // configs

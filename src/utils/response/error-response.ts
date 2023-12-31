@@ -1,7 +1,8 @@
 // @nestjs
 import { HttpStatus } from '@nestjs/common';
+// lodash
+import isEmpty from 'lodash/isEmpty';
 // lib
-import { isEmpty } from '@lib/lodash';
 import { Exclude, Expose } from 'class-transformer';
 
 // ----------------------------------------------------------------------

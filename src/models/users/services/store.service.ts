@@ -1,8 +1,9 @@
 // @nestjs
 import { Injectable } from '@nestjs/common';
+// lodash
+import isEmpty from 'lodash/isEmpty';
 // lib
 import { DataSource } from 'typeorm';
-import { isEmpty } from '@lib/lodash';
 // uitls
 import { generateSnowflakeId, promiseAllSettled } from '@utils/index';
 // cache

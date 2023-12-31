@@ -3,10 +3,14 @@ import type { Save, SaveValues } from '../types/save.type';
 import type { Emoji, Guild, GuildScheduledEvent } from '@models/discord-api/types/discordApi.type';
 // @nestjs
 import { Injectable, BadRequestException } from '@nestjs/common';
+// lodash
+import uniq from 'lodash/uniq';
+import uniqBy from 'lodash/uniqBy';
+import isEmpty from 'lodash/isEmpty';
+import differenceBy from 'lodash/differenceBy';
 // lib
 import { DataSource, QueryRunner } from 'typeorm';
 import dayjs from '@lib/dayjs';
-import { isNotEmpty, differenceBy, uniq, uniqBy } from '@lib/lodash';
 // utils
 import { generateSnowflakeId, promiseAllSettled } from '@utils/index';
 // cache
@@ -77,7 +81,7 @@ export class ServersStoreService {
                     id,
                 },
             });
-            if (isNotEmpty(guild)) {
+            if (!isEmpty(guild)) {
                 throw new BadRequestException(SERVER_ERROR_MESSAGES.SERVER_EXISTE);
             }
 
@@ -102,14 +106,14 @@ export class ServersStoreService {
 
             // 관리자 권한 목록 저장 / 관리자 권한있는 유저 목록 저장 또는 수정
             const cacheAdmins = await this.cacheService.get(CACHE_KEYS.DISNITY_BOT_ADMINS(id));
-            if (isNotEmpty(cacheAdmins)) {
+            if (!isEmpty(cacheAdmins)) {
                 promise4 = this.adminPermissionsInsert(queryRunner, discordGuild.id, cacheAdmins);
                 promise5 = this.adminsInsertOrUpdate(queryRunner, cacheAdmins);
             }
 
             // 길드 이벤트(일정) 목록 저장 / 길드 이벤트 생성자 유저 목록 저장 또는 수정
             const guildSchedules = await this.discordApiService.guildScheduledEvents().scheduledEvents(discordGuild.id);
-            if (isNotEmpty(guildSchedules)) {
+            if (!isEmpty(guildSchedules)) {
                 promise6 = this.guildSchedulesInsert(queryRunner, guildSchedules);
                 promise7 = this.creatorsInsertOrUpdate(queryRunner, guildSchedules);
             }
@@ -292,7 +296,7 @@ export class ServersStoreService {
         });
 
         const newAdmins = differenceBy(adminUsers, users, 'id');
-        if (isNotEmpty(newAdmins)) {
+        if (!isEmpty(newAdmins)) {
             return this.userRepository.cInsert({
                 transaction,
                 values: newAdmins,
@@ -381,7 +385,7 @@ export class ServersStoreService {
         });
 
         const newCreators = differenceBy(uniqByCreators, users, 'id');
-        if (isNotEmpty(newCreators)) {
+        if (!isEmpty(newCreators)) {
             return this.userRepository.cInsert({
                 transaction,
                 values: newCreators,

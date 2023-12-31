@@ -1,8 +1,9 @@
 // @nestjs
 import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
+// lodash
+import isEmpty from 'lodash/isEmpty';
 // lib
 import { DataSource } from 'typeorm';
-import { isEmpty } from '@lib/lodash';
 // utils
 import { promiseAllSettled } from '@utils/index';
 // messages

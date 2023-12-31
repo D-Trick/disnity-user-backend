@@ -1,7 +1,7 @@
 // @nestjs
 import { Injectable } from '@nestjs/common';
-// lib
-import { isEmpty } from '@lib/lodash';
+// lodash
+import isEmpty from 'lodash/isEmpty';
 // dtos
 import { ServerFilterRequestDto } from '@models/servers/dtos';
 // repositories

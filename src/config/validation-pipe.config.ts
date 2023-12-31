@@ -1,7 +1,7 @@
 // @nestjs
 import { BadRequestException, ValidationError, ValidationPipeOptions } from '@nestjs/common';
-// lib
-import { isEmpty } from '@lib/lodash';
+// lodash
+import isEmpty from 'lodash/isEmpty';
 // configs
 import { ENV_CONFIG } from './env.config';
 // messages
