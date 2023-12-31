@@ -1,7 +1,9 @@
+// @nestjs
+import { HttpModule } from '@nestjs/axios';
 // lib
 import { Module } from '@nestjs/common';
 // modules
-import { CoreModule } from '@common/modules/core.module';
+import { CacheModule } from '@cache/redis/cache.module';
 import { UsersModule } from '@models/users/users.module';
 import { DiscordApiModule } from '@models/discord-api/discordApi.module';
 import { ServersPaginationModule } from '@models/pagination/servers/servers-pagination.module';
@@ -18,7 +20,7 @@ import { ServersDetailService } from './services/detail.service';
 // ----------------------------------------------------------------------
 
 @Module({
-    imports: [CoreModule, UsersModule, DiscordApiModule, ServersPaginationModule],
+    imports: [CacheModule, HttpModule, UsersModule, DiscordApiModule, ServersPaginationModule],
     controllers: [ServersController],
     providers: [
         ServersService,

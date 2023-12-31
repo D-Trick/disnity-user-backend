@@ -1,7 +1,6 @@
 // @nestjs
 import { Module } from '@nestjs/common';
-// modules
-import { CoreModule } from '@common/modules/core.module';
+import { HttpModule } from '@nestjs/axios';
 // services
 import { DiscordApiService } from './discordApi.service';
 import { DiscordApiUsersService } from './services/users.service';
@@ -13,7 +12,7 @@ import { DiscordApiGuildScheduledEventService } from './services/guild-scheduled
 // ----------------------------------------------------------------------
 
 @Module({
-    imports: [CoreModule],
+    imports: [HttpModule],
     providers: [
         DiscordApiService,
         DiscordApiUsersService,
