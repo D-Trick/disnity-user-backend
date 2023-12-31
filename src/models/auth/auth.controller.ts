@@ -8,7 +8,7 @@ import dayjs from '@lib/dayjs';
 // utils
 import { controllerThrow } from '@utils/response/controller-throw';
 // configs
-import { getCookieOptions } from '@config/cookie.config';
+import { cookieOptions } from '@config/cookie.config';
 // guards
 import { AuthGuardJwt } from '@guards/jwt-auth.guard';
 import { AuthGuardDiscord } from '@guards/discord-auth.guard';
@@ -41,7 +41,7 @@ export class AuthController {
      **************************************************/
     @Get('/login')
     @UseGuards(AuthGuardDiscord)
-    login(): string {
+    login() {
         return 'Discord Login Redirect...';
     }
 
@@ -63,8 +63,8 @@ export class AuthController {
             await this.usersService.saveLoginInfo(discordUser, requestIp.getClientIp(req));
 
             const expires = dayjs().add(1, 'day').toDate();
-            res.cookie('token', accessToken, getCookieOptions(expires));
-            res.cookie('refreshToken', refreshToken, getCookieOptions(expires));
+            res.cookie('token', accessToken, cookieOptions(expires));
+            res.cookie('refreshToken', refreshToken, cookieOptions(expires));
 
             res.redirect('/login');
         } catch (error: any) {
@@ -76,8 +76,8 @@ export class AuthController {
 
     @Get('/logout')
     logout(@Response() res: ExpressResponse) {
-        res.clearCookie('token', getCookieOptions());
-        res.clearCookie('refreshToken', getCookieOptions());
+        res.clearCookie('token', cookieOptions());
+        res.clearCookie('refreshToken', cookieOptions());
 
         res.redirect('/logout');
     }
@@ -95,8 +95,8 @@ export class AuthController {
             const expires = dayjs().add(1, 'day').toDate();
             const accessToken = this.authService.createJwtToken('access', user.id);
             const refreshToken = this.authService.createJwtToken('refresh', user.id);
-            res.cookie('token', accessToken, getCookieOptions(expires));
-            res.cookie('refreshToken', refreshToken, getCookieOptions(expires));
+            res.cookie('token', accessToken, cookieOptions(expires));
+            res.cookie('refreshToken', refreshToken, cookieOptions(expires));
 
             return {
                 accessToken,
