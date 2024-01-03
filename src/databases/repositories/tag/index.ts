@@ -15,7 +15,7 @@ import { Tag } from '@databases/entities/tag.entity';
 // repositories
 import { CustomRepository } from '@common/modules/typeorm-custom-repository.module';
 // sql
-import { findSitemapUrls } from './sql/find-sitemap-urls';
+import { findSitemapData } from './sql/find-sitemap-data';
 import { findTagGuildIds } from './sql/pagination/find-tag-guild-ids';
 import { totalTagGuildsCount } from './sql/total-tag-guilds-count';
 import { findNames } from './sql/find-names';
@@ -71,8 +71,8 @@ export class TagRepository extends Repository<Tag> {
      * sitemap guild tag url 가져오기
      * @param {SqlOptions} options
      */
-    async findSitemapUrls(options?: SqlOptions) {
-        return findSitemapUrls(this, options);
+    async findSitemapData(options?: SqlOptions) {
+        return await findSitemapData(this, options);
     }
 
     /**

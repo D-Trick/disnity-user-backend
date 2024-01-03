@@ -2,6 +2,8 @@
 import { Controller, Get } from '@nestjs/common';
 // utils
 import { controllerThrow } from '@utils/response/controller-throw';
+// dtos
+import { DynamicUrlsResponseDto } from './dtos/dynamic-urls-response.dto';
 // services
 import { SitemapService } from './sitemap.service';
 
@@ -20,9 +22,9 @@ export class SitemapController {
     @Get('/disnity')
     async dynamicUrl() {
         try {
-            const dynamicUrls = await this.sitemapService.getDynamicUrl();
+            const dynamicData = await this.sitemapService.getDynamicData();
 
-            return dynamicUrls;
+            return new DynamicUrlsResponseDto(dynamicData).urls;
         } catch (error: any) {
             controllerThrow(error);
         }

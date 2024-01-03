@@ -21,14 +21,12 @@ export class CommonCodeDetailService {
      * @param {string} value
      */
     async commonCode(code: string, value: string) {
-        const commonCodes = await this.commonCodeRepository.selectOne({
+        const commonCodes = await this.commonCodeRepository.find({
             select: {
-                columns: {
-                    id: true,
-                    code: true,
-                    name: true,
-                    value: true,
-                },
+                id: true,
+                code: true,
+                name: true,
+                value: true,
             },
             where: {
                 code,

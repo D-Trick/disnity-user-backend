@@ -265,13 +265,6 @@ export interface FindMyGuildIdsOptions extends SqlOptions {
 }
 
 /******************************
- * FindSitemapUrls
- ******************************/
-export interface FindSitemapUrls {
-    url: string;
-}
-
-/******************************
  * DML
  ******************************/
 export interface InsertOptions extends SqlOptions {

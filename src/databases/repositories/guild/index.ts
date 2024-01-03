@@ -33,7 +33,7 @@ import { totalCategoryGuildsCount } from './sql/total-category-guilds-count';
 import { totalSearchGuildsCount } from './sql/total-search-guilds-count';
 import { totalGuildAdminsCount } from './sql/total-admin-guilds-count';
 import { findGuildDetailById } from './sql/find-guild-detail-by-id';
-import { findSitemapUrls } from './sql/find-sitemap-urls';
+import { findSitemapData } from './sql/find-sitemap-data';
 import { findCategoryGuildIds } from './sql/pagination/find-category-guild-ids';
 import { findSearchGuildIds } from './sql/pagination/find-search-guild-ids';
 import { findGuildsByIds } from './sql/find-guilds-by-ids';
@@ -156,8 +156,8 @@ export class GuildRepository extends Repository<Guild> {
      * sitemap server url 가져오기
      * @param {SqlOptions} options
      */
-    async findSitemapUrls(options?: SqlOptions) {
-        return findSitemapUrls(this, options);
+    async findSitemapData(options?: SqlOptions) {
+        return await findSitemapData(this, options);
     }
 
     /**

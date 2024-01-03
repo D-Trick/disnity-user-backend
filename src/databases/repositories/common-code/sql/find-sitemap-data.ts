@@ -4,8 +4,6 @@ import type { SqlOptions } from '@common/types/sql-options.type';
 import { Repository } from 'typeorm';
 // utils
 import { createSelectQueryBuilder } from '@databases/utils/createQueryBuilder';
-// configs
-import { baseConfig } from '@config/basic.config';
 // alias
 import { COMMON_CODE_TABLE_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
 // entities
@@ -13,10 +11,10 @@ import { CommonCode } from '@databases/entities/common-code.entity';
 
 // ----------------------------------------------------------------------
 
-export async function findCategorySitemapUrls(
+export async function findSitemapData(
     repository: Repository<CommonCode>,
     options: SqlOptions,
-): Promise<{ url: string }[]> {
+): Promise<Pick<CommonCode, 'value'>[]> {
     const { transaction } = options || {};
 
     const qb = createSelectQueryBuilder<CommonCode>(CommonCode, TABLE_ALIAS, {
@@ -25,10 +23,10 @@ export async function findCategorySitemapUrls(
     });
 
     // SELECT
-    qb.select([`CONCAT('${baseConfig.url}', '/servers/categorys/', value) as url`]);
+    qb.select(['value']);
 
     // WHERE
     qb.where("code = 'category'");
 
-    return qb.getRawMany();
+    return qb.getMany();
 }

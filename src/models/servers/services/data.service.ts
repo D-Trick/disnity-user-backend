@@ -28,11 +28,9 @@ export class ServersDataService {
      * @param {ServerFilterRequestDto} request
      */
     async getAllServers(request: ServerFilterRequestDto) {
-        const promise1 = this.commonCodeRepository.selectOne({
+        const promise1 = this.commonCodeRepository.findOne({
             select: {
-                columns: {
-                    name: true,
-                },
+                name: true,
             },
             where: {
                 code: 'category',
@@ -54,11 +52,9 @@ export class ServersDataService {
      * @param {ServerFilterRequestDto} request
      */
     async getCategoryServers(categoryId: number, request: ServerFilterRequestDto) {
-        const promise1 = this.commonCodeRepository.selectOne({
+        const promise1 = this.commonCodeRepository.findOne({
             select: {
-                columns: {
-                    name: true,
-                },
+                name: true,
             },
             where: {
                 code: 'category',

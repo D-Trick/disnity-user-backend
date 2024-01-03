@@ -21,7 +21,7 @@ export class SitemapService {
     /**
      * 동적 Url 가져오기
      */
-    async getDynamicUrl() {
-        return await this.dataService.getDynamicUrl();
+    async getDynamicData() {
+        return await this.dataService.getDynamicData();
     }
 }

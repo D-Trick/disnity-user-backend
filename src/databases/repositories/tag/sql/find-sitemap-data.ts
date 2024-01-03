@@ -1,12 +1,9 @@
 // types
 import type { SqlOptions } from '@common/types/sql-options.type';
-import type { FindSitemapUrls } from '@databases/types/guild.type';
 // lib
 import { Repository } from 'typeorm';
 // utils
 import { createSelectQueryBuilder } from '@databases/utils/createQueryBuilder';
-// configs
-import { baseConfig } from '@config/basic.config';
 // alias
 import { TAG_TABLE_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
 // entities
@@ -14,7 +11,7 @@ import { Tag } from '@databases/entities/tag.entity';
 
 // ----------------------------------------------------------------------
 
-export async function findSitemapUrls(repository: Repository<Tag>, options: SqlOptions): Promise<FindSitemapUrls[]> {
+export async function findSitemapData(repository: Repository<Tag>, options: SqlOptions): Promise<Pick<Tag, 'name'>[]> {
     const { transaction } = options || {};
 
     const qb = createSelectQueryBuilder<Tag>(Tag, TABLE_ALIAS, {
@@ -23,16 +20,19 @@ export async function findSitemapUrls(repository: Repository<Tag>, options: SqlO
     });
 
     // SELECT
-    qb.select([`CONCAT('${baseConfig.url}', '/servers/tags/', ${TABLE_ALIAS}.name) as url`]);
+    qb.select([`${TABLE_ALIAS}.name as name`]);
 
     // JOIN
     qb.leftJoin('guild', 'guild', `guild.id = ${TABLE_ALIAS}.guild_id`);
 
-    // GROUP BY
-    qb.groupBy(`${TABLE_ALIAS}.name`);
-
     // WHERE
     qb.andWhere(`guild.refresh_date >= date_add(NOW(), interval - 1 month)`);
+    qb.andWhere(`guild.is_bot = 1`);
+    qb.andWhere(`guild.is_open = 1`);
+    qb.andWhere(`guild.is_admin_open = 1`);
+
+    // GROUP BY
+    qb.groupBy(`${TABLE_ALIAS}.name`);
 
     return qb.getRawMany();
 }
