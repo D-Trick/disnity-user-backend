@@ -22,7 +22,7 @@ interface customJwtFromRequest {
 function customJwtFromRequest(): customJwtFromRequest {
     return (req: Request): string => {
         const { token } = req.cookies;
-        const headerToken = ExtractJwt.fromAuthHeaderWithScheme('bearer')(req);
+        const headerToken = ExtractJwt.fromAuthHeaderWithScheme('bearer')(req as any);
 
         return headerToken || token;
     };
