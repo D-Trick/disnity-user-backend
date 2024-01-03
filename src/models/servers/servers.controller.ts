@@ -43,7 +43,7 @@ export class ServersController {
     }
 
     @Get('category/:id')
-    async categoryServerList(@Param('id') param: ParamIdNumberRequestDto, @Query() query: ServerFilterRequestDto) {
+    async categoryServerList(@Param() param: ParamIdNumberRequestDto, @Query() query: ServerFilterRequestDto) {
         try {
             const categoryServers = await this.serversService.getCategoryServers(param.id, query);
 
