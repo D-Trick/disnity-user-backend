@@ -1,10 +1,12 @@
 // types
 import type { AdminGuild } from '../types/users.type';
 import type { Channel } from '@models/discord-api/types/discordApi.type';
+// @nestjs
+import { Injectable } from '@nestjs/common';
 // lodash
 import isEmpty from 'lodash/isEmpty';
 // lib
-import { Injectable } from '@nestjs/common';
+import { In } from 'typeorm';
 // flags
 import { permissionFlags } from '@utils/discord/flags/permission.flag';
 // services
@@ -36,18 +38,15 @@ export class FilterHelper {
         if (isEmpty(discordAdminGuilds)) return [];
 
         const discordAdminGuildIds = discordAdminGuilds.map((discordAdminGuild) => discordAdminGuild.id);
-        const guilds = await this.guildRepository.selectMany<'publicList'>({
-            select: {
-                sql: {
-                    publicList: true,
-                },
+        const guilds = await this.guildRepository.cFind<'frequentlyUsed'>({
+            preSelect: {
+                frequentlyUsed: true,
             },
             where: {
-                IN: {
-                    ids: discordAdminGuildIds,
-                },
+                id: In(discordAdminGuildIds),
             },
         });
+
         const guildIds = guilds.map((guild) => guild.id);
 
         const newAdminGuilds = discordAdminGuilds.filter((discordAdminGuild) => {

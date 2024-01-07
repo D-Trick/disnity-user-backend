@@ -22,9 +22,7 @@ export class CommonCodeController {
     @Get(':code')
     async commonCodeList(@Param() param: ParamCodeRequestDto) {
         try {
-            const { code } = param;
-
-            const commonCodes = await this.commonCodeService.getCommonCodes(code);
+            const commonCodes = await this.commonCodeService.getCommonCodes(param.code);
 
             return commonCodes;
         } catch (error: any) {

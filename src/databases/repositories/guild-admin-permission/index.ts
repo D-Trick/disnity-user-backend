@@ -1,8 +1,9 @@
 // types
 import type { DeleteResult, InsertResult, UpdateResult } from 'typeorm';
 import type {
+    CFindOptions,
+    CFindOneOptions,
     FindGuildAdminsOptions,
-    SelectOptions,
     InsertOptions,
     UpdateOptions,
     DeleteOptions,
@@ -14,7 +15,8 @@ import { GuildAdminPermission } from '@databases/entities/guild-admin-permission
 // repositories
 import { CustomRepository } from '@common/modules/typeorm-custom-repository.module';
 // sql
-import { selectMany, selectOne } from './sql/select';
+import { cFind } from './sql/find';
+import { cFindOne } from './sql/find-one';
 import { findGuildAdmins } from './sql/find-guild-admins';
 import { cInsert } from './sql/insert';
 import { cUpdate } from './sql/update';
@@ -25,18 +27,19 @@ import { cDelete } from './sql/delete';
 @CustomRepository(GuildAdminPermission)
 export class GuildAdminPermissionRepository extends Repository<GuildAdminPermission> {
     /**
-     * Select One
-     * @param {SelectOptions} options
+     * Custom Find
+     * @param {CFindOptions} options
      */
-    async selectOne(options: SelectOptions) {
-        return selectOne(this, options);
+    async cFind(options: CFindOptions) {
+        return cFind(this, options);
     }
+
     /**
-     * Select Many
-     * @param {SelectOptions} options
+     * Custom Find One
+     * @param {CFindOneOptions} options
      */
-    async selectMany(options: SelectOptions) {
-        return selectMany(this, options);
+    async cFindOne(options: CFindOneOptions) {
+        return cFindOne(this, options);
     }
 
     /**

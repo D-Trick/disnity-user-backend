@@ -1,7 +1,8 @@
 // types
 import type { SqlOptions } from '@common/types/sql-options.type';
 import type {
-    SelectOptions,
+    CFindOptions,
+    CFindOneOptions,
     TotalMyGuildsCountOptions,
     TotalGuildAdminsCountOptions,
     TotalSearchGuildsCountOptions,
@@ -17,8 +18,8 @@ import type {
     DeleteOptions,
     FindMyGuildDetailByIdOptions,
     FindGuildsByIdsSqlName,
-    SelectSqlName,
     SelectMyGuildOptions,
+    SelectType,
 } from '@databases/types/guild.type';
 // lib
 import { Repository } from 'typeorm';
@@ -27,7 +28,8 @@ import { Guild } from '@databases/entities/guild.entity';
 // repositories
 import { CustomRepository } from '@common/modules/typeorm-custom-repository.module';
 // sql
-import { selectMany, selectOne } from './sql/select';
+import { cFind } from './sql/find';
+import { cFindOne } from './sql/find-one';
 import { selectMyGuildOne } from './sql/selectMyGuild';
 import { totalCategoryGuildsCount } from './sql/total-category-guilds-count';
 import { totalSearchGuildsCount } from './sql/total-search-guilds-count';
@@ -82,19 +84,21 @@ export class GuildRepository extends Repository<Guild> {
     }
 
     /**
-     * Select One
-     * @param {SelectOptions} options
+     * Custom Find
+     * @param {CFindOptions} options
      */
-    async selectOne<T extends SelectSqlName = 'columns'>(options: SelectOptions) {
-        return selectOne<T>(this, options);
+    async cFind<T extends SelectType = 'basic'>(options: CFindOptions) {
+        return cFind<T>(this, options);
     }
+
     /**
-     * Select Many
-     * @param {SelectOptions} options
+     * Custom Find One
+     * @param {CFindOneOptions} options
      */
-    async selectMany<T extends SelectSqlName = 'columns'>(options: SelectOptions) {
-        return selectMany<T>(this, options);
+    async cFindOne<T extends SelectType = 'basic'>(options: CFindOneOptions) {
+        return cFindOne<T>(this, options);
     }
+
     /**
      * Select MyGuild One
      * @param {SelectMyGuildOptions} options

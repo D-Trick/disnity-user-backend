@@ -1,6 +1,7 @@
 // types
 import type { SqlOptions } from '@common/types/sql-options.type';
-import type { SelectBooleanified } from './global';
+// lib
+import { FindManyOptions, QueryRunner } from 'typeorm';
 // entities
 import { Guild } from '@databases/entities/guild.entity';
 import { GuildScheduled } from '@databases/entities/guild-scheduled.entity';
@@ -8,14 +9,13 @@ import { GuildScheduled } from '@databases/entities/guild-scheduled.entity';
 // ----------------------------------------------------------------------
 
 /******************************
- * Select
+ * Find
  ******************************/
-export interface SelectOptions extends SqlOptions {
-    select: {
-        // sql: {};
-        columns: SelectBooleanified<GuildScheduled>;
-    };
-    where?: Partial<Pick<GuildScheduled, 'id' | 'guild_id' | 'channel_id'>>;
+export interface CFindOptions extends Omit<FindManyOptions<GuildScheduled>, 'transaction'> {
+    transaction?: QueryRunner;
+}
+export interface CFindOneOptions extends Omit<FindManyOptions<GuildScheduled>, 'transaction'> {
+    transaction?: QueryRunner;
 }
 
 /******************************

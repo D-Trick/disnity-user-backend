@@ -1,6 +1,6 @@
 // types
 import type { SelectQueryBuilder } from 'typeorm';
-import type { ReturnSelect, SelectMyGuildOptions } from '@databases/types/guild.type';
+import type { SelectMyGuildOptions } from '@databases/types/guild.type';
 // lib
 import { Brackets, Repository } from 'typeorm';
 // utils
@@ -120,7 +120,7 @@ function selectMyGuild(qb: SelectQueryBuilder<Guild>, options: SelectMyGuildOpti
 export async function selectMyGuildOne(
     repository: Repository<Guild>,
     options: SelectMyGuildOptions,
-): Promise<ReturnSelect['columns']> {
+): Promise<Partial<Guild>> {
     const { transaction } = options || {};
 
     const qb = createSelectQueryBuilder<Guild>(Guild, TABLE_ALIAS, {

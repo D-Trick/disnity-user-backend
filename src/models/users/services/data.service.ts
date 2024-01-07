@@ -46,11 +46,9 @@ export class UsersDataService {
     async getUser(userId: string) {
         const cacheUser = await this.cacheService.getUser(userId);
         if (!cacheUser) {
-            const refreshUser = await this.userRepository.selectOne<'base'>({
-                select: {
-                    sql: {
-                        base: true,
-                    },
+            const refreshUser = await this.userRepository.cFindOne<'frequentlyUsed'>({
+                preSelect: {
+                    frequentlyUsed: true,
                 },
                 where: {
                     id: userId,

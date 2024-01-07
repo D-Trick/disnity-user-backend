@@ -1,6 +1,12 @@
 // types
 import type { SqlOptions } from '@common/types/sql-options.type';
-import type { SelectOptions, InsertOptions, UpdateOptions, DeleteOptions } from '@databases/types/guild-scheduled.type';
+import type {
+    CFindOptions,
+    CFindOneOptions,
+    InsertOptions,
+    UpdateOptions,
+    DeleteOptions,
+} from '@databases/types/guild-scheduled.type';
 // lib
 import { Repository } from 'typeorm';
 // entities
@@ -8,7 +14,8 @@ import { GuildScheduled } from '@databases/entities/guild-scheduled.entity';
 // repositories
 import { CustomRepository } from '@common/modules/typeorm-custom-repository.module';
 // sql
-import { selectMany, selectOne } from './sql/select';
+import { cFind } from './sql/find';
+import { cFindOne } from './sql/find-one';
 import { findThisMonthSchedules } from './sql/find-this-month-schedules';
 import { cInsert } from './sql/insert';
 import { cUpdate } from './sql/update';
@@ -19,19 +26,19 @@ import { cDelete } from './sql/delete';
 @CustomRepository(GuildScheduled)
 export class GuildScheduledRepository extends Repository<GuildScheduled> {
     /**
-     * Select One
-     * @param {SelectOptions} options
+     * Custom Find
+     * @param {CFindOptions} options
      */
-    async selectOne(options: SelectOptions) {
-        return selectOne(this, options);
+    async cFind(options: CFindOptions) {
+        return cFind(this, options);
     }
 
     /**
-     * Select Many
-     * @param {SelectOptions} options
+     * Custom Find One
+     * @param {CFindOneOptions} options
      */
-    async selectMany(options: SelectOptions) {
-        return selectMany(this, options);
+    async cFindOne(options: CFindOneOptions) {
+        return cFindOne(this, options);
     }
 
     /**

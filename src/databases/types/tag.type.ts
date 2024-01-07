@@ -1,28 +1,20 @@
 // types
-import type { SelectBooleanified } from './global';
 import type { SqlOptions } from '@common/types/sql-options.type';
+// lib
+import { FindManyOptions, QueryRunner } from 'typeorm';
 // entities
 import { Tag } from '@databases/entities/tag.entity';
 
 // ----------------------------------------------------------------------
 
 /******************************
- * Select
+ * Find
  ******************************/
-export interface SelectOptions extends SqlOptions {
-    select: {
-        columns?: SelectBooleanified<Tag>;
-    };
-
-    where: Partial<Pick<Tag, 'id' | 'guild_id' | 'name'>> & {
-        IN?: {
-            ids: Tag['id'][];
-        };
-    };
+export interface CFindOptions extends Omit<FindManyOptions<Tag>, 'transaction'> {
+    transaction?: QueryRunner;
 }
-
-export interface ReturnSelect {
-    columns: Partial<Tag>;
+export interface CFindOneOptions extends Omit<FindManyOptions<Tag>, 'transaction'> {
+    transaction?: QueryRunner;
 }
 
 /******************************

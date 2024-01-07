@@ -55,14 +55,15 @@ export class ServersDetailService {
             throw new NotFoundException(HTTP_ERROR_MESSAGES['404']);
         }
 
-        const promise1 = this.tagRepository.selectMany({
+        const promise1 = this.tagRepository.cFind({
             select: {
-                columns: {
-                    name: true,
-                },
+                name: true,
             },
             where: {
                 guild_id: id,
+            },
+            order: {
+                sort: 'ASC',
             },
         });
         const promise2 = this.guildAdminPermissionRepository.findGuildAdmins({
@@ -70,26 +71,22 @@ export class ServersDetailService {
                 guild_id: id,
             },
         });
-        const promise3 = this.emojiRepository.selectMany({
+        const promise3 = this.emojiRepository.cFind({
             select: {
-                columns: {
-                    id: true,
-                    name: true,
-                    animated: true,
-                },
+                id: true,
+                name: true,
+                animated: true,
             },
             where: {
                 guild_id: id,
                 animated: false,
             },
         });
-        const promise4 = this.emojiRepository.selectMany({
+        const promise4 = this.emojiRepository.cFind({
             select: {
-                columns: {
-                    id: true,
-                    name: true,
-                    animated: true,
-                },
+                id: true,
+                name: true,
+                animated: true,
             },
             where: {
                 guild_id: id,
@@ -123,14 +120,15 @@ export class ServersDetailService {
             throw new NotFoundException(HTTP_ERROR_MESSAGES['404']);
         }
 
-        const tags = await this.tagRepository.selectMany({
+        const tags = await this.tagRepository.cFind({
             select: {
-                columns: {
-                    name: true,
-                },
+                name: true,
             },
             where: {
                 guild_id: id,
+            },
+            order: {
+                sort: 'ASC',
             },
         });
 

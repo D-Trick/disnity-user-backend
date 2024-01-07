@@ -1,6 +1,7 @@
 // types
 import type { SqlOptions } from '@common/types/sql-options.type';
-import type { SelectBooleanified } from './global';
+// lib
+import { FindManyOptions, QueryRunner } from 'typeorm';
 // entities
 import { User } from '@databases/entities/user.entity';
 import { GuildAdminPermission } from '@databases/entities/guild-admin-permission.entity';
@@ -8,14 +9,13 @@ import { GuildAdminPermission } from '@databases/entities/guild-admin-permission
 // ----------------------------------------------------------------------
 
 /******************************
- * Select
+ * Find
  ******************************/
-export interface SelectOptions extends SqlOptions {
-    select: {
-        // sql: {};
-        columns: SelectBooleanified<GuildAdminPermission>;
-    };
-    where?: Partial<Pick<GuildAdminPermission, 'guild_id' | 'user_id'>>;
+export interface CFindOptions extends Omit<FindManyOptions<GuildAdminPermission>, 'transaction'> {
+    transaction?: QueryRunner;
+}
+export interface CFindOneOptions extends Omit<FindManyOptions<GuildAdminPermission>, 'transaction'> {
+    transaction?: QueryRunner;
 }
 
 /******************************

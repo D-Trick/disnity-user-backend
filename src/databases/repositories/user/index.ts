@@ -1,10 +1,11 @@
 // types
 import type {
+    CFindOptions,
+    CFindOneOptions,
     BulkUpdateOptions,
-    SelectOptions,
     InsertOptions,
     UpdateOptions,
-    SelectSqlName,
+    SelectType,
 } from '@databases/types/user.type';
 // lib
 import { Repository } from 'typeorm';
@@ -13,7 +14,8 @@ import { User } from '@databases/entities/user.entity';
 // repositories
 import { CustomRepository } from '@common/modules/typeorm-custom-repository.module';
 // sql
-import { selectMany, selectOne } from './sql/select';
+import { cFind } from './sql/find';
+import { cFindOne } from './sql/find-one';
 import { cInsert } from './sql/insert';
 import { cUpdate } from './sql/update';
 import { cBulkUpdate } from './sql/bulk-update';
@@ -23,18 +25,19 @@ import { cBulkUpdate } from './sql/bulk-update';
 @CustomRepository(User)
 export class UserRepository extends Repository<User> {
     /**
-     * Select One
-     * @param {SelectOptions} options
+     * Custom Find
+     * @param {CFindOptions} options
      */
-    async selectOne<T extends SelectSqlName = 'columns'>(options: SelectOptions) {
-        return selectOne<T>(this, options);
+    async cFind<T extends SelectType = 'basic'>(options: CFindOptions) {
+        return cFind<T>(this, options);
     }
+
     /**
-     * Select Many
-     * @param {SelectOptions} options
+     * Custom Find One
+     * @param {CFindOneOptions} options
      */
-    async selectMany<T extends SelectSqlName = 'columns'>(options: SelectOptions) {
-        return selectMany<T>(this, options);
+    async cFindOne<T extends SelectType = 'basic'>(options: CFindOneOptions) {
+        return cFindOne<T>(this, options);
     }
 
     /**

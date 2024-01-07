@@ -21,7 +21,7 @@ export class CommonCodeRepository extends Repository<CommonCode> {
      * @param {CFindOptions} options
      */
     async cFind(options: CFindOptions) {
-        return await cFind(this, options);
+        return cFind(this, options);
     }
 
     /**
@@ -29,7 +29,7 @@ export class CommonCodeRepository extends Repository<CommonCode> {
      * @param {CFindOneOptions} options
      */
     async cFindOne(options: CFindOneOptions) {
-        return await cFindOne(this, options);
+        return cFindOne(this, options);
     }
 
     /**
@@ -37,6 +37,6 @@ export class CommonCodeRepository extends Repository<CommonCode> {
      * @param {SqlOptions} options
      */
     async findSitemapData(options?: SqlOptions) {
-        return await findSitemapData(this, options);
+        return findSitemapData(this, options);
     }
 }

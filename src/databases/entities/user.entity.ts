@@ -2,6 +2,8 @@
 import { DataTypeBoolean, DataTypeDate } from '@databases/types/global';
 // lib
 import { Entity, Column, PrimaryColumn } from 'typeorm';
+// utils
+import { LocalDateTimeTransformer } from '@databases/utils/transformers/local-date-time.transformer';
 
 // ----------------------------------------------------------------------
 
@@ -37,9 +39,15 @@ export class User {
     @Column('int', { nullable: true })
     premium_type?: number;
 
-    @Column('timestamp', { nullable: true })
+    @Column('timestamp', {
+        nullable: true,
+        transformer: new LocalDateTimeTransformer(),
+    })
     created_at?: DataTypeDate;
 
-    @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
+    @Column('timestamp', {
+        default: () => 'CURRENT_TIMESTAMP',
+        transformer: new LocalDateTimeTransformer(),
+    })
     updated_at?: DataTypeDate;
 }

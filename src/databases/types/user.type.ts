@@ -1,32 +1,48 @@
 // types
 import type { SqlOptions } from '@common/types/sql-options.type';
-import type { SelectBooleanified } from './global';
+// lib
+import { FindManyOptions, FindOneOptions, QueryRunner } from 'typeorm';
 // entities
 import { User } from '@databases/entities/user.entity';
 
 // ----------------------------------------------------------------------
 
 /******************************
- * Select
+ * Find
  ******************************/
-export type SelectSqlName = 'base' | 'columns';
+export type SelectType = 'basic' | 'frequentlyUsed';
 
-export interface SelectOptions extends SqlOptions {
-    select: {
-        sql?: {
-            base?: boolean;
-        };
-        columns?: SelectBooleanified<User>;
-    };
-    where: Partial<Pick<User, 'id'>> & {
-        IN?: {
-            ids: User['id'][];
-        };
+export interface CFindOptions extends Omit<FindManyOptions<User>, 'transaction'> {
+    transaction?: QueryRunner;
+    preSelect?: {
+        frequentlyUsed?: boolean;
     };
 }
-
-export interface ReturnSelect {
-    base: Pick<
+export interface CFindOneOptions extends Omit<FindOneOptions<User>, 'transaction'> {
+    transaction?: QueryRunner;
+    preSelect?: {
+        frequentlyUsed?: boolean;
+    };
+}
+export interface ReturnCFind {
+    basic: User[];
+    frequentlyUsed: Pick<
+        User,
+        | 'id'
+        | 'global_name'
+        | 'username'
+        | 'discriminator'
+        | 'email'
+        | 'verified'
+        | 'avatar'
+        | 'locale'
+        | 'created_at'
+        | 'updated_at'
+    >[];
+}
+export interface ReturnCFindOne {
+    basic: User;
+    frequentlyUsed: Pick<
         User,
         | 'id'
         | 'global_name'
@@ -39,7 +55,6 @@ export interface ReturnSelect {
         | 'created_at'
         | 'updated_at'
     >;
-    columns: Partial<User>;
 }
 
 /******************************

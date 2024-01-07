@@ -9,7 +9,7 @@ import uniqBy from 'lodash/uniqBy';
 import isEmpty from 'lodash/isEmpty';
 import differenceBy from 'lodash/differenceBy';
 // lib
-import { DataSource, QueryRunner } from 'typeorm';
+import { DataSource, In, QueryRunner } from 'typeorm';
 import dayjs from '@lib/dayjs';
 // utils
 import { generateSnowflakeId, promiseAllSettled } from '@utils/index';
@@ -45,7 +45,6 @@ export class ServersStoreService {
         private readonly userRepository: UserRepository,
         private readonly emojiRepository: EmojiRepository,
         private readonly guildRepository: GuildRepository,
-
         private readonly guildScheduledRepository: GuildScheduledRepository,
         private readonly guildAdminPermissionRepository: GuildAdminPermissionRepository,
     ) {}
@@ -71,11 +70,9 @@ export class ServersStoreService {
 
         const queryRunner = this.dataSource.createQueryRunner();
         try {
-            const guild = await this.guildRepository.selectOne({
+            const guild = await this.guildRepository.cFindOne({
                 select: {
-                    columns: {
-                        id: true,
-                    },
+                    id: true,
                 },
                 where: {
                     id,
@@ -281,17 +278,13 @@ export class ServersStoreService {
             });
         });
 
-        const users = await this.userRepository.selectMany({
+        const users = await this.userRepository.cFind<'frequentlyUsed'>({
             transaction,
-            select: {
-                sql: {
-                    base: true,
-                },
+            preSelect: {
+                frequentlyUsed: true,
             },
             where: {
-                IN: {
-                    ids: adminIds,
-                },
+                id: In(adminIds),
             },
         });
 
@@ -369,18 +362,22 @@ export class ServersStoreService {
 
         const uniqCreatorsIds = uniq(creatorsIds);
         const uniqByCreators = uniqBy(creators, 'id');
-
-        const users = await this.userRepository.selectMany({
+        const users = await this.userRepository.cFind({
             transaction,
             select: {
-                sql: {
-                    base: true,
-                },
+                id: true,
+                global_name: true,
+                username: true,
+                discriminator: true,
+                email: true,
+                verified: true,
+                avatar: true,
+                locale: true,
+                created_at: true,
+                updated_at: true,
             },
             where: {
-                IN: {
-                    ids: uniqCreatorsIds,
-                },
+                id: In(uniqCreatorsIds),
             },
         });
 

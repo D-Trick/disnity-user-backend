@@ -48,12 +48,9 @@ export class UsersStoreService {
 
         const queryRunner = this.dataSource.createQueryRunner();
         try {
-            const user = await this.userRepository.selectOne({
-                select: {
-                    columns: {
-                        id: true,
-                        created_at: true,
-                    },
+            const user = await this.userRepository.cFindOne<'frequentlyUsed'>({
+                preSelect: {
+                    frequentlyUsed: true,
                 },
                 where: {
                     id: discordUser.id,
@@ -111,11 +108,9 @@ export class UsersStoreService {
 
             await queryRunner.commitTransaction();
 
-            const disnityUser = await this.userRepository.selectOne<'base'>({
-                select: {
-                    sql: {
-                        base: true,
-                    },
+            const disnityUser = await this.userRepository.cFindOne<'frequentlyUsed'>({
+                preSelect: {
+                    frequentlyUsed: true,
                 },
                 where: {
                     id: discordUser.id,

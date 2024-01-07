@@ -94,11 +94,9 @@ export class RedirectController {
     async inviteId(@Response() res: ExpressResponse, @Param() param: ParamIdStringRequestDto) {
         const { id } = param;
 
-        const server = await this.guildRepository.selectOne({
+        const server = await this.guildRepository.cFindOne({
             select: {
-                columns: {
-                    invite_code: true,
-                },
+                invite_code: true,
             },
             where: {
                 id,

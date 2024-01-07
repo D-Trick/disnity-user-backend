@@ -1,20 +1,20 @@
 // types
 import type { SqlOptions } from '@common/types/sql-options.type';
-import type { SelectBooleanified } from './global';
+// lib
+import { FindManyOptions, QueryRunner } from 'typeorm';
 // entities
 import { Emoji } from '@databases/entities/emoji.entity';
 
 // ----------------------------------------------------------------------
 
 /******************************
- * Select
+ * Find
  ******************************/
-export interface SelectOptions extends SqlOptions {
-    select: {
-        // sql: {};
-        columns: SelectBooleanified<Emoji>;
-    };
-    where?: Partial<Pick<Emoji, 'guild_id' | 'animated'>>;
+export interface CFindOptions extends Omit<FindManyOptions<Emoji>, 'transaction'> {
+    transaction?: QueryRunner;
+}
+export interface CFindOneOptions extends Omit<FindManyOptions<Emoji>, 'transaction'> {
+    transaction?: QueryRunner;
 }
 
 /******************************

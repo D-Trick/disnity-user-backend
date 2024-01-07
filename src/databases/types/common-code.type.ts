@@ -1,13 +1,16 @@
 // types
-import type { FindManyOptions, FindOneOptions } from 'typeorm';
-import type { SqlOptions } from '@common/types/sql-options.type';
+import type { FindManyOptions, QueryRunner } from 'typeorm';
 // entities
 import { CommonCode } from '@databases/entities/common-code.entity';
 
 // ----------------------------------------------------------------------
 
 /******************************
- * Select
+ * Find
  ******************************/
-export type CFindOptions = SqlOptions & FindManyOptions<CommonCode>;
-export type CFindOneOptions = SqlOptions & FindOneOptions<CommonCode>;
+export interface CFindOptions extends Omit<FindManyOptions<CommonCode>, 'transaction'> {
+    transaction?: QueryRunner;
+}
+export interface CFindOneOptions extends Omit<FindManyOptions<CommonCode>, 'transaction'> {
+    transaction?: QueryRunner;
+}

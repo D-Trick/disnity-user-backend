@@ -47,23 +47,19 @@ export class ServersDeleteService {
         const queryRunner = this.dataSource.createQueryRunner();
 
         try {
-            const user = await this.userRepository.selectOne({
+            const user = await this.userRepository.findOne({
                 select: {
-                    sql: {
-                        base: true,
-                    },
+                    id: true,
                 },
                 where: {
                     id: userId,
                 },
             });
 
-            const guild = await this.guildRepository.selectOne({
+            const guild = await this.guildRepository.cFindOne({
                 select: {
-                    columns: {
-                        id: true,
-                        is_admin_open: true,
-                    },
+                    id: true,
+                    is_admin_open: true,
                 },
                 where: {
                     id: serverId,

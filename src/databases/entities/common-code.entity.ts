@@ -2,6 +2,8 @@
 import type { DataTypeDate } from '@databases/types/global';
 // lib
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+// utils
+import { LocalDateTimeTransformer } from '@databases/utils/transformers/local-date-time.transformer';
 
 // ----------------------------------------------------------------------
 
@@ -19,13 +21,19 @@ export class CommonCode {
     @Column('varchar', { length: 50 })
     name: string;
 
-    @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
+    @Column('timestamp', {
+        default: () => 'CURRENT_TIMESTAMP',
+        transformer: new LocalDateTimeTransformer(),
+    })
     created_at?: DataTypeDate;
 
     @Column('bigint', { unsigned: true })
     created_admin_id: string;
 
-    @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
+    @Column('timestamp', {
+        default: () => 'CURRENT_TIMESTAMP',
+        transformer: new LocalDateTimeTransformer(),
+    })
     updated_at?: DataTypeDate;
 
     @Column('bigint', { unsigned: true })

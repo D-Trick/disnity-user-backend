@@ -1,6 +1,8 @@
 // types
 import type { SqlOptions } from '@common/types/sql-options.type';
 import type { SelectBooleanified } from './global';
+// lib
+import { FindManyOptions, FindOneOptions, QueryRunner } from 'typeorm';
 // entities
 import { Tag } from '@databases/entities/tag.entity';
 import { Guild } from '@databases/entities/guild.entity';
@@ -37,61 +39,46 @@ export interface TotalGuildAdminsCountOptions extends SqlOptions {
 }
 
 /******************************
- * Select
+ * Find
  ******************************/
-export type SelectSqlName = 'serverUrls' | 'publicList' | 'publicDetail' | 'columns';
+export type SelectType = 'basic' | 'frequentlyUsed';
 
-export interface SelectOptions extends SqlOptions {
-    select: {
-        columns?: SelectBooleanified<Guild>;
-        sql?: {
-            serverUrls?: boolean;
-            publicList?: boolean;
-            publicDetail?: boolean;
-        };
-    };
-
-    where: Partial<Pick<Guild, 'id' | 'user_id' | 'is_open' | 'is_admin_open' | 'is_bot'>> & {
-        IN?: {
-            ids: Guild['id'][];
-        };
+export interface CFindOptions extends Omit<FindManyOptions<Guild>, 'transaction'> {
+    transaction?: QueryRunner;
+    preSelect?: {
+        frequentlyUsed?: boolean;
     };
 }
+export interface CFindOneOptions extends Omit<FindOneOptions<Guild>, 'transaction'> {
+    transaction?: QueryRunner;
+    preSelect?: {
+        frequentlyUsed?: boolean;
+    };
+}
+export interface ReturnCFind {
+    basic: Guild[];
+    frequentlyUsed: Pick<
+        Guild,
+        'id' | 'name' | 'summary' | 'icon' | 'link_type' | 'online' | 'member' | 'membership_url' | 'refresh_date'
+    >[];
+}
+export interface ReturnCFindOne {
+    basic: Guild;
+    frequentlyUsed: Pick<
+        Guild,
+        'id' | 'name' | 'summary' | 'icon' | 'link_type' | 'online' | 'member' | 'membership_url' | 'refresh_date'
+    >;
+}
 
+/******************************
+ * Select
+ ******************************/
 export interface SelectMyGuildOptions extends SqlOptions {
     select: {
         columns?: SelectBooleanified<Guild>;
     };
 
     where: Pick<Guild, 'id' | 'user_id'>;
-}
-
-export interface ReturnSelect {
-    serverUrls: {
-        url: string;
-    };
-    publicList: Pick<
-        Guild,
-        'id' | 'name' | 'summary' | 'icon' | 'online' | 'member' | 'link_type' | 'membership_url' | 'refresh_date'
-    >;
-    publicDetail: Pick<
-        Guild,
-        | 'id'
-        | 'name'
-        | 'content'
-        | 'is_markdown'
-        | 'icon'
-        | 'link_type'
-        | 'online'
-        | 'member'
-        | 'premium_tier'
-        | 'membership_url'
-        | 'created_at'
-        | 'updated_at'
-        | 'refresh_date'
-    >;
-
-    columns: Partial<Guild>;
 }
 
 /******************************
