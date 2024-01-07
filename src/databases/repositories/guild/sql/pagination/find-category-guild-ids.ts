@@ -27,12 +27,12 @@ export async function findCategoryGuildIds(
     // SELECT
     qb.select([`${TABLE_ALIAS}.id AS id`]);
 
-    // join
+    // JOIN
     qb.leftJoin(
         'common_code',
         'comm',
         `comm.code = 'category'
-                 AND ${TABLE_ALIAS}.category_id = comm.value`,
+            AND ${TABLE_ALIAS}.category_id = comm.value`,
     );
 
     // WHERE
@@ -52,13 +52,9 @@ export async function findCategoryGuildIds(
         });
     }
 
-    // GROUP BY
-    qb.groupBy(`${TABLE_ALIAS}.id`);
-    qb.addGroupBy('comm.value');
-    if (sort) qb.addGroupBy(`${TABLE_ALIAS}.${sort}`);
-
     // ORDER BY
-    if (sort) qb.orderBy(`${TABLE_ALIAS}.${sort}`, 'DESC');
+    if (sort) qb.addOrderBy(`${TABLE_ALIAS}.${sort}`, 'DESC');
+    qb.addOrderBy(`${TABLE_ALIAS}.id`);
 
     // LIMIT, OFFSET
     qb.limit(limit).offset(offset);

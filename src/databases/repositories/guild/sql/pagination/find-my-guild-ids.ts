@@ -41,7 +41,8 @@ export async function findMyGuildIds(repository: Repository<Guild>, options: Fin
     );
 
     // ORDER BY
-    qb.orderBy(`${TABLE_ALIAS}.refresh_date`, 'DESC');
+    qb.addOrderBy(`${TABLE_ALIAS}.refresh_date`, 'DESC');
+    qb.addOrderBy(`${TABLE_ALIAS}.id`);
 
     // LIMIT, OFFSET
     qb.limit(limit).offset(offset);

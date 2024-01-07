@@ -55,10 +55,10 @@ export async function findSearchGuildIds(
 
     // GROUP BY
     qb.groupBy(`${TABLE_ALIAS}.id`);
-    if (sort) qb.addGroupBy(`${TABLE_ALIAS}.${sort}`);
 
     // ORDER BY
-    if (sort) qb.orderBy(`${TABLE_ALIAS}.${sort}`, 'DESC');
+    if (sort) qb.addOrderBy(`${TABLE_ALIAS}.${sort}`, 'DESC');
+    qb.addOrderBy(`${TABLE_ALIAS}.id`);
 
     // LIMIT, OFFSET
     qb.limit(limit).offset(offset);
