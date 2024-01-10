@@ -102,6 +102,7 @@ export interface FindGuildDetailById
     extends Pick<
         Guild,
         | 'id'
+        | 'category_id'
         | 'name'
         | 'summary'
         | 'content'
@@ -114,6 +115,7 @@ export interface FindGuildDetailById
         | 'link_type'
         | 'invite_code'
         | 'membership_url'
+        | 'is_open'
         | 'created_at'
         | 'refresh_date'
     > {

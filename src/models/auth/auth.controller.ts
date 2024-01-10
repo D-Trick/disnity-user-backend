@@ -16,8 +16,7 @@ import { AuthGuardDiscord } from '@guards/discord-auth.guard';
 import { AuthUser } from '@decorators/auth-user.decorator';
 import { AuthDiscordUser } from '@decorators/auth-discord-user.decorator';
 // dtos
-import { AuthUserDto } from './dtos/auth-user.dto';
-import { AuthDiscordUserDto } from './dtos/auth-discord-user.dto';
+import { AuthUserDto, AuthDiscordUserDto, TokenResponseDto, LoginCheckResponseDto } from './dtos';
 // services
 import { AuthService } from '@models/auth/auth.service';
 import { UsersService } from '@models/users/users.service';
@@ -76,16 +75,26 @@ export class AuthController {
 
     @Get('/logout')
     logout(@Response() res: ExpressResponse) {
-        res.clearCookie('token', cookieOptions());
-        res.clearCookie('refreshToken', cookieOptions());
+        try {
+            res.clearCookie('token', cookieOptions());
+            res.clearCookie('refreshToken', cookieOptions());
 
-        res.redirect('/logout');
+            res.redirect('/logout');
+        } catch (error: any) {
+            this.logger.error(error.message, error.stack);
+
+            res.redirect('/');
+        }
     }
 
     @Get('/check')
     @UseGuards(AuthGuardJwt)
     check(): { result: boolean } {
-        return { result: true };
+        try {
+            return new LoginCheckResponseDto(true);
+        } catch (error: any) {
+            controllerThrow(error);
+        }
     }
 
     @Get('/token/refresh')
@@ -98,10 +107,7 @@ export class AuthController {
             res.cookie('token', accessToken, cookieOptions(expires));
             res.cookie('refreshToken', refreshToken, cookieOptions(expires));
 
-            return {
-                accessToken,
-                refreshToken,
-            };
+            return new TokenResponseDto(accessToken, refreshToken);
         } catch (error: any) {
             controllerThrow(error);
         }

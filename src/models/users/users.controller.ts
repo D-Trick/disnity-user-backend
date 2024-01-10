@@ -4,6 +4,7 @@ import { Controller, Get, NotFoundException, Param, UseGuards } from '@nestjs/co
 import { controllerThrow } from '@utils/response/controller-throw';
 // dtos
 import { ParamGuildIdRequestDto } from '@common/dtos';
+import { UserResponseDto, AdminGuildResponseDto, AdminGuildListResponseDto, ChannelListResponseDto } from './dtos';
 // guards
 import { AuthGuardJwt } from '@guards/jwt-auth.guard';
 import { AuthGuardUserMe } from '@guards/user-me.guard';
@@ -40,7 +41,7 @@ export class UsersController {
         try {
             const user = await this.usersServices.getUser(aUser.id);
 
-            return user;
+            return new UserResponseDto(user);
         } catch (error: any) {
             controllerThrow(error);
         }
@@ -52,7 +53,7 @@ export class UsersController {
         try {
             const adminGuilds = await this.usersServices.getAdminGuilds(user.id);
 
-            return adminGuilds;
+            return adminGuilds.map((adminGuild) => new AdminGuildListResponseDto(adminGuild));
         } catch (error: any) {
             controllerThrow(error);
         }
@@ -62,9 +63,9 @@ export class UsersController {
     @UseGuards(AuthGuardJwt)
     async meGuildsRefresh(@AuthUser() user: AuthUserDto) {
         try {
-            const refreshGuilds = await this.usersServices.refreshAdminGuilds(user.id);
+            const adminGuilds = await this.usersServices.refreshAdminGuilds(user.id);
 
-            return refreshGuilds;
+            return adminGuilds.map((adminGuild) => new AdminGuildListResponseDto(adminGuild));
         } catch (error: any) {
             controllerThrow(error);
         }
@@ -83,7 +84,7 @@ export class UsersController {
                 throw new NotFoundException(SERVER_ERROR_MESSAGES.SERVER_NOT_FOUND);
             }
 
-            return adminGuild;
+            return new AdminGuildResponseDto(adminGuild);
         } catch (error: any) {
             controllerThrow(error);
         }
@@ -97,7 +98,7 @@ export class UsersController {
 
             const channels = await this.usersServices.getChannels(guildId, user.id, false);
 
-            return channels;
+            return channels.map((channel) => new ChannelListResponseDto(channel));
         } catch (error: any) {
             controllerThrow(error);
         }
@@ -111,7 +112,7 @@ export class UsersController {
 
             const channels = await this.usersServices.getChannels(guildId, user.id, true);
 
-            return channels;
+            return channels.map((channel) => new ChannelListResponseDto(channel));
         } catch (error: any) {
             controllerThrow(error);
         }

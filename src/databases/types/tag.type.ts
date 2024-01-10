@@ -21,7 +21,7 @@ export interface CFindOneOptions extends Omit<FindManyOptions<Tag>, 'transaction
  * FindNames
  ******************************/
 export interface FindNames extends Pick<Tag, 'name'> {
-    total: number;
+    total: string;
 }
 
 /******************************

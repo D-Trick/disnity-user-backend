@@ -7,9 +7,10 @@ import { AuthGuardJwt } from '@guards/jwt-auth.guard';
 // docorators
 import { AuthUser } from '@decorators/auth-user.decorator';
 // dtos
+import { AuthUserDto } from '@models/auth/dtos';
 import { ParamIdStringRequestDto } from '@common/dtos';
 import { ServerFilterRequestDto } from '@models/servers/dtos';
-import { AuthUserDto } from '@models/auth/dtos/auth-user.dto';
+import { MyServerListResponseDto, MyServerResponseDto } from './dtos';
 // services
 import { ServersService } from '@models/servers/servers.service';
 
@@ -31,7 +32,7 @@ export class MypageController {
         try {
             const myServers = await this.serversService.getMyServers(user.id, query);
 
-            return myServers;
+            return new MyServerListResponseDto(myServers);
         } catch (error: any) {
             controllerThrow(error);
         }
@@ -43,7 +44,7 @@ export class MypageController {
         try {
             const myServer = await this.serversService.myServerDetail(param.id, user.id);
 
-            return myServer;
+            return new MyServerResponseDto(myServer);
         } catch (error: any) {
             controllerThrow(error);
         }

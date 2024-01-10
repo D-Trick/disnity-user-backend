@@ -16,35 +16,35 @@ import { Guild } from '@databases/entities/guild.entity';
 
 // ----------------------------------------------------------------------
 const selectBase = [
-    `${TABLE_ALIAS}.id                                                      AS id`,
-    `${TABLE_ALIAS}.name                                                    AS name`,
-    `${TABLE_ALIAS}.summary                                                 AS summary`,
-    `${TABLE_ALIAS}.icon                                                    AS icon`,
-    `${TABLE_ALIAS}.online                                                  AS online`,
-    `${TABLE_ALIAS}.member                                                  AS member`,
-    `${TABLE_ALIAS}.banner                                                  AS banner`,
-    `${TABLE_ALIAS}.link_type                                               AS link_type`,
+    `${TABLE_ALIAS}.id              AS id`,
+    `${TABLE_ALIAS}.name            AS name`,
+    `${TABLE_ALIAS}.summary         AS summary`,
+    `${TABLE_ALIAS}.icon            AS icon`,
+    `${TABLE_ALIAS}.online          AS online`,
+    `${TABLE_ALIAS}.member          AS member`,
+    `${TABLE_ALIAS}.banner          AS banner`,
+    `${TABLE_ALIAS}.link_type       AS link_type`,
 
-    `DATE_FORMAT(${TABLE_ALIAS}.refresh_date, '%Y-%m-%d %H:%i:%S')          AS refresh_date`,
+    `${TABLE_ALIAS}.refresh_date    AS refresh_date`,
 ];
 
 const selectMyServer = [
-    `${TABLE_ALIAS}.id                                                      AS id`,
-    `${TABLE_ALIAS}.name                                                    AS name`,
-    `${TABLE_ALIAS}.summary                                                 AS summary`,
-    `${TABLE_ALIAS}.icon                                                    AS icon`,
-    `${TABLE_ALIAS}.online                                                  AS online`,
-    `${TABLE_ALIAS}.member                                                  AS member`,
-    `${TABLE_ALIAS}.banner                                                  AS banner`,
-    `${TABLE_ALIAS}.link_type                                               AS link_type`,
-    `${TABLE_ALIAS}.invite_code                                             AS invite_code`,
-    `${TABLE_ALIAS}.is_open                                                 AS is_open`,
-    `${TABLE_ALIAS}.is_admin_open                                           AS is_admin_open`,
-    `${TABLE_ALIAS}.private_reason                                          AS private_reason`,
-    `${TABLE_ALIAS}.is_bot                                                  AS is_bot`,
-    `${TABLE_ALIAS}.user_id                                                 AS user_id`,
+    `${TABLE_ALIAS}.id              AS id`,
+    `${TABLE_ALIAS}.name            AS name`,
+    `${TABLE_ALIAS}.summary         AS summary`,
+    `${TABLE_ALIAS}.icon            AS icon`,
+    `${TABLE_ALIAS}.online          AS online`,
+    `${TABLE_ALIAS}.member          AS member`,
+    `${TABLE_ALIAS}.banner          AS banner`,
+    `${TABLE_ALIAS}.link_type       AS link_type`,
+    `${TABLE_ALIAS}.invite_code     AS invite_code`,
+    `${TABLE_ALIAS}.is_open         AS is_open`,
+    `${TABLE_ALIAS}.is_admin_open   AS is_admin_open`,
+    `${TABLE_ALIAS}.private_reason  AS private_reason`,
+    `${TABLE_ALIAS}.is_bot          AS is_bot`,
+    `${TABLE_ALIAS}.user_id         AS user_id`,
 
-    `DATE_FORMAT(${TABLE_ALIAS}.refresh_date, '%Y-%m-%d %H:%i:%S')          AS refresh_date`,
+    `${TABLE_ALIAS}.refresh_date    AS refresh_date`,
 ];
 // ----------------------------------------------------------------------
 

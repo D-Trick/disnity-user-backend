@@ -5,7 +5,6 @@ import type {
     BulkUpdateOptions,
     InsertOptions,
     UpdateOptions,
-    SelectType,
 } from '@databases/types/user.type';
 // lib
 import { Repository } from 'typeorm';
@@ -28,16 +27,16 @@ export class UserRepository extends Repository<User> {
      * Custom Find
      * @param {CFindOptions} options
      */
-    async cFind<T extends SelectType = 'basic'>(options: CFindOptions) {
-        return cFind<T>(this, options);
+    async cFind(options: CFindOptions) {
+        return cFind(this, options);
     }
 
     /**
      * Custom Find One
      * @param {CFindOneOptions} options
      */
-    async cFindOne<T extends SelectType = 'basic'>(options: CFindOneOptions) {
-        return cFindOne<T>(this, options);
+    async cFindOne(options: CFindOneOptions) {
+        return cFindOne(this, options);
     }
 
     /**

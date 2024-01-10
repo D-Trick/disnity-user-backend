@@ -41,7 +41,7 @@ export class PaginateService {
             ...request.toPagination(),
         });
         if (isEmpty(serverIds)) {
-            return { totalCount: 0, list: [] };
+            return { totalCount: '0', list: [] };
         }
 
         const promise1 = this.guildRepository.totalCategoryGuildsCount({
@@ -68,7 +68,7 @@ export class PaginateService {
         const [total, servers] = await Promise.all([promise1, promise2]);
 
         return {
-            totalCount: parseInt(total.count),
+            totalCount: total.count,
             list: servers,
         };
     }
@@ -92,7 +92,7 @@ export class PaginateService {
             ...request.toPagination(),
         });
         if (isEmpty(serverIds)) {
-            return { totalCount: 0, list: [] };
+            return { totalCount: '0', list: [] };
         }
 
         const promise1 = this.tagRepository.totalTagGuildsCount({
@@ -119,7 +119,7 @@ export class PaginateService {
         const [total, servers] = await Promise.all([promise1, promise2]);
 
         return {
-            totalCount: parseInt(total.count),
+            totalCount: total.count,
             list: servers,
         };
     }
@@ -143,7 +143,7 @@ export class PaginateService {
             ...request.toPagination(),
         });
         if (isEmpty(serverIds)) {
-            return { totalCount: 0, list: [] };
+            return { totalCount: '0', list: [] };
         }
 
         const promise1 = this.guildRepository.totalSearchGuildsCount({
@@ -170,7 +170,7 @@ export class PaginateService {
         const [total, servers] = await Promise.all([promise1, promise2]);
 
         return {
-            totalCount: parseInt(total.count),
+            totalCount: total.count,
             list: servers,
         };
     }
@@ -193,7 +193,7 @@ export class PaginateService {
             ...request.toPagination(),
         });
         if (isEmpty(serverIds)) {
-            return { totalCount: 0, list: [] };
+            return { totalCount: '0', list: [] };
         }
 
         const promise1 = this.guildRepository.totalMyGuildsCount({
@@ -219,7 +219,7 @@ export class PaginateService {
         const [total, servers] = await Promise.all([promise1, promise2]);
 
         return {
-            totalCount: parseInt(total.count),
+            totalCount: total.count,
             list: servers,
         };
     }

@@ -1,5 +1,5 @@
 // types
-import type { Save, SaveValues } from '../types/save.type';
+import type { SaveValues } from '../types/save.type';
 // @nestjs
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 // lodash
@@ -43,7 +43,7 @@ export class ServersUpdateService {
      * @param {string} userId
      * @param {SaveValues} saveValues
      */
-    async edit(serverId: string, userId: string, saveValues: Partial<SaveValues>): Promise<Save> {
+    async edit(serverId: string, userId: string, saveValues: Partial<SaveValues>) {
         const { tags } = saveValues;
 
         const queryRunner = this.dataSource.createQueryRunner();
@@ -76,7 +76,7 @@ export class ServersUpdateService {
 
             await queryRunner.commitTransaction();
 
-            return { id: serverId };
+            return serverId;
         } catch (error) {
             if (queryRunner.isTransactionActive) {
                 await queryRunner.rollbackTransaction();
@@ -93,7 +93,7 @@ export class ServersUpdateService {
      * @param {string} guildId
      * @param {string} userId
      */
-    async refresh(guildId: string, userId: string): Promise<{ result: boolean }> {
+    async refresh(guildId: string, userId: string) {
         try {
             const myServer = await this.guildRepository.selectMyGuildOne({
                 select: {
@@ -144,7 +144,7 @@ export class ServersUpdateService {
                 },
             });
 
-            return { result: true };
+            return true;
         } catch (error) {
             if (error instanceof DiscordApiException) {
                 if (error.statusCode === 403 || error.statusCode === 404) {

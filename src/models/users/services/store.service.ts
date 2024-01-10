@@ -42,16 +42,13 @@ export class UsersStoreService {
      * 로그인 유저 정보 저장
      * @param user
      */
-    async saveLoginInfo(discordUser: AuthDiscordUserDto, ip: string): Promise<{ result: boolean }> {
+    async saveLoginInfo(discordUser: AuthDiscordUserDto, ip: string) {
         let promise1 = undefined;
         let promise2 = undefined;
 
         const queryRunner = this.dataSource.createQueryRunner();
         try {
-            const user = await this.userRepository.cFindOne<'frequentlyUsed'>({
-                preSelect: {
-                    frequentlyUsed: true,
-                },
+            const user = await this.userRepository.cFindOne({
                 where: {
                     id: discordUser.id,
                 },
@@ -108,10 +105,7 @@ export class UsersStoreService {
 
             await queryRunner.commitTransaction();
 
-            const disnityUser = await this.userRepository.cFindOne<'frequentlyUsed'>({
-                preSelect: {
-                    frequentlyUsed: true,
-                },
+            const disnityUser = await this.userRepository.cFindOne({
                 where: {
                     id: discordUser.id,
                 },
@@ -131,7 +125,7 @@ export class UsersStoreService {
             promise2 = this.cacheService.set(CACHE_KEYS.DISNITY_USER(discordUser.id), disnityUser, refreshTokenTTL);
             await Promise.all([promise1, promise2]);
 
-            return { result: true };
+            return true;
         } catch (error) {
             if (queryRunner.isTransactionActive) {
                 await queryRunner.rollbackTransaction();

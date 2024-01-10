@@ -10,51 +10,11 @@ import { User } from '@databases/entities/user.entity';
 /******************************
  * Find
  ******************************/
-export type SelectType = 'basic' | 'frequentlyUsed';
-
 export interface CFindOptions extends Omit<FindManyOptions<User>, 'transaction'> {
     transaction?: QueryRunner;
-    preSelect?: {
-        frequentlyUsed?: boolean;
-    };
 }
 export interface CFindOneOptions extends Omit<FindOneOptions<User>, 'transaction'> {
     transaction?: QueryRunner;
-    preSelect?: {
-        frequentlyUsed?: boolean;
-    };
-}
-export interface ReturnCFind {
-    basic: User[];
-    frequentlyUsed: Pick<
-        User,
-        | 'id'
-        | 'global_name'
-        | 'username'
-        | 'discriminator'
-        | 'email'
-        | 'verified'
-        | 'avatar'
-        | 'locale'
-        | 'created_at'
-        | 'updated_at'
-    >[];
-}
-export interface ReturnCFindOne {
-    basic: User;
-    frequentlyUsed: Pick<
-        User,
-        | 'id'
-        | 'global_name'
-        | 'username'
-        | 'discriminator'
-        | 'email'
-        | 'verified'
-        | 'avatar'
-        | 'locale'
-        | 'created_at'
-        | 'updated_at'
-    >;
 }
 
 /******************************

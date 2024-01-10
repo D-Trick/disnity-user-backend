@@ -56,9 +56,6 @@ export class ServersDetailService {
         }
 
         const promise1 = this.tagRepository.cFind({
-            select: {
-                name: true,
-            },
             where: {
                 guild_id: id,
             },
@@ -72,22 +69,12 @@ export class ServersDetailService {
             },
         });
         const promise3 = this.emojiRepository.cFind({
-            select: {
-                id: true,
-                name: true,
-                animated: true,
-            },
             where: {
                 guild_id: id,
                 animated: false,
             },
         });
         const promise4 = this.emojiRepository.cFind({
-            select: {
-                id: true,
-                name: true,
-                animated: true,
-            },
             where: {
                 guild_id: id,
                 animated: true,

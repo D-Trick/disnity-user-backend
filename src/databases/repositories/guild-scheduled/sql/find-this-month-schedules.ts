@@ -25,15 +25,18 @@ export async function findThisMonthSchedules(
 
     // SELECT
     qb.select([
-        `${TABLE_ALIAS}.id                                                  AS id`,
-        'guild.id                                                           AS guild_id',
-        'guild.name                                                         AS guild_name',
-        'guild.icon                                                         AS guild_icon',
-        `${TABLE_ALIAS}.name                                                AS name`,
-        `${TABLE_ALIAS}.image                                               AS image`,
-        `${TABLE_ALIAS}.description                                         AS description`,
-        `DATE_FORMAT(${TABLE_ALIAS}.scheduled_start_time, '%Y-%m-%d %H:%i') AS scheduled_start_time`,
-        `DATE_FORMAT(${TABLE_ALIAS}.scheduled_end_time, '%Y-%m-%d %H:%i')   AS scheduled_end_time`,
+        `${TABLE_ALIAS}.id                      AS id`,
+        `${TABLE_ALIAS}.name                    AS name`,
+        `${TABLE_ALIAS}.image                   AS image`,
+        `${TABLE_ALIAS}.description             AS description`,
+        `${TABLE_ALIAS}.scheduled_start_time    AS scheduled_start_time`,
+        `${TABLE_ALIAS}.scheduled_end_time      AS scheduled_end_time`,
+    ]);
+    // SELECT guild
+    qb.addSelect([
+        'guild.id                               AS guild_id',
+        'guild.name                             AS guild_name',
+        'guild.icon                             AS guild_icon',
     ]);
 
     // JOIN

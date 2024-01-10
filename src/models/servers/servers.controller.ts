@@ -14,7 +14,16 @@ import {
     ParamNameRequestDto,
     ParamGuildIdRequestDto,
 } from '@common/dtos';
-import { CreateRequestDto, UpdateRequestDto, ServerFilterRequestDto } from './dtos';
+import {
+    CreateRequestDto,
+    UpdateRequestDto,
+    ServerFilterRequestDto,
+    CategoryServerListResponseDto,
+    TagServerListResponseDto,
+    ResultResponseDto,
+    ServerResponseDto,
+    SaveResultResponseDto,
+} from './dtos';
 import { AuthUserDto } from '@models/auth/dtos/auth-user.dto';
 // services
 import { ServersService } from '@models/servers/servers.service';
@@ -36,7 +45,7 @@ export class ServersController {
         try {
             const allServers = await this.serversService.getAllServers(query);
 
-            return allServers;
+            return new CategoryServerListResponseDto(allServers);
         } catch (error: any) {
             controllerThrow(error);
         }
@@ -47,7 +56,7 @@ export class ServersController {
         try {
             const categoryServers = await this.serversService.getCategoryServers(param.id, query);
 
-            return categoryServers;
+            return new CategoryServerListResponseDto(categoryServers);
         } catch (error: any) {
             controllerThrow(error);
         }
@@ -58,7 +67,7 @@ export class ServersController {
         try {
             const tagServers = await this.serversService.getTagServers(param.name, query);
 
-            return tagServers;
+            return new TagServerListResponseDto(tagServers);
         } catch (error: any) {
             controllerThrow(error);
         }
@@ -68,9 +77,9 @@ export class ServersController {
     @UseGuards(AuthGuardJwt)
     async refresh(@AuthUser() user: AuthUserDto, @Param() param: ParamGuildIdRequestDto) {
         try {
-            const serverRefreshResult = await this.serversService.refresh(param.guildId, user.id);
+            const result = await this.serversService.refresh(param.guildId, user.id);
 
-            return serverRefreshResult;
+            return new ResultResponseDto(result);
         } catch (error: any) {
             controllerThrow(error);
         }
@@ -82,7 +91,7 @@ export class ServersController {
         try {
             const server = await this.serversService.detail(param.id, user.id);
 
-            return server;
+            return new ServerResponseDto(server);
         } catch (error: any) {
             controllerThrow(error);
         }
@@ -92,9 +101,9 @@ export class ServersController {
     @UseGuards(AuthGuardJwt)
     async store(@AuthUser() user: AuthUserDto, @Body() body: CreateRequestDto) {
         try {
-            const result = await this.serversService.store(user.id, body);
+            const id = await this.serversService.store(user.id, body);
 
-            return result;
+            return new SaveResultResponseDto(id);
         } catch (error: any) {
             controllerThrow(error);
         }
@@ -108,9 +117,9 @@ export class ServersController {
         @Body() body: UpdateRequestDto,
     ) {
         try {
-            const result = await this.serversService.edit(param.id, user.id, body);
+            const id = await this.serversService.edit(param.id, user.id, body);
 
-            return result;
+            return new SaveResultResponseDto(id);
         } catch (error: any) {
             controllerThrow(error);
         }
@@ -122,7 +131,7 @@ export class ServersController {
         try {
             const result = await this.serversService.delete(user.id, param.id);
 
-            return result;
+            return new ResultResponseDto(result);
         } catch (error: any) {
             controllerThrow(error);
         }

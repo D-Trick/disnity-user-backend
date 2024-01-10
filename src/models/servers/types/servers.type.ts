@@ -8,8 +8,8 @@ import { FindGuildAdmins } from '@databases/types/guild-admin-permission.type';
 // ----------------------------------------------------------------------
 
 export interface ServerDetail extends FindGuildDetailById {
-    tags: Partial<Pick<Tag, 'name'>>[];
+    tags: Tag[];
     admins: FindGuildAdmins[];
-    emojis: Partial<Pick<Emoji, 'id' | 'name' | 'animated'>>[];
-    animate_emojis: Partial<Pick<Emoji, 'id' | 'name' | 'animated'>>[];
+    emojis: Emoji[];
+    animate_emojis: Emoji[];
 }

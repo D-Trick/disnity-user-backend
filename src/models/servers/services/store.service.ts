@@ -1,5 +1,5 @@
 // types
-import type { Save, SaveValues } from '../types/save.type';
+import type { SaveValues } from '../types/save.type';
 import type { Emoji, Guild, GuildScheduledEvent } from '@models/discord-api/types/discordApi.type';
 // @nestjs
 import { Injectable, BadRequestException } from '@nestjs/common';
@@ -57,7 +57,7 @@ export class ServersStoreService {
      * @param {string} userId
      * @param {SaveValues} saveValues
      */
-    async store(userId: string, saveValues: SaveValues): Promise<Save> {
+    async store(userId: string, saveValues: SaveValues) {
         const { id, tags } = saveValues;
 
         let promise1 = undefined;
@@ -118,7 +118,7 @@ export class ServersStoreService {
 
             await queryRunner.commitTransaction();
 
-            return { id: discordGuild.id };
+            return discordGuild.id;
         } catch (error) {
             if (queryRunner.isTransactionActive) {
                 await queryRunner.rollbackTransaction();
@@ -278,11 +278,8 @@ export class ServersStoreService {
             });
         });
 
-        const users = await this.userRepository.cFind<'frequentlyUsed'>({
+        const users = await this.userRepository.cFind({
             transaction,
-            preSelect: {
-                frequentlyUsed: true,
-            },
             where: {
                 id: In(adminIds),
             },

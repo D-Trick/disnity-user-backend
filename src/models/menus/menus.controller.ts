@@ -4,6 +4,8 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { ParamTypeRequestDto } from '@common/dtos';
 // utils
 import { controllerThrow } from '@utils/response/controller-throw';
+// dtos
+import { MenuListResponseDto } from './dtos';
 // services
 import { MenusService } from '@models/menus/menus.service';
 
@@ -26,7 +28,7 @@ export class MenusController {
 
             const menus = await this.menusService.getMenus(type, '디스코드 서버');
 
-            return [menus];
+            return [new MenuListResponseDto(menus)];
         } catch (error: any) {
             controllerThrow(error);
         }

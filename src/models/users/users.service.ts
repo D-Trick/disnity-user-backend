@@ -1,6 +1,3 @@
-// types
-import type { AdminGuild } from './types/users.type';
-import type { Channel } from '@models/discord-api/types/discordApi.type';
 // @nestjs
 import { Injectable } from '@nestjs/common';
 // dtos
@@ -49,7 +46,7 @@ export class UsersService {
      * 관리자 권한이 있는 나의 길드 목록 조회
      * @param {string} userId
      */
-    async getAdminGuilds(userId: string): Promise<AdminGuild[]> {
+    async getAdminGuilds(userId: string) {
         return await this.dataService.getAdminGuilds(userId);
     }
 
@@ -58,7 +55,7 @@ export class UsersService {
      * @param {string} guildId
      * @param {string} userId
      */
-    async getChannels(guildId: string, userId: string, refresh: boolean): Promise<Channel[]> {
+    async getChannels(guildId: string, userId: string, refresh: boolean) {
         await this.updateService.refreshAdminGuilds(userId);
         const channels = await this.dataService.getChannels(guildId, userId, refresh);
 
@@ -83,7 +80,7 @@ export class UsersService {
      * 관리자 권한이 있는 길드 목록 새로고침
      * @param {string} userId
      */
-    async refreshAdminGuilds(userId: string): Promise<AdminGuild[]> {
+    async refreshAdminGuilds(userId: string) {
         return await this.updateService.refreshAdminGuilds(userId);
     }
 }

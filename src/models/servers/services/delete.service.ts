@@ -43,7 +43,7 @@ export class ServersDeleteService {
      * @param {string} userId
      * @param {string} serverId
      */
-    async delete(userId: string, serverId: string): Promise<{ result: boolean }> {
+    async delete(userId: string, serverId: string) {
         const queryRunner = this.dataSource.createQueryRunner();
 
         try {
@@ -119,7 +119,7 @@ export class ServersDeleteService {
 
             await queryRunner.commitTransaction();
 
-            return { result: true };
+            return true;
         } catch (error) {
             if (queryRunner.isTransactionActive) {
                 await queryRunner.rollbackTransaction();
