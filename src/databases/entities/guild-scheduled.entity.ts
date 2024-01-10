@@ -3,7 +3,7 @@ import type { DataTypeDate } from '@databases/types/global';
 // lib
 import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
 // utils
-import { LocalDateTimeTransformer } from '@databases/utils/transformers/local-date-time.transformer';
+import { LocalDateTimeTransformer } from '@utils/database/transformers/local-date-time.transformer';
 
 // ----------------------------------------------------------------------
 

@@ -5,7 +5,7 @@ import type { DeleteOptions } from '@databases/types/tag.type';
 import { Repository } from 'typeorm';
 // utils
 import { isAllEmpty } from '@utils/index';
-import { createDeleteQueryBuilder } from '@databases/utils/createQueryBuilder';
+import { createDeleteQueryBuilder } from '@utils/database/createQueryBuilder';
 // messages
 import { COMMON_ERROR_MESSAGES } from '@common/messages';
 // alias

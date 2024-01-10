@@ -1,5 +1,5 @@
 // utils
-import Nplus1 from '@databases/utils/n-plus-1';
+import { Nplus1 } from '@utils/database';
 
 // ----------------------------------------------------------------------
 

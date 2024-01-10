@@ -7,8 +7,8 @@ import type {
 // lib
 import { Repository } from 'typeorm';
 // utils
-import Nplus1 from '@databases/utils/n-plus-1';
-import { createSelectQueryBuilder } from '@databases/utils/createQueryBuilder';
+import { Nplus1 } from '@utils/database';
+import { createSelectQueryBuilder } from '@utils/database/createQueryBuilder';
 // alias
 import { GUILD_TABLE_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
 // entities

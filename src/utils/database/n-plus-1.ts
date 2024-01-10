@@ -23,7 +23,7 @@ interface DynamicObject {
 }
 /**************************************************/
 
-export default class Nplus1<T> {
+export class Nplus1<T> {
     private primaryColumn: string;
     private joinGroups: JoinGroup[] = [];
     private deleteColumnList: string[] = [];

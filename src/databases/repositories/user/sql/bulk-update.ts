@@ -4,8 +4,7 @@ import type { BulkUpdateOptions } from '@databases/types/user.type';
 // lib
 import { Repository } from 'typeorm';
 // utils
-import { bulkUpdateQueryFormat } from '@databases/utils/bulk-update-query-format';
-import { createUpdateQueryBuilder } from '@databases/utils/createQueryBuilder';
+import { bulkUpdateQueryFormat, createUpdateQueryBuilder } from '@utils/database';
 // alias
 import { USER_TABLE_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
 // entities

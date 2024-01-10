@@ -4,7 +4,7 @@ import type { InsertOptions } from '@databases/types/guild-admin-permission.type
 // lib
 import { Repository } from 'typeorm';
 // utils
-import { createInsertQueryBuilder } from '@databases/utils/createQueryBuilder';
+import { createInsertQueryBuilder } from '@utils/database/createQueryBuilder';
 // alias
 import { GUILD_ADMIN_PERMISSION_TABLE_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
 // entities

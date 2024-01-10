@@ -5,7 +5,7 @@ import type { UpdateOptions } from '@databases/types/guild-admin-permission.type
 import { Repository } from 'typeorm';
 import { isAllEmpty } from '@utils/index';
 // utils
-import { createUpdateQueryBuilder } from '@databases/utils/createQueryBuilder';
+import { createUpdateQueryBuilder } from '@utils/database/createQueryBuilder';
 // messages
 import { COMMON_ERROR_MESSAGES } from '@common/messages';
 // alias

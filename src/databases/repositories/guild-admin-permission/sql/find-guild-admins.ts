@@ -3,7 +3,7 @@ import type { FindGuildAdmins, FindGuildAdminsOptions } from '@databases/types/g
 // lib
 import { Repository } from 'typeorm';
 // utils
-import { createSelectQueryBuilder } from '@databases/utils/createQueryBuilder';
+import { createSelectQueryBuilder } from '@utils/database/createQueryBuilder';
 // alias
 import { GUILD_ADMIN_PERMISSION_TABLE_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
 // entities

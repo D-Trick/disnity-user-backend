@@ -3,9 +3,10 @@ import type { FindByType } from '@databases/types/menu.type';
 import type { FindByTypeOptions } from '@databases/types/menu.type';
 // lib
 import { Repository } from 'typeorm';
+// utils
+import { connection } from '@utils/database';
 // entities
 import { Menu } from '@databases/entities/menu.entity';
-import { connection } from '@databases/utils/connection';
 
 // ----------------------------------------------------------------------
 
