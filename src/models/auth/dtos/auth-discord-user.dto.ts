@@ -7,28 +7,26 @@ import { Exclude, Expose } from 'class-transformer';
 // ----------------------------------------------------------------------
 
 export class AuthDiscordUserDto {
-    @Exclude() private readonly _id?: snowflake;
-    @Exclude() private readonly _username?: string;
-    @Exclude() private readonly _avatar?: discordString;
-    @Exclude() private readonly _discriminator?: discordString;
-    @Exclude() private readonly _publicFlags?: number;
-    @Exclude() private readonly _premiumType?: number;
-    @Exclude() private readonly _flags?: number;
-    @Exclude() private readonly _banner?: discordString;
-    @Exclude() private readonly _accentColor?: number;
-    @Exclude() private readonly _globalName?: string;
-    @Exclude() private readonly _avatarDecorationData?: discordString;
-    @Exclude() private readonly _bannerColor?: discordString;
-    @Exclude() private readonly _mfaEnabled?: boolean;
-    @Exclude() private readonly _locale?: discordString;
-    @Exclude() private readonly _email?: discordString;
-    @Exclude() private readonly _verified?: boolean;
-    @Exclude() private readonly _guilds?: UserGuild[];
-    @Exclude() private readonly _adminGuilds?: UserGuild[];
-    @Exclude() private readonly _accessToken?: string;
-    @Exclude() private readonly _refreshToken?: string;
-
-    @Exclude() private readonly _isReLogin?: boolean;
+    @Exclude() private readonly _id: snowflake;
+    @Exclude() private readonly _username: string;
+    @Exclude() private readonly _avatar: discordString;
+    @Exclude() private readonly _discriminator: discordString;
+    @Exclude() private readonly _publicFlags: number;
+    @Exclude() private readonly _premiumType: number;
+    @Exclude() private readonly _flags: number;
+    @Exclude() private readonly _banner: discordString;
+    @Exclude() private readonly _accentColor: number;
+    @Exclude() private readonly _globalName: string;
+    @Exclude() private readonly _avatarDecorationData: discordString;
+    @Exclude() private readonly _bannerColor: discordString;
+    @Exclude() private readonly _mfaEnabled: boolean;
+    @Exclude() private readonly _locale: discordString;
+    @Exclude() private readonly _email: discordString;
+    @Exclude() private readonly _verified: boolean;
+    @Exclude() private readonly _guilds: UserGuild[];
+    @Exclude() private readonly _adminGuilds: UserGuild[];
+    @Exclude() private readonly _accessToken: string;
+    @Exclude() private readonly _refreshToken: string;
 
     constructor(user: Partial<AuthDiscordUser>) {
         this._id = user?.id;
@@ -51,8 +49,6 @@ export class AuthDiscordUserDto {
         this._adminGuilds = user?.admin_guilds;
         this._accessToken = user?.access_token;
         this._refreshToken = user?.refresh_token;
-
-        this._isReLogin = user?.isReLogin || false;
     }
 
     static create(user: Partial<AuthDiscordUser>) {
@@ -157,10 +153,5 @@ export class AuthDiscordUserDto {
     @Expose()
     get refresh_token() {
         return this._refreshToken;
-    }
-
-    @Expose()
-    get isReLogin() {
-        return this._isReLogin;
     }
 }

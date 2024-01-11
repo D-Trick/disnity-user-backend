@@ -69,8 +69,8 @@ export class UsersService {
      * 로그인 유저 정보 저장
      * @param user
      */
-    async saveLoginInfo(discordUser: AuthDiscordUserDto, ip: string) {
-        return await this.storeService.saveLoginInfo(discordUser, ip);
+    async saveLoginUser(discordUser: AuthDiscordUserDto, ip: string) {
+        return await this.storeService.saveLoginUser(discordUser, ip);
     }
 
     /******************************

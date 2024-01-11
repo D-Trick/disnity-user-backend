@@ -66,8 +66,6 @@ export class Strategy extends OAuth2Strategy {
                 ...user,
                 guilds,
                 admin_guilds: filterAdminGuilds(guilds),
-
-                isReLogin: false,
             };
 
             return done(null, profile);
@@ -83,7 +81,7 @@ export class Strategy extends OAuth2Strategy {
      * @return {Object}
      * @api protected
      */
-    override authorizationParams(options: any) {
+    override authorizationParams(options: any): { [key: string]: any } {
         const params: any = {};
 
         if (typeof options.permissions !== 'undefined') {

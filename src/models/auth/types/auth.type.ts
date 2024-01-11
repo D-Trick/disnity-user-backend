@@ -19,6 +19,4 @@ export interface AuthDiscordUser extends User {
 
     access_token: string;
     refresh_token: string;
-
-    isReLogin: boolean;
 }

@@ -17,8 +17,14 @@ export class UnauthorizedExceptionFilter implements ExceptionFilter {
         const request = host.switchToHttp().getRequest<Request>();
         const response = host.switchToHttp().getResponse<Response>();
 
+        const errorData: any = exception.getResponse();
         const statusCode = exception.getStatus();
         const message = exception.message;
+
+        const isRedirect = !!errorData?.redirect;
+        if (isRedirect) {
+            return response.redirect(errorData?.redirect);
+        }
 
         if (this.shouldLogMessage(message)) {
             this.logger.error(`${statusCode} - ${request.url} | ${exception.message}`, exception.stack);

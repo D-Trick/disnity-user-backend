@@ -42,7 +42,7 @@ export class UsersStoreService {
      * 로그인 유저 정보 저장
      * @param user
      */
-    async saveLoginInfo(discordUser: AuthDiscordUserDto, ip: string) {
+    async saveLoginUser(discordUser: AuthDiscordUserDto, ip: string) {
         let promise1 = undefined;
         let promise2 = undefined;
 

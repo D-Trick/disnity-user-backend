@@ -52,14 +52,10 @@ export class AuthController {
         @AuthDiscordUser() discordUser: AuthDiscordUserDto,
     ) {
         try {
-            if (discordUser.isReLogin) {
-                return res.redirect('/');
-            }
-
             const accessToken = this.authService.createJwtToken('access', discordUser.id);
             const refreshToken = this.authService.createJwtToken('refresh', discordUser.id);
 
-            await this.usersService.saveLoginInfo(discordUser, requestIp.getClientIp(req));
+            await this.usersService.saveLoginUser(discordUser, requestIp.getClientIp(req));
 
             const expires = dayjs().add(1, 'day').toDate();
             res.cookie('token', accessToken, cookieOptions(expires));
