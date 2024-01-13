@@ -1,9 +1,5 @@
 // types
-import type {
-    FindGuildsByIdsOptions,
-    FindGuildsByIdsSqlName,
-    ReturnFindGuildsByIds,
-} from '@databases/types/guild.type';
+import type { FindGuildsByIdsOptions, FindGuildsByIdsSqlName, FindGuildsByIds } from '@databases/types/guild.type';
 // lib
 import { Repository } from 'typeorm';
 // utils
@@ -51,7 +47,7 @@ const selectMyServer = [
 export async function findGuildsByIds<T extends FindGuildsByIdsSqlName>(
     repository: Repository<Guild>,
     options: FindGuildsByIdsOptions,
-): Promise<ReturnFindGuildsByIds[T][]> {
+): Promise<FindGuildsByIds[T][]> {
     const { transaction, select, where, orderBy } = options || {};
     const { sql } = select || {};
     const { sort } = orderBy || {};
@@ -97,7 +93,7 @@ export async function findGuildsByIds<T extends FindGuildsByIdsSqlName>(
     // N + 1 FORMAT
     const queryResult = await qb.getRawMany();
 
-    const n1 = new Nplus1<ReturnFindGuildsByIds[T]>(queryResult, {
+    const n1 = new Nplus1<FindGuildsByIds[T]>(queryResult, {
         primaryColumn: 'id',
         joinGroups: [
             {

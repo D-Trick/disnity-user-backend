@@ -41,8 +41,6 @@ export interface TotalGuildAdminsCountOptions extends SqlOptions {
 /******************************
  * Find
  ******************************/
-export type SelectType = 'basic' | 'frequentlyUsed';
-
 export interface CFindOptions extends Omit<FindManyOptions<Guild>, 'transaction'> {
     transaction?: QueryRunner;
     preSelect?: {
@@ -54,20 +52,6 @@ export interface CFindOneOptions extends Omit<FindOneOptions<Guild>, 'transactio
     preSelect?: {
         frequentlyUsed?: boolean;
     };
-}
-export interface ReturnCFind {
-    basic: Guild[];
-    frequentlyUsed: Pick<
-        Guild,
-        'id' | 'name' | 'summary' | 'icon' | 'link_type' | 'online' | 'member' | 'membership_url' | 'refresh_date'
-    >[];
-}
-export interface ReturnCFindOne {
-    basic: Guild;
-    frequentlyUsed: Pick<
-        Guild,
-        'id' | 'name' | 'summary' | 'icon' | 'link_type' | 'online' | 'member' | 'membership_url' | 'refresh_date'
-    >;
 }
 
 /******************************
@@ -178,7 +162,7 @@ export interface FindGuildsByIdsOptions extends SqlOptions {
         sort?: string;
     };
 }
-export interface ReturnFindGuildsByIds {
+export interface FindGuildsByIds {
     base: Pick<
         Guild,
         'id' | 'name' | 'summary' | 'icon' | 'online' | 'member' | 'banner' | 'link_type' | 'refresh_date'

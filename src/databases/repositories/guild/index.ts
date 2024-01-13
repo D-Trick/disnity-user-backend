@@ -19,7 +19,6 @@ import type {
     FindMyGuildDetailByIdOptions,
     FindGuildsByIdsSqlName,
     SelectMyGuildOptions,
-    SelectType,
 } from '@databases/types/guild.type';
 // lib
 import { Repository } from 'typeorm';
@@ -87,16 +86,16 @@ export class GuildRepository extends Repository<Guild> {
      * Custom Find
      * @param {CFindOptions} options
      */
-    async cFind<T extends SelectType = 'basic'>(options: CFindOptions) {
-        return cFind<T>(this, options);
+    async cFind(options: CFindOptions) {
+        return cFind(this, options);
     }
 
     /**
      * Custom Find One
      * @param {CFindOneOptions} options
      */
-    async cFindOne<T extends SelectType = 'basic'>(options: CFindOneOptions) {
-        return cFindOne<T>(this, options);
+    async cFindOne(options: CFindOneOptions) {
+        return cFindOne(this, options);
     }
 
     /**

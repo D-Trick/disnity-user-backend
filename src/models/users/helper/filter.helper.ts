@@ -38,10 +38,7 @@ export class FilterHelper {
         if (isEmpty(discordAdminGuilds)) return [];
 
         const discordAdminGuildIds = discordAdminGuilds.map((discordAdminGuild) => discordAdminGuild.id);
-        const guilds = await this.guildRepository.cFind<'frequentlyUsed'>({
-            preSelect: {
-                frequentlyUsed: true,
-            },
+        const guilds = await this.guildRepository.cFind({
             where: {
                 id: In(discordAdminGuildIds),
             },

@@ -1,5 +1,5 @@
 // types
-import type { ReturnFindGuildsByIds } from '@databases/types/guild.type';
+import type { FindGuildsByIds } from '@databases/types/guild.type';
 // lib
 import { Exclude, Expose } from 'class-transformer';
 import dayjs from '@lib/dayjs';
@@ -8,7 +8,7 @@ import dayjs from '@lib/dayjs';
 interface CategoryServerList {
     totalCount: string;
     categoryName: string;
-    list: ReturnFindGuildsByIds['base'][];
+    list: FindGuildsByIds['base'][];
 }
 // ----------------------------------------------------------------------
 
