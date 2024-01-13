@@ -4,7 +4,7 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { controllerThrow } from '@utils/response/controller-throw';
 // dtos
 import { ParamCodeRequestDto } from '@common/dtos';
-import { CommonCodeResponseDto } from './dtos';
+import { CommonCodeListResponseDto } from './dtos';
 // services
 import { CommonCodeService } from './common-code.service';
 
@@ -25,7 +25,7 @@ export class CommonCodeController {
         try {
             const commonCodes = await this.commonCodeService.getCommonCodes(param.code);
 
-            return commonCodes.map((commonCode) => new CommonCodeResponseDto(commonCode));
+            return commonCodes.map((commonCode) => new CommonCodeListResponseDto(commonCode));
         } catch (error: any) {
             controllerThrow(error);
         }

@@ -22,12 +22,6 @@ export class CommonCodeDetailService {
      */
     async commonCode(code: string, value: string) {
         const commonCodes = await this.commonCodeRepository.cFind({
-            select: {
-                id: true,
-                code: true,
-                name: true,
-                value: true,
-            },
             where: {
                 code,
                 value,
