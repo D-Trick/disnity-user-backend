@@ -30,6 +30,7 @@ export interface FindNames extends Pick<Tag, 'name'> {
 export interface TotalTagGuildsCountOptions extends SqlOptions {
     where: {
         tag_name: Tag['name'];
+
         min?: number;
         max?: number;
     };
@@ -41,6 +42,7 @@ export interface TotalTagGuildsCountOptions extends SqlOptions {
 export interface FindTagGuildIdsOptions extends SqlOptions {
     where?: {
         tag_name: Tag['name'];
+
         min?: number;
         max?: number;
     };
@@ -51,15 +53,21 @@ export interface FindTagGuildIdsOptions extends SqlOptions {
 }
 
 /******************************
- * DML
+ * 쓰기, 수정, 삭제
  ******************************/
 export interface InsertOptions extends SqlOptions {
     values: Tag | Tag[];
 }
 export interface UpdateOptions extends SqlOptions {
     values: Partial<Tag>;
-    where: Partial<Pick<Tag, 'id' | 'guild_id'>>;
+    where: {
+        id?: Tag['id'];
+        guild_id?: Tag['guild_id'];
+    };
 }
 export interface DeleteOptions extends SqlOptions {
-    where: Partial<Pick<Tag, 'id' | 'guild_id'>>;
+    where: {
+        id?: Tag['id'];
+        guild_id?: Tag['guild_id'];
+    };
 }

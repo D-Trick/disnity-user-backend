@@ -22,24 +22,40 @@ export interface CFindOneOptions extends Omit<FindManyOptions<GuildAdminPermissi
  * FindGuildAdmins
  ******************************/
 export interface FindGuildAdminsOptions extends SqlOptions {
-    where: Partial<Pick<GuildAdminPermission, 'guild_id' | 'user_id'>>;
+    where: {
+        user_id?: GuildAdminPermission['user_id'];
+        guild_id?: GuildAdminPermission['guild_id'];
+    };
 }
 
-export type FindGuildAdmins = Pick<GuildAdminPermission, 'is_owner'> &
-    Pick<User, 'id' | 'global_name' | 'username' | 'avatar' | 'discriminator'>;
+export type FindGuildAdmins = {
+    is_owner: GuildAdminPermission['is_owner'];
+
+    id: User['id'];
+    global_name: User['global_name'];
+    username: User['username'];
+    avatar: User['avatar'];
+    discriminator: User['discriminator'];
+};
 
 /******************************
- * DML
+ * 쓰기, 수정, 삭제
  ******************************/
 export interface InsertOptions extends SqlOptions {
     values: GuildAdminPermission | GuildAdminPermission[];
 }
 export interface UpdateOptions extends SqlOptions {
     values: Partial<GuildAdminPermission>;
-    where: Partial<Pick<GuildAdminPermission, 'guild_id' | 'user_id'>>;
+    where: {
+        user_id?: GuildAdminPermission['user_id'];
+        guild_id?: GuildAdminPermission['guild_id'];
+    };
 }
 export interface DeleteOptions extends SqlOptions {
-    where: Partial<Pick<GuildAdminPermission, 'guild_id' | 'user_id'>> & {
+    where: {
+        user_id?: GuildAdminPermission['user_id'];
+        guild_id?: GuildAdminPermission['guild_id'];
+
         IN?: {
             user_ids?: GuildAdminPermission['guild_id'][];
         };

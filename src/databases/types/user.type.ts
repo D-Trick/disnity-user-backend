@@ -18,18 +18,22 @@ export interface CFindOneOptions extends Omit<FindOneOptions<User>, 'transaction
 }
 
 /******************************
- * DML
+ * 쓰기, 수정, 삭제
  ******************************/
 export interface InsertOptions extends SqlOptions {
     values: User | User[];
 }
 export interface UpdateOptions extends SqlOptions {
     values: Partial<User>;
-    where: Partial<Pick<User, 'id'>>;
+    where: {
+        id?: User['id'];
+    };
 }
 export interface BulkUpdateOptions extends SqlOptions {
     values: Partial<User>[];
-    where: Partial<Pick<User, 'id'>> & {
+    where: {
+        id?: User['id'];
+
         IN: {
             ids: User['id'][];
         };

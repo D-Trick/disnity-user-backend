@@ -6,6 +6,7 @@ import { FindManyOptions, FindOneOptions, QueryRunner } from 'typeorm';
 // entities
 import { Tag } from '@databases/entities/tag.entity';
 import { Guild } from '@databases/entities/guild.entity';
+import { CommonCode } from '@databases/entities/common-code.entity';
 
 // ----------------------------------------------------------------------
 
@@ -13,7 +14,9 @@ import { Guild } from '@databases/entities/guild.entity';
  * CommonCount
  ******************************/
 export interface TotalCategoryGuildsCountOptions extends SqlOptions {
-    where?: Partial<Pick<Guild, 'category_id'>> & {
+    where?: {
+        category_id?: Guild['category_id'];
+
         keyword?: string;
         min?: number;
         max?: number;
@@ -35,7 +38,10 @@ export interface TotalMyGuildsCountOptions extends SqlOptions {
 }
 
 export interface TotalGuildAdminsCountOptions extends SqlOptions {
-    where: Partial<Pick<Guild, 'id' | 'user_id'>>;
+    where: {
+        id?: Guild['id'];
+        user_id?: Guild['user_id'];
+    };
 }
 
 /******************************
@@ -43,15 +49,9 @@ export interface TotalGuildAdminsCountOptions extends SqlOptions {
  ******************************/
 export interface CFindOptions extends Omit<FindManyOptions<Guild>, 'transaction'> {
     transaction?: QueryRunner;
-    preSelect?: {
-        frequentlyUsed?: boolean;
-    };
 }
 export interface CFindOneOptions extends Omit<FindOneOptions<Guild>, 'transaction'> {
     transaction?: QueryRunner;
-    preSelect?: {
-        frequentlyUsed?: boolean;
-    };
 }
 
 /******************************
@@ -77,63 +77,64 @@ export interface FindPublicServersByCriteriaOptions extends SqlOptions {
 }
 
 /******************************
- * FindGuildDetailByIdOptions
+ * FindGuildDetailById
  ******************************/
 export interface FindGuildDetailByIdOptions extends SqlOptions {
-    where: Partial<Pick<Guild, 'id'>>;
+    where: {
+        id?: Guild['id'];
+    };
 }
-export interface FindGuildDetailById
-    extends Pick<
-        Guild,
-        | 'id'
-        | 'category_id'
-        | 'name'
-        | 'summary'
-        | 'content'
-        | 'is_markdown'
-        | 'icon'
-        | 'splash'
-        | 'online'
-        | 'member'
-        | 'premium_tier'
-        | 'link_type'
-        | 'invite_code'
-        | 'membership_url'
-        | 'is_open'
-        | 'created_at'
-        | 'refresh_date'
-    > {
-    category_name: string;
+export interface FindGuildDetailById {
+    id: Guild['id'];
+    category_id: Guild['category_id'];
+    name: Guild['name'];
+    summary: Guild['summary'];
+    content: Guild['content'];
+    is_markdown: Guild['is_markdown'];
+    icon: Guild['icon'];
+    splash: Guild['splash'];
+    online: Guild['online'];
+    member: Guild['member'];
+    premium_tier: Guild['premium_tier'];
+    link_type: Guild['link_type'];
+    invite_code: Guild['invite_code'];
+    membership_url: Guild['membership_url'];
+    is_open: Guild['is_open'];
+    created_at: Guild['created_at'];
+    refresh_date: Guild['refresh_date'];
+
+    category_name: CommonCode['value'];
 }
 
 /******************************
- * FindMyGuildDetailByIdOptions
+ * FindMyGuildDetailById
  ******************************/
 export interface FindMyGuildDetailByIdOptions extends SqlOptions {
-    where: Pick<Guild, 'id' | 'user_id'>;
+    where: {
+        id: Guild['id'];
+        user_id: Guild['user_id'];
+    };
 }
-export interface FindMyGuildDetailById
-    extends Pick<
-        Guild,
-        | 'id'
-        | 'category_id'
-        | 'name'
-        | 'summary'
-        | 'content'
-        | 'is_markdown'
-        | 'icon'
-        | 'splash'
-        | 'online'
-        | 'member'
-        | 'premium_tier'
-        | 'link_type'
-        | 'invite_code'
-        | 'membership_url'
-        | 'is_open'
-        | 'created_at'
-        | 'refresh_date'
-    > {
-    category_name: string;
+export interface FindMyGuildDetailById {
+    id: Guild['id'];
+    category_id: Guild['category_id'];
+    name: Guild['name'];
+    summary: Guild['summary'];
+    content: Guild['content'];
+    is_markdown: Guild['is_markdown'];
+    icon: Guild['icon'];
+    splash: Guild['splash'];
+    online: Guild['online'];
+    member: Guild['member'];
+    premium_tier: Guild['premium_tier'];
+    link_type: Guild['link_type'];
+    invite_code: Guild['invite_code'];
+    membership_url: Guild['membership_url'];
+    is_open: Guild['is_open'];
+    created_at: Guild['created_at'];
+    refresh_date: Guild['refresh_date'];
+
+    category_name: CommonCode['value'];
 }
 
 /******************************
@@ -148,7 +149,9 @@ export interface FindGuildsByIdsOptions extends SqlOptions {
             myGuild?: boolean;
         };
     };
-    where: Partial<Pick<Guild, 'category_id'>> & {
+    where: {
+        category_id?: Guild['category_id'];
+
         keyword?: string;
         min?: number;
         max?: number;
@@ -163,34 +166,48 @@ export interface FindGuildsByIdsOptions extends SqlOptions {
     };
 }
 export interface FindGuildsByIds {
-    base: Pick<
-        Guild,
-        'id' | 'name' | 'summary' | 'icon' | 'online' | 'member' | 'banner' | 'link_type' | 'refresh_date'
-    > & {
-        category_name: string;
-        tags: Pick<Tag, 'id' | 'name'>[];
+    base: {
+        id: Guild['id'];
+        name: Guild['name'];
+        summary: Guild['summary'];
+        icon: Guild['icon'];
+        online: Guild['online'];
+        member: Guild['member'];
+        banner: Guild['banner'];
+        link_type: Guild['link_type'];
+        refresh_date: Guild['refresh_date'];
+
+        category_name: CommonCode['value'];
+
+        tags: {
+            id: Tag['id'];
+            name: Tag['name'];
+        }[];
     };
 
-    myGuild: Pick<
-        Guild,
-        | 'id'
-        | 'name'
-        | 'summary'
-        | 'icon'
-        | 'online'
-        | 'member'
-        | 'banner'
-        | 'link_type'
-        | 'invite_code'
-        | 'refresh_date'
-        | 'is_open'
-        | 'is_admin_open'
-        | 'private_reason'
-        | 'is_bot'
-        | 'user_id'
-    > & {
-        category_name: string;
-        tags: Pick<Tag, 'id' | 'name'>[];
+    myGuild: {
+        id: Guild['id'];
+        user_id: Guild['user_id'];
+        name: Guild['name'];
+        summary: Guild['summary'];
+        icon: Guild['icon'];
+        online: Guild['online'];
+        member: Guild['member'];
+        banner: Guild['banner'];
+        link_type: Guild['link_type'];
+        invite_code: Guild['invite_code'];
+        refresh_date: Guild['refresh_date'];
+        is_open: Guild['is_open'];
+        is_admin_open: Guild['is_admin_open'];
+        private_reason: Guild['private_reason'];
+        is_bot: Guild['is_bot'];
+
+        category_name: CommonCode['value'];
+
+        tags: {
+            id: Tag['id'];
+            name: Tag['name'];
+        }[];
     };
 }
 
@@ -198,7 +215,9 @@ export interface FindGuildsByIds {
  * FindCategoryGuildIds
  ******************************/
 export interface FindCategoryGuildIdsOptions extends SqlOptions {
-    where?: Partial<Pick<Guild, 'category_id'>> & {
+    where?: {
+        category_id?: Guild['category_id'];
+
         keyword?: string;
         min?: number;
         max?: number;
@@ -238,14 +257,17 @@ export interface FindMyGuildIdsOptions extends SqlOptions {
 }
 
 /******************************
- * DML
+ * 쓰기, 수정, 삭제
  ******************************/
 export interface InsertOptions extends SqlOptions {
     values: Guild | Guild[];
 }
 export interface UpdateOptions extends SqlOptions {
     values: Partial<Guild>;
-    where: Partial<Pick<Guild, 'id' | 'user_id'>>;
+    where: {
+        id?: Guild['id'];
+        user_id?: Guild['user_id'];
+    };
 }
 export interface BulkUpdateOptions extends SqlOptions {
     values: Partial<Guild>[];
@@ -256,5 +278,8 @@ export interface BulkUpdateOptions extends SqlOptions {
     };
 }
 export interface DeleteOptions extends SqlOptions {
-    where: Partial<Pick<Guild, 'id' | 'user_id'>>;
+    where: {
+        id?: Guild['id'];
+        user_id?: Guild['user_id'];
+    };
 }
