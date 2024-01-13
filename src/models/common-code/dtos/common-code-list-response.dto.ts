@@ -5,7 +5,7 @@ import { CommonCode } from '@databases/entities/common-code.entity';
 
 // ----------------------------------------------------------------------
 
-export class CommonCodeResponseDto {
+export class CommonCodeListResponseDto {
     @Exclude() private readonly _id: CommonCode['id'];
     @Exclude() private readonly _code: CommonCode['code'];
     @Exclude() private readonly _name: CommonCode['name'];

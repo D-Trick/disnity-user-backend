@@ -1,1 +1,1 @@
-export * from './common-code-response.dto';
+export * from './common-code-list-response.dto';
