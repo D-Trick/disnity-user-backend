@@ -2,9 +2,8 @@
 import type { Invite } from '../types/discordApi.type';
 // @nestjs
 import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-// lib
-import * as discordApi from '@utils/discord/api';
+// utils
+import { DiscordApi } from '@utils/discord/api';
 // configs
 import { discordConfig } from '@config/discord.config';
 
@@ -14,11 +13,6 @@ const { API_URL, AUTH_TYPE_BOT, BOT_TOKEN } = discordConfig;
 
 @Injectable()
 export class DiscordApiChannelsService {
-    /**************************************************
-     * Constructor
-     **************************************************/
-    constructor(private axios: HttpService) {}
-
     /**************************************************
      * Public Methods
      **************************************************/
@@ -32,7 +26,7 @@ export class DiscordApiChannelsService {
         const body = {
             max_age: 0,
         };
-        const { data: invites } = await discordApi.post(this.axios, URL, body, {
+        const { data: invites } = await DiscordApi.post(URL, body, {
             authType: AUTH_TYPE_BOT,
             token: BOT_TOKEN,
         });
