@@ -2,7 +2,8 @@
 import type { FindMyGuildDetailById } from '@databases/types/guild.type';
 // lib
 import { Exclude, Expose } from 'class-transformer';
-import dayjs from '@lib/dayjs';
+// utils
+import { dateTimeFormat } from '@utils/format-date';
 // entities
 import { Tag } from '@databases/entities/tag.entity';
 import { CommonCode } from '@databases/entities/common-code.entity';
@@ -50,20 +51,12 @@ export class MyServerResponseDto {
         this._invite_code = myServer.invite_code;
         this._membership_url = myServer.membership_url;
         this._is_open = myServer.is_open;
-        this._created_at = this.dateTimeFormat(myServer.created_at);
-        this._refresh_date = this.dateTimeFormat(myServer.refresh_date);
+        this._created_at = dateTimeFormat(myServer.created_at);
+        this._refresh_date = dateTimeFormat(myServer.refresh_date);
         this._category_name = myServer.category_name;
         this._tags = myServer.tags.map((tag) => ({
             name: tag.name,
         }));
-    }
-
-    private dateTimeFormat(timestamp: any) {
-        if (timestamp) {
-            return dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss');
-        }
-
-        return timestamp;
     }
 
     @Expose()

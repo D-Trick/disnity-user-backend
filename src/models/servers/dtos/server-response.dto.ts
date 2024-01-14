@@ -1,8 +1,9 @@
 // types
 import { ServerDetail } from '../types/servers.type';
 // lib
-import dayjs from '@lib/dayjs';
 import { Exclude, Expose } from 'class-transformer';
+// utils
+import { dateTimeFormat } from '@utils/format-date';
 // entities
 import { Emoji } from '@databases/entities/emoji.entity';
 
@@ -48,8 +49,8 @@ export class ServerResponseDto {
         this._link_type = server.link_type;
         this._invite_code = server.invite_code;
         this._membership_url = server.membership_url;
-        this._created_at = this.dateTimeFormat(server.created_at);
-        this._refresh_date = this.dateTimeFormat(server.refresh_date);
+        this._created_at = dateTimeFormat(server.created_at);
+        this._refresh_date = dateTimeFormat(server.refresh_date);
         this._category_name = server.name;
 
         this._tags = server.tags.map((tag) => ({
@@ -66,14 +67,6 @@ export class ServerResponseDto {
             name: animateEmoji.name,
             animated: animateEmoji.animated,
         }));
-    }
-
-    private dateTimeFormat(timestamp: any) {
-        if (timestamp) {
-            return dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss');
-        }
-
-        return timestamp;
     }
 
     @Expose()

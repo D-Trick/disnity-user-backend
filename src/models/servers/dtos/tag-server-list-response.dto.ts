@@ -2,7 +2,8 @@
 import type { FindGuildsByIds } from '@databases/types/guild.type';
 // lib
 import { Exclude, Expose } from 'class-transformer';
-import dayjs from '@lib/dayjs';
+// utils
+import { dateTimeFormat } from '@utils/format-date';
 
 // ----------------------------------------------------------------------
 interface TagServerList {
@@ -19,18 +20,10 @@ export class TagServerListResponseDto {
     constructor(tagServers: TagServerList) {
         this._totalCount = parseInt(tagServers.totalCount || '0');
         this._list = tagServers.list.map((server) => {
-            server.refresh_date = this.dateTimeFormat(server.refresh_date);
+            server.refresh_date = dateTimeFormat(server.refresh_date);
 
             return server;
         });
-    }
-
-    private dateTimeFormat(timestamp: any) {
-        if (timestamp) {
-            return dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss');
-        }
-
-        return timestamp;
     }
 
     @Expose()

@@ -1,10 +1,12 @@
+// types
+import type { FindThisMonthSchedules } from '@databases/types/guild-scheduled.type';
 // lib
 import { Exclude, Expose } from 'class-transformer';
-import dayjs from '@lib/dayjs';
+// utils
+import { dateTimeFormat } from '@utils/format-date';
 // entities
 import { Guild } from '@databases/entities/guild.entity';
 import { GuildScheduled } from '@databases/entities/guild-scheduled.entity';
-import { FindThisMonthSchedules } from '@databases/types/guild-scheduled.type';
 
 // ----------------------------------------------------------------------
 
@@ -27,16 +29,8 @@ export class ThisMonthScheduleListResponseDto {
         this._name = schedule.name;
         this._image = schedule.image;
         this._description = schedule.description;
-        this._scheduled_start_time = this.dateTimeFormat(schedule.scheduled_start_time);
-        this._scheduled_end_time = this.dateTimeFormat(schedule.scheduled_end_time);
-    }
-
-    private dateTimeFormat(timestamp: any) {
-        if (timestamp) {
-            return dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss');
-        }
-
-        return timestamp;
+        this._scheduled_start_time = dateTimeFormat(schedule.scheduled_start_time);
+        this._scheduled_end_time = dateTimeFormat(schedule.scheduled_end_time);
     }
 
     @Expose()
