@@ -48,12 +48,7 @@ export class ServersUpdateService {
 
         const queryRunner = this.dataSource.createQueryRunner();
         try {
-            const myGuild = await this.guildRepository.selectMyGuildOne({
-                select: {
-                    columns: {
-                        id: true,
-                    },
-                },
+            const myGuild = await this.guildRepository.findMyGuild({
                 where: {
                     id: serverId,
                     user_id: userId,
@@ -95,12 +90,7 @@ export class ServersUpdateService {
      */
     async refresh(guildId: string, userId: string) {
         try {
-            const myServer = await this.guildRepository.selectMyGuildOne({
-                select: {
-                    columns: {
-                        refresh_date: true,
-                    },
-                },
+            const myServer = await this.guildRepository.findMyGuild({
                 where: {
                     id: guildId,
                     user_id: userId,
@@ -115,7 +105,6 @@ export class ServersUpdateService {
                 unit: 'minute',
                 afterTime: 10,
             });
-
             if (!isTimePassed) {
                 const diff = dayjs(afterDateTime).diff(currentDateTime);
                 const minutes = dayjs.duration(diff).minutes();

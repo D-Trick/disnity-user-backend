@@ -18,7 +18,7 @@ import type {
     DeleteOptions,
     FindMyGuildDetailByIdOptions,
     FindGuildsByIdsSqlName,
-    SelectMyGuildOptions,
+    FindMyGuildOptions,
 } from '@databases/types/guild.type';
 // lib
 import { Repository } from 'typeorm';
@@ -29,7 +29,7 @@ import { CustomRepository } from '@common/modules/typeorm-custom-repository.modu
 // sql
 import { cFind } from './sql/find';
 import { cFindOne } from './sql/find-one';
-import { selectMyGuildOne } from './sql/selectMyGuild';
+import { findMyGuild } from './sql/find-my-guild';
 import { totalCategoryGuildsCount } from './sql/total-category-guilds-count';
 import { totalSearchGuildsCount } from './sql/total-search-guilds-count';
 import { totalGuildAdminsCount } from './sql/total-admin-guilds-count';
@@ -99,11 +99,11 @@ export class GuildRepository extends Repository<Guild> {
     }
 
     /**
-     * Select MyGuild One
-     * @param {SelectMyGuildOptions} options
+     * Find MyGuild
+     * @param {FindMyGuildOptions} options
      */
-    async selectMyGuildOne(options: SelectMyGuildOptions) {
-        return selectMyGuildOne(this, options);
+    async findMyGuild(options: FindMyGuildOptions) {
+        return findMyGuild(this, options);
     }
 
     /**

@@ -1,6 +1,5 @@
 // types
 import type { SqlOptions } from '@common/types/sql-options.type';
-import type { SelectBooleanified } from './global';
 // lib
 import { FindManyOptions, FindOneOptions, QueryRunner } from 'typeorm';
 // entities
@@ -55,14 +54,13 @@ export interface CFindOneOptions extends Omit<FindOneOptions<Guild>, 'transactio
 }
 
 /******************************
- * Select
+ * FindMyGuild
  ******************************/
-export interface SelectMyGuildOptions extends SqlOptions {
-    select: {
-        columns?: SelectBooleanified<Guild>;
+export interface FindMyGuildOptions extends SqlOptions {
+    where: {
+        id: Guild['id'];
+        user_id: Guild['user_id'];
     };
-
-    where: Pick<Guild, 'id' | 'user_id'>;
 }
 
 /******************************
