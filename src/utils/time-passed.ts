@@ -7,6 +7,7 @@ interface TimePassed {
     isTimePassed: boolean;
     currentDateTime: string;
     afterDateTime: string;
+    timeRemainningText: string;
 }
 interface Options {
     dateTime: ConfigType;
@@ -42,9 +43,26 @@ export function timePassed({ dateTime, unit, afterTime }: Options): TimePassed {
         afterDateTime = compareDayjs.add(afterTime, 'second').format(DATE_FORMAT);
     }
 
+    let timeRemainningText = '';
+    const diff = dayjs(afterDateTime).diff(currentDateTime);
+    const hour = dayjs.duration(diff).hours();
+    const minutes = dayjs.duration(diff).minutes();
+    const seconds = dayjs.duration(diff).seconds();
+
+    if (hour > 0) {
+        timeRemainningText = `${hour}시간`;
+    } else if (minutes > 0) {
+        timeRemainningText = `${minutes}분`;
+    } else if (seconds > 0) {
+        timeRemainningText = `${seconds}초`;
+    } else {
+        timeRemainningText = '';
+    }
+
     return {
         isTimePassed: currentDateTime > afterDateTime,
         currentDateTime,
         afterDateTime,
+        timeRemainningText,
     };
 }

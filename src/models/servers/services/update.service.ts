@@ -5,7 +5,6 @@ import { Injectable, BadRequestException, NotFoundException } from '@nestjs/comm
 // lodash
 import isEmpty from 'lodash/isEmpty';
 // lib
-import dayjs from '@lib/dayjs';
 import { DataSource, QueryRunner } from 'typeorm';
 // utils
 import { timePassed, generateSnowflakeId } from '@utils/index';
@@ -100,18 +99,13 @@ export class ServersUpdateService {
                 throw new NotFoundException(SERVER_ERROR_MESSAGES.SERVER_NOT_FOUND);
             }
 
-            const { isTimePassed, currentDateTime, afterDateTime } = timePassed({
+            const { isTimePassed, timeRemainningText } = timePassed({
                 dateTime: myServer.refresh_date as string,
                 unit: 'minute',
                 afterTime: 10,
             });
             if (!isTimePassed) {
-                const diff = dayjs(afterDateTime).diff(currentDateTime);
-                const minutes = dayjs.duration(diff).minutes();
-                const seconds = dayjs.duration(diff).seconds();
-
-                const timeRemainning = minutes !== 0 ? `${minutes}분` : `${seconds}초`;
-                throw new BadRequestException(`${timeRemainning} 후 다시 시도해주세요.`);
+                throw new BadRequestException(`${timeRemainningText} 후 다시 시도해주세요.`);
             }
 
             const discordGuild = await this.discordApiService.guilds().detail(guildId);
