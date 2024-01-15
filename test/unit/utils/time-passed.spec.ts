@@ -20,9 +20,11 @@ describe('시간(시 or 분 or 초)만큼 지났는지 검사', () => {
         });
 
         // Than
+        expect(Object.keys(result).length).toBe(4);
         expect(result).toHaveProperty('isTimePassed');
         expect(result).toHaveProperty('currentDateTime');
         expect(result).toHaveProperty('afterDateTime');
+        expect(result).toHaveProperty('timeRemainningText');
         expect(result.isTimePassed).toBe(true);
     });
 
@@ -38,9 +40,11 @@ describe('시간(시 or 분 or 초)만큼 지났는지 검사', () => {
         });
 
         // Than
+        expect(Object.keys(result).length).toBe(4);
         expect(result).toHaveProperty('isTimePassed');
         expect(result).toHaveProperty('currentDateTime');
         expect(result).toHaveProperty('afterDateTime');
+        expect(result).toHaveProperty('timeRemainningText');
         expect(result.isTimePassed).toBe(false);
     });
 
@@ -56,9 +60,11 @@ describe('시간(시 or 분 or 초)만큼 지났는지 검사', () => {
         });
 
         // Than
+        expect(Object.keys(result).length).toBe(4);
         expect(result).toHaveProperty('isTimePassed');
         expect(result).toHaveProperty('currentDateTime');
         expect(result).toHaveProperty('afterDateTime');
+        expect(result).toHaveProperty('timeRemainningText');
         expect(result.isTimePassed).toBe(true);
     });
 
@@ -74,9 +80,11 @@ describe('시간(시 or 분 or 초)만큼 지났는지 검사', () => {
         });
 
         // Than
+        expect(Object.keys(result).length).toBe(4);
         expect(result).toHaveProperty('isTimePassed');
         expect(result).toHaveProperty('currentDateTime');
         expect(result).toHaveProperty('afterDateTime');
+        expect(result).toHaveProperty('timeRemainningText');
         expect(result.isTimePassed).toBe(false);
     });
 
@@ -92,9 +100,11 @@ describe('시간(시 or 분 or 초)만큼 지났는지 검사', () => {
         });
 
         // Than
+        expect(Object.keys(result).length).toBe(4);
         expect(result).toHaveProperty('isTimePassed');
         expect(result).toHaveProperty('currentDateTime');
         expect(result).toHaveProperty('afterDateTime');
+        expect(result).toHaveProperty('timeRemainningText');
         expect(result.isTimePassed).toBe(true);
     });
 
@@ -110,9 +120,11 @@ describe('시간(시 or 분 or 초)만큼 지났는지 검사', () => {
         });
 
         // Than
+        expect(Object.keys(result).length).toBe(4);
         expect(result).toHaveProperty('isTimePassed');
         expect(result).toHaveProperty('currentDateTime');
         expect(result).toHaveProperty('afterDateTime');
+        expect(result).toHaveProperty('timeRemainningText');
         expect(result.isTimePassed).toBe(false);
     });
 
