@@ -15,11 +15,13 @@ interface CategoryServerList {
 
 export class CategoryServerListResponseDto {
     @Exclude() private readonly _totalCount: number;
+    @Exclude() private readonly _categoryName: CategoryServerList['categoryName'];
     @Exclude() private readonly _list: CategoryServerList['list'];
 
-    constructor(categoryServers: CategoryServerList) {
-        this._totalCount = parseInt(categoryServers.totalCount || '0');
-        this._list = categoryServers.list.map((server) => {
+    constructor(categoryServer: CategoryServerList) {
+        this._totalCount = parseInt(categoryServer.totalCount || '0');
+        this._categoryName = categoryServer.categoryName;
+        this._list = categoryServer.list.map((server) => {
             server.refresh_date = dateTimeFormat(server.refresh_date);
 
             return server;
@@ -29,6 +31,11 @@ export class CategoryServerListResponseDto {
     @Expose()
     get totalCount() {
         return this._totalCount;
+    }
+
+    @Expose()
+    get categoryName() {
+        return this._categoryName;
     }
 
     @Expose()
