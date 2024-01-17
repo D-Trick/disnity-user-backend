@@ -28,5 +28,5 @@ export async function findSitemapData(
     // WHERE
     qb.where("code = 'category'");
 
-    return qb.getMany();
+    return qb.getRawMany();
 }

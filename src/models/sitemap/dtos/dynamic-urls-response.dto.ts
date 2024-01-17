@@ -21,7 +21,13 @@ export class DynamicUrlsResponseDto {
     constructor(dynamicData: DynamicData) {
         const tagUrls = dynamicData.tags.map((tag) => `${baseConfig.url}/servers/tags/${tag.name}`);
         const serverUrls = dynamicData.servers.map((server) => `${baseConfig.url}/servers/${server.id}`);
-        const categorysUrls = dynamicData.categorys.map((category) => `${category.value}`);
+        const categorysUrls = dynamicData.categorys.map((category) => {
+            if (category.value === 'all') {
+                return `${baseConfig.url}/servers`;
+            }
+
+            return `${baseConfig.url}/servers/categorys/${category.value}`;
+        });
 
         this._urls = [].concat(categorysUrls, serverUrls, tagUrls);
     }

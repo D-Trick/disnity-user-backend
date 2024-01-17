@@ -31,5 +31,5 @@ export async function findSitemapData(
     qb.andWhere('is_open = 1');
     qb.andWhere('is_admin_open = 1');
 
-    return qb.getMany();
+    return qb.getRawMany();
 }
