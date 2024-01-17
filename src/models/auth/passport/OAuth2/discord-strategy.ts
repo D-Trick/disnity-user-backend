@@ -1,5 +1,5 @@
 // lib
-import { Strategy as OAuth2Strategy, StrategyOptions, VerifyFunction } from 'passport-oauth2';
+import { InternalOAuthError, Strategy as OAuth2Strategy, StrategyOptions, VerifyFunction } from 'passport-oauth2';
 import { filterAdminGuilds } from '@utils/discord/permission';
 // configs
 import { discordConfig } from '@config/discord.config';
@@ -33,7 +33,7 @@ const { API_URL } = discordConfig;
  */
 
 export class Strategy extends OAuth2Strategy {
-    public name = 'discord';
+    public override name = 'discord';
 
     constructor(options: StrategyOptions, verify: VerifyFunction) {
         super(options, verify);
@@ -55,7 +55,7 @@ export class Strategy extends OAuth2Strategy {
      * @param {function} done
      * @access protected
      */
-    async userProfile(accessToken: string, done: (err?: Error | null, profile?: any) => void): Promise<void> {
+    override async userProfile(accessToken: string, done: (err?: Error | null, profile?: any) => void): Promise<void> {
         try {
             const promise1 = this.oAuth2Get(`${API_URL}/users/@me`, accessToken);
             const promise2 = this.oAuth2Get(`${API_URL}/users/@me/guilds`, accessToken);
@@ -69,8 +69,8 @@ export class Strategy extends OAuth2Strategy {
             };
 
             return done(null, profile);
-        } catch {
-            return done(null, { loginRedirect: true });
+        } catch (error: any) {
+            return done(new InternalOAuthError('[userProfile]', error));
         }
     }
 
@@ -81,7 +81,7 @@ export class Strategy extends OAuth2Strategy {
      * @return {Object}
      * @api protected
      */
-    authorizationParams(options: any) {
+    override authorizationParams(options: any): { [key: string]: any } {
         const params: any = {};
 
         if (typeof options.permissions !== 'undefined') {
@@ -101,20 +101,15 @@ export class Strategy extends OAuth2Strategy {
             // function (error: { statusCode: number; data?: any }, result?: any, response?: IncomingMessage) {
             this._oauth2.get(url, accessToken, function (error: { statusCode: number; data?: any }, result?: any) {
                 if (error) {
-                    reject({
-                        error,
-                        customMessage: '요청을 실패했습니다.',
-                    });
+                    reject(error);
                 }
 
                 try {
                     const data = JSON.parse(result);
 
                     resolve(data);
-                } catch {
-                    reject({
-                        customMessage: '요청 데이터 처리를 실패했습니다.',
-                    });
+                } catch (error: any) {
+                    reject(error);
                 }
             });
         });

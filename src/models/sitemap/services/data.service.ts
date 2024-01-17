@@ -2,8 +2,8 @@
 import { Injectable } from '@nestjs/common';
 // repositories
 import { TagRepository } from '@databases/repositories/tag';
-import { CommonCodeRepository } from '@databases/repositories/common-code';
 import { GuildRepository } from '@databases/repositories/guild';
+import { CommonCodeRepository } from '@databases/repositories/common-code';
 
 // ----------------------------------------------------------------------
 
@@ -14,49 +14,27 @@ export class SitemapDataService {
      **************************************************/
     constructor(
         private readonly tagRepository: TagRepository,
-        private readonly commonCodeRepository: CommonCodeRepository,
         private readonly guildRepository: GuildRepository,
+        private readonly commonCodeRepository: CommonCodeRepository,
     ) {}
 
     /**************************************************
      * Public Methods
      **************************************************/
     /**
-     * 동적 Url 가져오기
+     * 동적 Url 목록을 위한 data 가져오기
      */
-    async getDynamicUrl(): Promise<string[]> {
-        const promise1 = this.tagRepository.findSitemapUrls();
-        const promise2 = this.guildRepository.findSitemapUrls();
-        const promise3 = this.commonCodeRepository.findCategorySitemapUrls();
+    async getDynamicData() {
+        const promise1 = this.tagRepository.findSitemapData();
+        const promise2 = this.guildRepository.findSitemapData();
+        const promise3 = this.commonCodeRepository.findSitemapData();
 
         const [tags, servers, categorys] = await Promise.all([promise1, promise2, promise3]);
 
-        const categoryUrls = this.urlJsonArrayToArray(categorys);
-        const serverUrls = this.urlJsonArrayToArray(servers);
-        const tagsUrls = this.urlJsonArrayToArray(tags);
-
-        const sitemap = [].concat(categoryUrls, serverUrls, tagsUrls);
-
-        return sitemap;
-    }
-
-    /**************************************************
-     * Private Methods
-     **************************************************/
-    /**
-     * Json 형태의 URL 목록을 배열 형태로 변경
-     * @param {{ url: string }[]} urlJsonArray
-     */
-    private urlJsonArrayToArray(urlJsonArray: { url: string }[]) {
-        const urlArray = [];
-
-        const { length = 0 } = urlJsonArray;
-        for (let i = 0; i < length; i++) {
-            const json = urlJsonArray[i];
-
-            urlArray.push(json.url);
-        }
-
-        return urlArray;
+        return {
+            tags,
+            servers,
+            categorys,
+        };
     }
 }

@@ -17,10 +17,6 @@ export interface SaveValues extends Pick<Guild, 'summary' | 'content'> {
     contentType: 'basic' | 'markdown';
 }
 
-export interface Save {
-    id: string;
-}
-
 export interface SaveUser {
     id: string;
     email?: string;

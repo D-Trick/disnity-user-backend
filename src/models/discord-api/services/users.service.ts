@@ -2,9 +2,8 @@
 import type { User, UserGuild } from '@models/discord-api/types/discordApi.type';
 // @nestjs
 import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-// lib
-import * as discordApi from '@utils/discord/api';
+// utils
+import { DiscordApi } from '@utils/discord/api';
 // configs
 import { discordConfig } from '@config/discord.config';
 
@@ -15,11 +14,6 @@ const { AUTH_TYPE_BEARER, API_URL } = discordConfig;
 @Injectable()
 export class DiscordApiUsersService {
     /**************************************************
-     * Constructor
-     **************************************************/
-    constructor(private readonly axios: HttpService) {}
-
-    /**************************************************
      * Public Methods
      **************************************************/
     /**
@@ -29,7 +23,7 @@ export class DiscordApiUsersService {
     async me(token: string): Promise<User> {
         const URL = `${API_URL}/users/@me`;
 
-        const { data: user } = await discordApi.get(this.axios, URL, {
+        const { data: user } = await DiscordApi.get(URL, {
             authType: AUTH_TYPE_BEARER,
             token,
         });
@@ -44,7 +38,7 @@ export class DiscordApiUsersService {
     async guilds(token: string): Promise<UserGuild[]> {
         const URL = `${API_URL}/users/@me/guilds`;
 
-        const { data: guilds } = await discordApi.get(this.axios, URL, {
+        const { data: guilds } = await DiscordApi.get(URL, {
             authType: AUTH_TYPE_BEARER,
             token,
         });

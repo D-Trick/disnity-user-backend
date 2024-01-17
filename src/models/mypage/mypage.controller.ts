@@ -1,11 +1,16 @@
 // @nestjs
-import { Controller, Get, Request, UseGuards, Query, Param } from '@nestjs/common';
+import { Controller, Get, UseGuards, Query, Param } from '@nestjs/common';
 // utils
 import { controllerThrow } from '@utils/response/controller-throw';
 // guards
-import { JwtAuthGuard } from '@guards/jwt-auth.guard';
+import { AuthGuardJwt } from '@guards/jwt-auth.guard';
+// docorators
+import { AuthUser } from '@decorators/auth-user.decorator';
 // dtos
-import { ParamIdStringDto, QueryStringDto } from '@common/dtos';
+import { AuthUserDto } from '@models/auth/dtos';
+import { ParamIdStringRequestDto } from '@common/dtos';
+import { ServerFilterRequestDto } from '@models/servers/dtos';
+import { MyServerListResponseDto, MyServerResponseDto } from './dtos';
 // services
 import { ServersService } from '@models/servers/servers.service';
 
@@ -22,24 +27,24 @@ export class MypageController {
      * Public Methods
      **************************************************/
     @Get('servers')
-    @UseGuards(JwtAuthGuard)
-    async servers(@Request() req, @Query() query: QueryStringDto) {
+    @UseGuards(AuthGuardJwt)
+    async servers(@AuthUser() user: AuthUserDto, @Query() query: ServerFilterRequestDto) {
         try {
-            const myServers = await this.serversService.getMyServers(req.user.id, query);
+            const myServers = await this.serversService.getMyServers(user.id, query);
 
-            return myServers;
+            return new MyServerListResponseDto(myServers);
         } catch (error: any) {
             controllerThrow(error);
         }
     }
 
     @Get('servers/:id')
-    @UseGuards(JwtAuthGuard)
-    async serversId(@Request() req, @Param() param: ParamIdStringDto) {
+    @UseGuards(AuthGuardJwt)
+    async serversId(@AuthUser() user: AuthUserDto, @Param() param: ParamIdStringRequestDto) {
         try {
-            const myServer = await this.serversService.myServerDetail(param.id, req.user.id);
+            const myServer = await this.serversService.myServerDetail(param.id, user.id);
 
-            return myServer;
+            return new MyServerResponseDto(myServer);
         } catch (error: any) {
             controllerThrow(error);
         }

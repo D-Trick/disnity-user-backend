@@ -1,18 +1,16 @@
 // types
-import type { SqlOptions } from '@common/types/sql-options.type';
-import type { SelectBooleanified } from './global';
+import type { FindManyOptions, QueryRunner } from 'typeorm';
 // entities
 import { CommonCode } from '@databases/entities/common-code.entity';
 
 // ----------------------------------------------------------------------
 
 /******************************
- * Select
+ * Find
  ******************************/
-export interface SelectOptions extends SqlOptions {
-    select: {
-        //sql?: {};
-        columns: SelectBooleanified<CommonCode>;
-    };
-    where?: Partial<Pick<CommonCode, 'code' | 'value'>>;
+export interface CFindOptions extends Omit<FindManyOptions<CommonCode>, 'transaction'> {
+    transaction?: QueryRunner;
+}
+export interface CFindOneOptions extends Omit<FindManyOptions<CommonCode>, 'transaction'> {
+    transaction?: QueryRunner;
 }

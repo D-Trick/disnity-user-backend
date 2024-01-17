@@ -2,6 +2,8 @@
 import type { DataTypeDate } from '@databases/types/global';
 // lib
 import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
+// utils
+import { LocalDateTimeTransformer } from '@utils/database/transformers/local-date-time.transformer';
 
 // ----------------------------------------------------------------------
 
@@ -26,10 +28,16 @@ export class GuildScheduled {
     @Column('varchar', { length: 1000, nullable: true })
     description?: string;
 
-    @Column('timestamp', { nullable: true })
+    @Column('timestamp', {
+        nullable: true,
+        transformer: new LocalDateTimeTransformer(),
+    })
     scheduled_start_time?: DataTypeDate;
 
-    @Column('timestamp', { nullable: true })
+    @Column('timestamp', {
+        nullable: true,
+        transformer: new LocalDateTimeTransformer(),
+    })
     scheduled_end_time?: DataTypeDate;
 
     @Column('tinyint', { nullable: true })

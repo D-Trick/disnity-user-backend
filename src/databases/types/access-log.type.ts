@@ -6,7 +6,7 @@ import { AccessLog } from '@databases/entities/access-log.entity';
 // ----------------------------------------------------------------------
 
 /******************************
- * DML
+ * 쓰기, 수정, 삭제
  ******************************/
 export interface InsertOptions extends SqlOptions {
     values: AccessLog | AccessLog[];

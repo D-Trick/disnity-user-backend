@@ -1,8 +1,9 @@
 // @nestjs
 import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
+// lodash
+import isEmpty from 'lodash/isEmpty';
 // lib
 import { DataSource } from 'typeorm';
-import { isEmpty } from '@lib/lodash';
 // utils
 import { promiseAllSettled } from '@utils/index';
 // messages
@@ -42,27 +43,23 @@ export class ServersDeleteService {
      * @param {string} userId
      * @param {string} serverId
      */
-    async delete(userId: string, serverId: string): Promise<{ result: boolean }> {
+    async delete(userId: string, serverId: string) {
         const queryRunner = this.dataSource.createQueryRunner();
 
         try {
-            const user = await this.userRepository.selectOne({
+            const user = await this.userRepository.findOne({
                 select: {
-                    sql: {
-                        base: true,
-                    },
+                    id: true,
                 },
                 where: {
                     id: userId,
                 },
             });
 
-            const guild = await this.guildRepository.selectOne({
+            const guild = await this.guildRepository.cFindOne({
                 select: {
-                    columns: {
-                        id: true,
-                        is_admin_open: true,
-                    },
+                    id: true,
+                    is_admin_open: true,
                 },
                 where: {
                     id: serverId,
@@ -122,7 +119,7 @@ export class ServersDeleteService {
 
             await queryRunner.commitTransaction();
 
-            return { result: true };
+            return true;
         } catch (error) {
             if (queryRunner.isTransactionActive) {
                 await queryRunner.rollbackTransaction();

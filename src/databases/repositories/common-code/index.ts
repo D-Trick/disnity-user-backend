@@ -1,6 +1,6 @@
 // types
 import type { SqlOptions } from '@common/types/sql-options.type';
-import type { SelectOptions } from '@databases/types/common-code.type';
+import type { CFindOneOptions, CFindOptions } from '@databases/types/common-code.type';
 // lib
 import { Repository } from 'typeorm';
 // entities
@@ -8,34 +8,35 @@ import { CommonCode } from '@databases/entities/common-code.entity';
 // repositories
 import { CustomRepository } from '@common/modules/typeorm-custom-repository.module';
 // sql
-import { selectOne, selectMany } from './sql/select';
-import { findCategorySitemapUrls } from './sql/find-category-sitemap-urls';
+import { cFind } from './sql/find';
+import { cFindOne } from './sql/find-one';
+import { findSitemapData } from './sql/find-sitemap-data';
 
 // ----------------------------------------------------------------------
 
 @CustomRepository(CommonCode)
 export class CommonCodeRepository extends Repository<CommonCode> {
     /**
-     * Select One
-     * @param {SelectOptions} options
+     * Custom Find
+     * @param {CFindOptions} options
      */
-    async selectOne(options: SelectOptions) {
-        return selectOne(this, options);
+    async cFind(options: CFindOptions) {
+        return cFind(this, options);
     }
 
     /**
-     * Select Many
-     * @param {SelectOptions} options
+     * Custom Find One
+     * @param {CFindOneOptions} options
      */
-    async selectMany(options: SelectOptions) {
-        return selectMany(this, options);
+    async cFindOne(options: CFindOneOptions) {
+        return cFindOne(this, options);
     }
 
     /**
-     * FindByCode
-     * @param {FindByCodeOptions} options
+     * 카테고리 목록 가져오기
+     * @param {SqlOptions} options
      */
-    async findCategorySitemapUrls(options?: SqlOptions) {
-        return findCategorySitemapUrls(this, options);
+    async findSitemapData(options?: SqlOptions) {
+        return findSitemapData(this, options);
     }
 }

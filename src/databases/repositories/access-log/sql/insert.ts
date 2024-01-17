@@ -4,7 +4,7 @@ import type { InsertOptions } from '@databases/types/access-log.type';
 // lib
 import { Repository } from 'typeorm';
 // utils
-import { createInsertQueryBuilder } from '@databases/utils/createQueryBuilder';
+import { createInsertQueryBuilder } from '@utils/database/createQueryBuilder';
 // alias
 import { ACCESS_LOG_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
 // entities

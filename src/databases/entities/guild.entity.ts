@@ -2,6 +2,8 @@
 import type { DataTypeBoolean, DataTypeDate } from '@databases/types/global';
 // lib
 import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
+// utils
+import { LocalDateTimeTransformer } from '@utils/database/transformers/local-date-time.transformer';
 
 // ----------------------------------------------------------------------
 
@@ -68,13 +70,22 @@ export class Guild {
     @Column('varchar', { length: 250, nullable: true })
     private_reason?: string;
 
-    @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
+    @Column('timestamp', {
+        default: () => 'CURRENT_TIMESTAMP',
+        transformer: new LocalDateTimeTransformer(),
+    })
     created_at?: DataTypeDate;
 
-    @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
+    @Column('timestamp', {
+        default: () => 'CURRENT_TIMESTAMP',
+        transformer: new LocalDateTimeTransformer(),
+    })
     updated_at?: DataTypeDate;
 
-    @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
+    @Column('timestamp', {
+        default: () => 'CURRENT_TIMESTAMP',
+        transformer: new LocalDateTimeTransformer(),
+    })
     @Index('ix_refresh_date')
     refresh_date?: DataTypeDate;
 }

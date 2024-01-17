@@ -1,5 +1,7 @@
 // @nestjs
 import { HttpStatus } from '@nestjs/common';
+// lodash
+import isEmpty from 'lodash/isEmpty';
 // lib
 import { Exclude, Expose } from 'class-transformer';
 
@@ -20,15 +22,24 @@ export class ErrorResponse {
         this._error = HttpStatus[`${statusCode}`];
         this._message = message;
 
-        if (typeof information === 'object') {
-            delete information?.error;
-            delete information?.message;
-        }
-        this._information = information;
+        const newInformation = this.unUsedInformationKeyRemove(information);
+        this._information = isEmpty(newInformation) ? undefined : newInformation;
     }
 
     static create(status: HttpStatus, message: string, information?: string | DynamicObject): ErrorResponse {
         return new ErrorResponse(status, message, information);
+    }
+
+    private unUsedInformationKeyRemove(information: any) {
+        const newInformation = { ...information };
+
+        if (typeof newInformation === 'object') {
+            delete newInformation?.statusCode;
+            delete newInformation?.error;
+            delete newInformation?.message;
+        }
+
+        return newInformation;
     }
 
     @Expose()

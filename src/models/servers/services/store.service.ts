@@ -1,12 +1,16 @@
 // types
-import type { Save, SaveValues } from '../types/save.type';
+import type { SaveValues } from '../types/save.type';
 import type { Emoji, Guild, GuildScheduledEvent } from '@models/discord-api/types/discordApi.type';
 // @nestjs
 import { Injectable, BadRequestException } from '@nestjs/common';
+// lodash
+import uniq from 'lodash/uniq';
+import uniqBy from 'lodash/uniqBy';
+import isEmpty from 'lodash/isEmpty';
+import differenceBy from 'lodash/differenceBy';
 // lib
-import { DataSource, QueryRunner } from 'typeorm';
+import { DataSource, In, QueryRunner } from 'typeorm';
 import dayjs from '@lib/dayjs';
-import { isNotEmpty, differenceBy, uniq, uniqBy } from '@lib/lodash';
 // utils
 import { generateSnowflakeId, promiseAllSettled } from '@utils/index';
 // cache
@@ -41,7 +45,6 @@ export class ServersStoreService {
         private readonly userRepository: UserRepository,
         private readonly emojiRepository: EmojiRepository,
         private readonly guildRepository: GuildRepository,
-
         private readonly guildScheduledRepository: GuildScheduledRepository,
         private readonly guildAdminPermissionRepository: GuildAdminPermissionRepository,
     ) {}
@@ -54,7 +57,7 @@ export class ServersStoreService {
      * @param {string} userId
      * @param {SaveValues} saveValues
      */
-    async store(userId: string, saveValues: SaveValues): Promise<Save> {
+    async store(userId: string, saveValues: SaveValues) {
         const { id, tags } = saveValues;
 
         let promise1 = undefined;
@@ -67,17 +70,15 @@ export class ServersStoreService {
 
         const queryRunner = this.dataSource.createQueryRunner();
         try {
-            const guild = await this.guildRepository.selectOne({
+            const guild = await this.guildRepository.cFindOne({
                 select: {
-                    columns: {
-                        id: true,
-                    },
+                    id: true,
                 },
                 where: {
                     id,
                 },
             });
-            if (isNotEmpty(guild)) {
+            if (!isEmpty(guild)) {
                 throw new BadRequestException(SERVER_ERROR_MESSAGES.SERVER_EXISTE);
             }
 
@@ -102,14 +103,14 @@ export class ServersStoreService {
 
             // 관리자 권한 목록 저장 / 관리자 권한있는 유저 목록 저장 또는 수정
             const cacheAdmins = await this.cacheService.get(CACHE_KEYS.DISNITY_BOT_ADMINS(id));
-            if (isNotEmpty(cacheAdmins)) {
+            if (!isEmpty(cacheAdmins)) {
                 promise4 = this.adminPermissionsInsert(queryRunner, discordGuild.id, cacheAdmins);
                 promise5 = this.adminsInsertOrUpdate(queryRunner, cacheAdmins);
             }
 
             // 길드 이벤트(일정) 목록 저장 / 길드 이벤트 생성자 유저 목록 저장 또는 수정
             const guildSchedules = await this.discordApiService.guildScheduledEvents().scheduledEvents(discordGuild.id);
-            if (isNotEmpty(guildSchedules)) {
+            if (!isEmpty(guildSchedules)) {
                 promise6 = this.guildSchedulesInsert(queryRunner, guildSchedules);
                 promise7 = this.creatorsInsertOrUpdate(queryRunner, guildSchedules);
             }
@@ -117,7 +118,7 @@ export class ServersStoreService {
 
             await queryRunner.commitTransaction();
 
-            return { id: discordGuild.id };
+            return discordGuild.id;
         } catch (error) {
             if (queryRunner.isTransactionActive) {
                 await queryRunner.rollbackTransaction();
@@ -277,22 +278,15 @@ export class ServersStoreService {
             });
         });
 
-        const users = await this.userRepository.selectMany({
+        const users = await this.userRepository.cFind({
             transaction,
-            select: {
-                sql: {
-                    base: true,
-                },
-            },
             where: {
-                IN: {
-                    ids: adminIds,
-                },
+                id: In(adminIds),
             },
         });
 
         const newAdmins = differenceBy(adminUsers, users, 'id');
-        if (isNotEmpty(newAdmins)) {
+        if (!isEmpty(newAdmins)) {
             return this.userRepository.cInsert({
                 transaction,
                 values: newAdmins,
@@ -365,23 +359,27 @@ export class ServersStoreService {
 
         const uniqCreatorsIds = uniq(creatorsIds);
         const uniqByCreators = uniqBy(creators, 'id');
-
-        const users = await this.userRepository.selectMany({
+        const users = await this.userRepository.cFind({
             transaction,
             select: {
-                sql: {
-                    base: true,
-                },
+                id: true,
+                global_name: true,
+                username: true,
+                discriminator: true,
+                email: true,
+                verified: true,
+                avatar: true,
+                locale: true,
+                created_at: true,
+                updated_at: true,
             },
             where: {
-                IN: {
-                    ids: uniqCreatorsIds,
-                },
+                id: In(uniqCreatorsIds),
             },
         });
 
         const newCreators = differenceBy(uniqByCreators, users, 'id');
-        if (isNotEmpty(newCreators)) {
+        if (!isEmpty(newCreators)) {
             return this.userRepository.cInsert({
                 transaction,
                 values: newCreators,

@@ -14,8 +14,14 @@ export interface FindByTypeOptions extends SqlOptions {
     };
 }
 
-export type Menus = Pick<
-    Menu,
-    'id' | 'parent_id' | 'name' | 'path' | 'icon' | 'caption' | 'disabled' | 'depth' | 'sort'
->;
-export type FindByType = Menus;
+export type FindByType = {
+    id: Menu['id'];
+    parent_id: Menu['parent_id'];
+    name: Menu['name'];
+    path: Menu['path'];
+    icon: Menu['icon'];
+    caption: Menu['caption'];
+    disabled: Menu['disabled'];
+    depth: Menu['depth'];
+    sort: Menu['sort'];
+};

@@ -2,6 +2,8 @@
 import { Controller, Get } from '@nestjs/common';
 // utils
 import { controllerThrow } from '@utils/response/controller-throw';
+// dtos
+import { ThisMonthScheduleListResponseDto } from './dtos';
 // services
 import { GuildScheduledService } from '@models/guild-scheduled/guild-scheduled.service';
 
@@ -22,7 +24,7 @@ export class GuildScheduledController {
         try {
             const thisMonthSchedules = await this.guildScheduledService.getThisMonthSchedules();
 
-            return thisMonthSchedules;
+            return thisMonthSchedules.map((schedule) => new ThisMonthScheduleListResponseDto(schedule));
         } catch (error: any) {
             controllerThrow(error);
         }

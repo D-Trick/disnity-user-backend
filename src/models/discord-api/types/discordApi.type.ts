@@ -7,22 +7,22 @@ export type discordTimeStamp = string | number | Date;
 
 // users
 export interface User {
-    id?: snowflake;
-    global_name?: string;
-    username?: string;
-    discriminator?: discordString;
-    avatar?: discordString;
-    bot?: boolean;
-    system?: boolean;
-    mfa_enabled?: boolean;
-    banner?: discordString;
-    accent_color?: number;
-    locale?: discordString;
-    verified?: boolean;
-    email?: discordString;
-    flags?: number;
-    premium_type?: number;
-    public_flags?: number;
+    id: snowflake;
+    username: string;
+    avatar: discordString;
+    discriminator: discordString;
+    public_flags: number;
+    premium_type: number;
+    flags: number;
+    banner: discordString;
+    accent_color: number;
+    global_name: string;
+    avatar_decoration_data: discordString;
+    banner_color: discordString;
+    mfa_enabled: boolean;
+    locale: discordString;
+    email: discordString;
+    verified: boolean;
 }
 export interface UserGuild {
     id: snowflake;
@@ -30,8 +30,8 @@ export interface UserGuild {
     icon: discordString;
     owner: boolean;
     permissions: number;
-    features: string[];
     permissions_new: discordString;
+    features: string[];
 }
 
 // Guilds

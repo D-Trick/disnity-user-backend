@@ -1,12 +1,13 @@
 // types
 import type { SqlOptions } from '@common/types/sql-options.type';
 import type {
+    CFindOptions,
+    CFindOneOptions,
     FindTagGuildIdsOptions,
     TotalTagGuildsCountOptions,
     InsertOptions,
     UpdateOptions,
     DeleteOptions,
-    SelectOptions,
 } from '@databases/types/tag.type';
 // lib
 import { Repository } from 'typeorm';
@@ -15,14 +16,15 @@ import { Tag } from '@databases/entities/tag.entity';
 // repositories
 import { CustomRepository } from '@common/modules/typeorm-custom-repository.module';
 // sql
-import { findSitemapUrls } from './sql/find-sitemap-urls';
+import { cFind } from './sql/find';
+import { cFindOne } from './sql/find-one';
+import { findSitemapData } from './sql/find-sitemap-data';
 import { findTagGuildIds } from './sql/pagination/find-tag-guild-ids';
 import { totalTagGuildsCount } from './sql/total-tag-guilds-count';
 import { findNames } from './sql/find-names';
 import { cInsert } from './sql/insert';
 import { cUpdate } from './sql/update';
 import { cDelete } from './sql/delete';
-import { selectMany, selectOne } from './sql/select';
 
 // ----------------------------------------------------------------------
 
@@ -37,18 +39,19 @@ export class TagRepository extends Repository<Tag> {
     }
 
     /**
-     * Select One
-     * @param {SelectOptions} options
+     * Custom Find
+     * @param {CFindOptions} options
      */
-    async selectOne(options: SelectOptions) {
-        return selectOne(this, options);
+    async cFind(options: CFindOptions) {
+        return cFind(this, options);
     }
+
     /**
-     * Select Many
-     * @param {SelectOptions} options
+     * Custom Find One
+     * @param {CFindOneOptions} options
      */
-    async selectMany(options: SelectOptions) {
-        return selectMany(this, options);
+    async cFindOne(options: CFindOneOptions) {
+        return cFindOne(this, options);
     }
 
     /**
@@ -71,8 +74,8 @@ export class TagRepository extends Repository<Tag> {
      * sitemap guild tag url 가져오기
      * @param {SqlOptions} options
      */
-    async findSitemapUrls(options?: SqlOptions) {
-        return findSitemapUrls(this, options);
+    async findSitemapData(options?: SqlOptions) {
+        return await findSitemapData(this, options);
     }
 
     /**

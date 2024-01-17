@@ -4,7 +4,7 @@ import { Module } from '@nestjs/common';
 import { UtilHelper } from './helper/util.helper';
 import { FilterHelper } from './helper/filter.helper';
 // modules
-import { CoreModule } from '@common/modules/core.module';
+import { CacheModule } from '@cache/redis/cache.module';
 import { DiscordApiModule } from '@models/discord-api/discordApi.module';
 // controllers
 import { UsersController } from './users.controller';
@@ -17,7 +17,7 @@ import { UsersUpdateService } from './services/update.service';
 // ----------------------------------------------------------------------
 
 @Module({
-    imports: [CoreModule, DiscordApiModule],
+    imports: [CacheModule, DiscordApiModule],
     controllers: [UsersController],
     providers: [UtilHelper, FilterHelper, UsersService, UsersDataService, UsersStoreService, UsersUpdateService],
     exports: [UsersService],

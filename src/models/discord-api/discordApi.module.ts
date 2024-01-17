@@ -1,7 +1,5 @@
 // @nestjs
 import { Module } from '@nestjs/common';
-// modules
-import { CoreModule } from '@common/modules/core.module';
 // services
 import { DiscordApiService } from './discordApi.service';
 import { DiscordApiUsersService } from './services/users.service';
@@ -13,7 +11,6 @@ import { DiscordApiGuildScheduledEventService } from './services/guild-scheduled
 // ----------------------------------------------------------------------
 
 @Module({
-    imports: [CoreModule],
     providers: [
         DiscordApiService,
         DiscordApiUsersService,

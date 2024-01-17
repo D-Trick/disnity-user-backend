@@ -2,8 +2,8 @@
 import type { ServerDetail } from '../types/servers.type';
 // @nestjs
 import { Injectable, NotFoundException } from '@nestjs/common';
-// lib
-import { isEmpty } from '@lib/lodash';
+// lodash
+import isEmpty from 'lodash/isEmpty';
 // messages
 import { HTTP_ERROR_MESSAGES } from '@common/messages';
 // repositories
@@ -55,14 +55,12 @@ export class ServersDetailService {
             throw new NotFoundException(HTTP_ERROR_MESSAGES['404']);
         }
 
-        const promise1 = this.tagRepository.selectMany({
-            select: {
-                columns: {
-                    name: true,
-                },
-            },
+        const promise1 = this.tagRepository.cFind({
             where: {
                 guild_id: id,
+            },
+            order: {
+                sort: 'ASC',
             },
         });
         const promise2 = this.guildAdminPermissionRepository.findGuildAdmins({
@@ -70,27 +68,13 @@ export class ServersDetailService {
                 guild_id: id,
             },
         });
-        const promise3 = this.emojiRepository.selectMany({
-            select: {
-                columns: {
-                    id: true,
-                    name: true,
-                    animated: true,
-                },
-            },
+        const promise3 = this.emojiRepository.cFind({
             where: {
                 guild_id: id,
                 animated: false,
             },
         });
-        const promise4 = this.emojiRepository.selectMany({
-            select: {
-                columns: {
-                    id: true,
-                    name: true,
-                    animated: true,
-                },
-            },
+        const promise4 = this.emojiRepository.cFind({
             where: {
                 guild_id: id,
                 animated: true,
@@ -123,14 +107,15 @@ export class ServersDetailService {
             throw new NotFoundException(HTTP_ERROR_MESSAGES['404']);
         }
 
-        const tags = await this.tagRepository.selectMany({
+        const tags = await this.tagRepository.cFind({
             select: {
-                columns: {
-                    name: true,
-                },
+                name: true,
             },
             where: {
                 guild_id: id,
+            },
+            order: {
+                sort: 'ASC',
             },
         });
 

@@ -21,15 +21,7 @@ export class CommonCodeDetailService {
      * @param {string} value
      */
     async commonCode(code: string, value: string) {
-        const commonCodes = await this.commonCodeRepository.selectOne({
-            select: {
-                columns: {
-                    id: true,
-                    code: true,
-                    name: true,
-                    value: true,
-                },
-            },
+        const commonCodes = await this.commonCodeRepository.cFind({
             where: {
                 code,
                 value,

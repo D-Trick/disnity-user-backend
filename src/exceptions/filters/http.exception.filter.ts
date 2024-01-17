@@ -19,8 +19,18 @@ export class HttpExceptionFilter implements ExceptionFilter {
         const statusCode = exception.getStatus();
         const message = exception.message;
 
-        this.logger.error(`${statusCode} - ${request.url} | ${exception.message}`, exception.stack);
+        if (this.shouldLogMessage(message)) {
+            this.logger.error(`${statusCode} - ${request.url} | ${exception.message}`, exception.stack);
+        }
 
         response.status(statusCode).json(instanceToPlain(ErrorResponse.create(statusCode, message)));
+    }
+
+    private shouldLogMessage(message: string) {
+        if (message.includes('다시 시도해주세요.')) {
+            return false;
+        }
+
+        return true;
     }
 }

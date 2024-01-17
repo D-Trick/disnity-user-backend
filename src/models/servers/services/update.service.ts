@@ -1,11 +1,11 @@
 // types
-import type { Save, SaveValues } from '../types/save.type';
+import type { SaveValues } from '../types/save.type';
 // @nestjs
-import { Injectable, HttpException, HttpStatus, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+// lodash
+import isEmpty from 'lodash/isEmpty';
 // lib
 import { DataSource, QueryRunner } from 'typeorm';
-import dayjs from '@lib/dayjs';
-import { isEmpty } from '@lib/lodash';
 // utils
 import { timePassed, generateSnowflakeId } from '@utils/index';
 // exceptions
@@ -42,17 +42,12 @@ export class ServersUpdateService {
      * @param {string} userId
      * @param {SaveValues} saveValues
      */
-    async edit(serverId: string, userId: string, saveValues: Partial<SaveValues>): Promise<Save> {
+    async edit(serverId: string, userId: string, saveValues: Partial<SaveValues>) {
         const { tags } = saveValues;
 
         const queryRunner = this.dataSource.createQueryRunner();
         try {
-            const myGuild = await this.guildRepository.selectMyGuildOne({
-                select: {
-                    columns: {
-                        id: true,
-                    },
-                },
+            const myGuild = await this.guildRepository.findMyGuild({
                 where: {
                     id: serverId,
                     user_id: userId,
@@ -75,7 +70,7 @@ export class ServersUpdateService {
 
             await queryRunner.commitTransaction();
 
-            return { id: serverId };
+            return serverId;
         } catch (error) {
             if (queryRunner.isTransactionActive) {
                 await queryRunner.rollbackTransaction();
@@ -92,14 +87,9 @@ export class ServersUpdateService {
      * @param {string} guildId
      * @param {string} userId
      */
-    async refresh(guildId: string, userId: string): Promise<{ result: boolean }> {
+    async refresh(guildId: string, userId: string) {
         try {
-            const myServer = await this.guildRepository.selectMyGuildOne({
-                select: {
-                    columns: {
-                        refresh_date: true,
-                    },
-                },
+            const myServer = await this.guildRepository.findMyGuild({
                 where: {
                     id: guildId,
                     user_id: userId,
@@ -109,19 +99,13 @@ export class ServersUpdateService {
                 throw new NotFoundException(SERVER_ERROR_MESSAGES.SERVER_NOT_FOUND);
             }
 
-            const { isTimePassed, currentDateTime, afterDateTime } = timePassed({
+            const { isTimePassed, timeRemainningText } = timePassed({
                 dateTime: myServer.refresh_date as string,
                 unit: 'minute',
                 afterTime: 10,
             });
-
             if (!isTimePassed) {
-                const diff = dayjs(afterDateTime).diff(currentDateTime);
-                const minutes = dayjs.duration(diff).minutes();
-                const seconds = dayjs.duration(diff).seconds();
-
-                const timeRemainning = minutes !== 0 ? `${minutes}분` : `${seconds}초`;
-                throw new BadRequestException(`${timeRemainning} 후 다시 시도해주세요.`);
+                throw new BadRequestException(`${timeRemainningText} 후 다시 시도해주세요.`);
             }
 
             const discordGuild = await this.discordApiService.guilds().detail(guildId);
@@ -143,7 +127,7 @@ export class ServersUpdateService {
                 },
             });
 
-            return { result: true };
+            return true;
         } catch (error) {
             if (error instanceof DiscordApiException) {
                 if (error.statusCode === 403 || error.statusCode === 404) {

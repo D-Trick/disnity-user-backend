@@ -2,6 +2,8 @@
 import type { DataTypeDate } from '@databases/types/global';
 // lib
 import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
+// utils
+import { LocalDateTimeTransformer } from '@utils/database/transformers/local-date-time.transformer';
 
 // ----------------------------------------------------------------------
 
@@ -17,6 +19,9 @@ export class AccessLog {
     @Column('varchar', { length: 15, nullable: true })
     ip?: string;
 
-    @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
+    @Column('timestamp', {
+        default: () => 'CURRENT_TIMESTAMP',
+        transformer: new LocalDateTimeTransformer(),
+    })
     created_at?: DataTypeDate;
 }

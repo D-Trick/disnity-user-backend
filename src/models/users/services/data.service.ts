@@ -4,8 +4,8 @@ import type { AdminGuild } from '../types/users.type';
 import type { Channel } from '@models/discord-api/types/discordApi.type';
 // @nestjs
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-// lib
-import { isEmpty } from '@lib/lodash';
+// lodash
+import isEmpty from 'lodash/isEmpty';
 // cache
 import { CACHE_KEYS } from '@cache/redis/keys';
 // configs
@@ -46,11 +46,18 @@ export class UsersDataService {
     async getUser(userId: string) {
         const cacheUser = await this.cacheService.getUser(userId);
         if (!cacheUser) {
-            const refreshUser = await this.userRepository.selectOne<'base'>({
+            const refreshUser = await this.userRepository.cFindOne({
                 select: {
-                    sql: {
-                        base: true,
-                    },
+                    id: true,
+                    global_name: true,
+                    username: true,
+                    discriminator: true,
+                    email: true,
+                    verified: true,
+                    avatar: true,
+                    locale: true,
+                    created_at: true,
+                    updated_at: true,
                 },
                 where: {
                     id: userId,

@@ -6,7 +6,7 @@ import { getTimestamp, getDate } from '@utils/discord/snowflake';
 describe('Discord Snowflake', () => {
     const snowflakeId = '1149206920645836840';
 
-    it(`snowflake id에서 timestampe를 가져온다`, async () => {
+    it(`snowflake id에서 timestamp를 가져온다`, async () => {
         // When
         const timestamp = getTimestamp(snowflakeId);
 

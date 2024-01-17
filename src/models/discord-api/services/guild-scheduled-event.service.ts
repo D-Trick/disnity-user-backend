@@ -2,9 +2,8 @@
 import type { GuildScheduledEvent } from '../types/discordApi.type';
 // @nestjs
 import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-// lib
-import * as discordApi from '@utils/discord/api';
+// utils
+import { DiscordApi } from '@utils/discord/api';
 // configs
 import { discordConfig } from '@config/discord.config';
 
@@ -15,11 +14,6 @@ const { API_URL, AUTH_TYPE_BOT, BOT_TOKEN } = discordConfig;
 @Injectable()
 export class DiscordApiGuildScheduledEventService {
     /**************************************************
-     * Constructor
-     **************************************************/
-    constructor(private axios: HttpService) {}
-
-    /**************************************************
      * Public Methods
      **************************************************/
     /**
@@ -29,7 +23,7 @@ export class DiscordApiGuildScheduledEventService {
     async scheduledEvents(guildId: string): Promise<GuildScheduledEvent[]> {
         const URL = `${API_URL}/guilds/${guildId}/scheduled-events`;
 
-        const { data: guildSchedules } = await discordApi.get(this.axios, URL, {
+        const { data: guildSchedules } = await DiscordApi.get(URL, {
             authType: AUTH_TYPE_BOT,
             token: BOT_TOKEN,
         });

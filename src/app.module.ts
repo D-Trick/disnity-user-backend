@@ -1,14 +1,12 @@
 // @nestjs
 import { Module } from '@nestjs/common';
-import { RouterModule } from '@nestjs/core';
-import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { CacheModule } from '@nestjs/cache-manager';
 // configs
 import { cacheConfig } from '@config/redis.config';
-import { mysqlConfig } from '@config/database.config';
-// routes
-import router from '@routers/index';
+
 // global modules
+import { RouterModule } from '@routers/router.module';
 import { DatabaseModule } from '@common/modules/database.module';
 // model modules
 import { AuthModule } from '@models/auth/auth.module';
@@ -27,8 +25,7 @@ import { GuildScheduledModule } from '@models/guild-scheduled/guild-scheduled.mo
 
 @Module({
     imports: [
-        RouterModule.register(router),
-        TypeOrmModule.forRoot(mysqlConfig),
+        RouterModule,
         CacheModule.registerAsync(cacheConfig),
 
         // Global

@@ -3,7 +3,7 @@ import type { FindMyGuildIdsOptions } from '@databases/types/guild.type';
 // lib
 import { Brackets, Repository } from 'typeorm';
 // utils
-import { createSelectQueryBuilder } from '@databases/utils/createQueryBuilder';
+import { createSelectQueryBuilder } from '@utils/database/createQueryBuilder';
 // alias
 import { GUILD_TABLE_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
 // entities
@@ -41,7 +41,8 @@ export async function findMyGuildIds(repository: Repository<Guild>, options: Fin
     );
 
     // ORDER BY
-    qb.orderBy(`${TABLE_ALIAS}.refresh_date`, 'DESC');
+    qb.addOrderBy(`${TABLE_ALIAS}.refresh_date`, 'DESC');
+    qb.addOrderBy(`${TABLE_ALIAS}.id`);
 
     // LIMIT, OFFSET
     qb.limit(limit).offset(offset);

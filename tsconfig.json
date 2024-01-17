@@ -29,6 +29,7 @@
             "@common/*": ["./src/common/*"],
             "@routers/*": ["./src/routers/*"],
             "@databases/*": ["./src/databases/*"],
+            "@decorators/*": ["./src/decorators/*"],
             "@exceptions/*": ["./src/exceptions/*"],
             "@middlewares/*": ["./src/middlewares/*"]
         }

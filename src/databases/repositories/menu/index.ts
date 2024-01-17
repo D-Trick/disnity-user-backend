@@ -14,7 +14,7 @@ import { findByType } from './sql/findByType';
 @CustomRepository(Menu)
 export class MenuRepository extends Repository<Menu> {
     /**
-     * 타입에 맞는 메튜 목록 조회
+     * 타입에 맞는 메뉴 목록 조회
      * @param {FindByTypeOptions} options
      */
     async findByType(options: FindByTypeOptions) {

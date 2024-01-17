@@ -1,10 +1,15 @@
+// types
+import type { AuthUser } from '@models/auth/types/auth.type';
 // @nestjs
-import { ENV_CONFIG } from '@config/env.config';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 // lib
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+// configs
+import { ENV_CONFIG } from '@config/env.config';
+// dtos
+import { AuthUserDto } from '@models/auth/dtos/auth-user.dto';
 
 // ----------------------------------------------------------------------
 interface customJwtFromRequest {
@@ -17,7 +22,7 @@ interface customJwtFromRequest {
 function customJwtFromRequest(): customJwtFromRequest {
     return (req: Request): string => {
         const { token } = req.cookies;
-        const headerToken = ExtractJwt.fromAuthHeaderWithScheme('bearer')(req);
+        const headerToken = ExtractJwt.fromAuthHeaderWithScheme('bearer')(req as any);
 
         return headerToken || token;
     };
@@ -34,9 +39,12 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         });
     }
 
-    validate(payload: any) {
-        return {
+    validate(payload: any): AuthUserDto {
+        const user: AuthUser = {
             id: payload.id,
+            isLogin: true,
         };
+
+        return AuthUserDto.create(user);
     }
 }

@@ -1,7 +1,8 @@
 // types
 import type { SqlOptions } from '@common/types/sql-options.type';
 import type {
-    SelectOptions,
+    CFindOptions,
+    CFindOneOptions,
     TotalMyGuildsCountOptions,
     TotalGuildAdminsCountOptions,
     TotalSearchGuildsCountOptions,
@@ -17,8 +18,7 @@ import type {
     DeleteOptions,
     FindMyGuildDetailByIdOptions,
     FindGuildsByIdsSqlName,
-    SelectSqlName,
-    SelectMyGuildOptions,
+    FindMyGuildOptions,
 } from '@databases/types/guild.type';
 // lib
 import { Repository } from 'typeorm';
@@ -27,13 +27,14 @@ import { Guild } from '@databases/entities/guild.entity';
 // repositories
 import { CustomRepository } from '@common/modules/typeorm-custom-repository.module';
 // sql
-import { selectMany, selectOne } from './sql/select';
-import { selectMyGuildOne } from './sql/selectMyGuild';
+import { cFind } from './sql/find';
+import { cFindOne } from './sql/find-one';
+import { findMyGuild } from './sql/find-my-guild';
 import { totalCategoryGuildsCount } from './sql/total-category-guilds-count';
 import { totalSearchGuildsCount } from './sql/total-search-guilds-count';
 import { totalGuildAdminsCount } from './sql/total-admin-guilds-count';
 import { findGuildDetailById } from './sql/find-guild-detail-by-id';
-import { findSitemapUrls } from './sql/find-sitemap-urls';
+import { findSitemapData } from './sql/find-sitemap-data';
 import { findCategoryGuildIds } from './sql/pagination/find-category-guild-ids';
 import { findSearchGuildIds } from './sql/pagination/find-search-guild-ids';
 import { findGuildsByIds } from './sql/find-guilds-by-ids';
@@ -82,25 +83,27 @@ export class GuildRepository extends Repository<Guild> {
     }
 
     /**
-     * Select One
-     * @param {SelectOptions} options
+     * Custom Find
+     * @param {CFindOptions} options
      */
-    async selectOne<T extends SelectSqlName = 'columns'>(options: SelectOptions) {
-        return selectOne<T>(this, options);
+    async cFind(options: CFindOptions) {
+        return cFind(this, options);
     }
+
     /**
-     * Select Many
-     * @param {SelectOptions} options
+     * Custom Find One
+     * @param {CFindOneOptions} options
      */
-    async selectMany<T extends SelectSqlName = 'columns'>(options: SelectOptions) {
-        return selectMany<T>(this, options);
+    async cFindOne(options: CFindOneOptions) {
+        return cFindOne(this, options);
     }
+
     /**
-     * Select MyGuild One
-     * @param {SelectMyGuildOptions} options
+     * Find MyGuild
+     * @param {FindMyGuildOptions} options
      */
-    async selectMyGuildOne(options: SelectMyGuildOptions) {
-        return selectMyGuildOne(this, options);
+    async findMyGuild(options: FindMyGuildOptions) {
+        return findMyGuild(this, options);
     }
 
     /**
@@ -156,8 +159,8 @@ export class GuildRepository extends Repository<Guild> {
      * sitemap server url 가져오기
      * @param {SqlOptions} options
      */
-    async findSitemapUrls(options?: SqlOptions) {
-        return findSitemapUrls(this, options);
+    async findSitemapData(options?: SqlOptions) {
+        return await findSitemapData(this, options);
     }
 
     /**

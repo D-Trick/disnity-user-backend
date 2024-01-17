@@ -1,5 +1,11 @@
 // types
-import type { SelectOptions, InsertOptions, UpdateOptions, DeleteOptions } from '@databases/types/emoji.type';
+import type {
+    CFindOptions,
+    CFindOneOptions,
+    InsertOptions,
+    UpdateOptions,
+    DeleteOptions,
+} from '@databases/types/emoji.type';
 // lib
 import { Repository } from 'typeorm';
 // entities
@@ -7,7 +13,8 @@ import { Emoji } from '@databases/entities/emoji.entity';
 // repositories
 import { CustomRepository } from '@common/modules/typeorm-custom-repository.module';
 // sql
-import { selectOne, selectMany } from './sql/select';
+import { cFind } from './sql/find';
+import { cFindOne } from './sql/find-one';
 import { cInsert } from './sql/insert';
 import { cUpdate } from './sql/update';
 import { cDelete } from './sql/delete';
@@ -17,19 +24,19 @@ import { cDelete } from './sql/delete';
 @CustomRepository(Emoji)
 export class EmojiRepository extends Repository<Emoji> {
     /**
-     * Select One
-     * @param {SelectOptions} options
+     * Custom Find
+     * @param {CFindOptions} options
      */
-    async selectOne(options: SelectOptions) {
-        return selectOne(this, options);
+    async cFind(options: CFindOptions) {
+        return cFind(this, options);
     }
 
     /**
-     * Select Many
-     * @param {SelectOptions} options
+     * Custom Find One
+     * @param {CFindOneOptions} options
      */
-    async selectMany(options: SelectOptions) {
-        return selectMany(this, options);
+    async cFindOne(options: CFindOneOptions) {
+        return cFindOne(this, options);
     }
 
     /**

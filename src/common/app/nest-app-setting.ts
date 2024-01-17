@@ -10,13 +10,13 @@ import { NotFoundExceptionFilter } from '@exceptions/filters/not-found.exception
 import { DiscordApiExceptionFilter } from '@exceptions/filters/discord-api.exception.filter';
 import { UnauthorizedExceptionFilter } from '@exceptions/filters/unauthorized.exception.filter';
 // configs
-import { cookieConfig } from '@config/cookie.config';
+import { cookieParserOptions } from '@config/cookie.config';
 import { validationPipeConfig } from '@config/validation-pipe.config';
 
 // ----------------------------------------------------------------------
 
 export function nestAppSetting<T extends INestApplication>(app: T): void {
-    app.use(cookieParser(cookieConfig.secret));
+    app.use(cookieParser(cookieParserOptions.secret));
 
     app.useGlobalPipes(new ValidationPipe(validationPipeConfig));
 

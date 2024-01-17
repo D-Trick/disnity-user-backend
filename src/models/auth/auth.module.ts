@@ -8,7 +8,6 @@ import { JwtStrategy } from '@models/auth/passport/strategys/jwt.strategy';
 // configs
 import { jwtConfig } from '@config/jwt.config';
 // modules
-import { CoreModule } from '@common/modules/core.module';
 import { UsersModule } from '@models/users/users.module';
 // controllers
 import { AuthController } from './auth.controller';
@@ -19,7 +18,7 @@ import { AuthTokenService } from './services/token.service';
 // ----------------------------------------------------------------------
 
 @Module({
-    imports: [CoreModule, PassportModule, JwtModule.register(jwtConfig), UsersModule],
+    imports: [JwtModule.register(jwtConfig), PassportModule, UsersModule],
     controllers: [AuthController],
     providers: [JwtStrategy, DiscordStrategy, AuthService, AuthTokenService],
     exports: [AuthService],

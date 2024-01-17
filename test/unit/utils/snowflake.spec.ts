@@ -15,7 +15,7 @@ describe('Disnity Snowflake 테스트', () => {
         expect(id.length).toBeGreaterThanOrEqual(18);
     });
 
-    it(`snowflake id에서 timestampe를 가져온다`, async () => {
+    it(`snowflake id에서 timestamp를 가져온다`, async () => {
         // When
         const timestamp = getTimestamp(snowflakeId);
 

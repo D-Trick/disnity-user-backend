@@ -3,7 +3,7 @@ import type { FindSearchGuildIdsOptions } from '@databases/types/guild.type';
 // lib
 import { Repository, Brackets } from 'typeorm';
 // utils
-import { createSelectQueryBuilder } from '@databases/utils/createQueryBuilder';
+import { createSelectQueryBuilder } from '@utils/database/createQueryBuilder';
 // alias
 import { GUILD_TABLE_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
 // entities
@@ -55,10 +55,10 @@ export async function findSearchGuildIds(
 
     // GROUP BY
     qb.groupBy(`${TABLE_ALIAS}.id`);
-    if (sort) qb.addGroupBy(`${TABLE_ALIAS}.${sort}`);
 
     // ORDER BY
-    if (sort) qb.orderBy(`${TABLE_ALIAS}.${sort}`, 'DESC');
+    if (sort) qb.addOrderBy(`${TABLE_ALIAS}.${sort}`, 'DESC');
+    qb.addOrderBy(`${TABLE_ALIAS}.id`);
 
     // LIMIT, OFFSET
     qb.limit(limit).offset(offset);
