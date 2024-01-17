@@ -15,11 +15,13 @@ interface TagServerList {
 
 export class TagServerListResponseDto {
     @Exclude() private readonly _totalCount: number;
+    @Exclude() private readonly _tagName: string;
     @Exclude() private readonly _list: TagServerList['list'];
 
-    constructor(tagServers: TagServerList) {
-        this._totalCount = parseInt(tagServers.totalCount || '0');
-        this._list = tagServers.list.map((server) => {
+    constructor(tagServer: TagServerList) {
+        this._totalCount = parseInt(tagServer.totalCount || '0');
+        this._tagName = tagServer.tagName;
+        this._list = tagServer.list.map((server) => {
             server.refresh_date = dateTimeFormat(server.refresh_date);
 
             return server;
@@ -29,6 +31,11 @@ export class TagServerListResponseDto {
     @Expose()
     get totalCount() {
         return this._totalCount;
+    }
+
+    @Expose()
+    get tagName() {
+        return this._tagName;
     }
 
     @Expose()
