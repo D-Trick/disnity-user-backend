@@ -51,7 +51,7 @@ export class ServerResponseDto {
         this._membership_url = server.membership_url;
         this._created_at = dateTimeFormat(server.created_at);
         this._refresh_date = dateTimeFormat(server.refresh_date);
-        this._category_name = server.name;
+        this._category_name = server.category_name;
 
         this._tags = server.tags.map((tag) => ({
             name: tag.name,
