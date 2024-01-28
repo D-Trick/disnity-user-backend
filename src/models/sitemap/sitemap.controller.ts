@@ -1,7 +1,7 @@
 // @nestjs
 import { Controller, Get } from '@nestjs/common';
 // utils
-import { controllerThrow } from '@utils/response/controller-throw';
+import { ControllerException } from '@utils/response';
 // dtos
 import { DynamicUrlsResponseDto } from './dtos/dynamic-urls-response.dto';
 // services
@@ -26,7 +26,7 @@ export class SitemapController {
 
             return new DynamicUrlsResponseDto(dynamicData).urls;
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 }

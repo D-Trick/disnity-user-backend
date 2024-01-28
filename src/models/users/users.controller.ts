@@ -1,7 +1,7 @@
 // lib
 import { Controller, Get, NotFoundException, Param, UseGuards } from '@nestjs/common';
 // utils
-import { controllerThrow } from '@utils/response/controller-throw';
+import { ControllerException } from '@utils/response';
 // dtos
 import { ParamGuildIdRequestDto } from '@common/dtos';
 import { UserResponseDto, AdminGuildResponseDto, AdminGuildListResponseDto, ChannelListResponseDto } from './dtos';
@@ -43,7 +43,7 @@ export class UsersController {
 
             return new UserResponseDto(user);
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 
@@ -55,7 +55,7 @@ export class UsersController {
 
             return adminGuilds.map((adminGuild) => new AdminGuildListResponseDto(adminGuild));
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 
@@ -67,7 +67,7 @@ export class UsersController {
 
             return adminGuilds.map((adminGuild) => new AdminGuildListResponseDto(adminGuild));
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 
@@ -86,7 +86,7 @@ export class UsersController {
 
             return new AdminGuildResponseDto(adminGuild);
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 
@@ -100,7 +100,7 @@ export class UsersController {
 
             return channels.map((channel) => new ChannelListResponseDto(channel));
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 
@@ -114,7 +114,7 @@ export class UsersController {
 
             return channels.map((channel) => new ChannelListResponseDto(channel));
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 }

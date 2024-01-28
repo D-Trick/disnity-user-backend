@@ -6,7 +6,7 @@ import { Controller, Get, Logger, Request, Response, UseGuards } from '@nestjs/c
 import requestIp from 'request-ip';
 import dayjs from '@lib/dayjs';
 // utils
-import { controllerThrow } from '@utils/response/controller-throw';
+import { ControllerException } from '@utils/response';
 // configs
 import { cookieOptions } from '@config/cookie.config';
 // guards
@@ -89,7 +89,7 @@ export class AuthController {
         try {
             return new LoginCheckResponseDto(true);
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 
@@ -105,7 +105,7 @@ export class AuthController {
 
             return new TokenResponseDto(accessToken, refreshToken);
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 }

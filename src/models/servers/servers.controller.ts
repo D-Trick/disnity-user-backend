@@ -1,7 +1,7 @@
 // @nestjs
 import { Controller, Get, Post, UseGuards, Param, Body, Patch, Query, Delete } from '@nestjs/common';
 // utils
-import { controllerThrow } from '@utils/response/controller-throw';
+import { ControllerException } from '@utils/response';
 // guards
 import { AuthGuardJwt } from '@guards/jwt-auth.guard';
 import { AuthGuardLoginCheck } from '@guards/login-check.guard';
@@ -47,7 +47,7 @@ export class ServersController {
 
             return new CategoryServerListResponseDto(allServers);
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 
@@ -58,7 +58,7 @@ export class ServersController {
 
             return new CategoryServerListResponseDto(categoryServers);
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 
@@ -69,7 +69,7 @@ export class ServersController {
 
             return new TagServerListResponseDto(tagServers);
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 
@@ -81,7 +81,7 @@ export class ServersController {
 
             return new ResultResponseDto(result);
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 
@@ -93,7 +93,7 @@ export class ServersController {
 
             return new ServerResponseDto(server);
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 
@@ -105,7 +105,7 @@ export class ServersController {
 
             return new SaveResultResponseDto(id);
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 
@@ -121,7 +121,7 @@ export class ServersController {
 
             return new SaveResultResponseDto(id);
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 
@@ -133,7 +133,7 @@ export class ServersController {
 
             return new ResultResponseDto(result);
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 }

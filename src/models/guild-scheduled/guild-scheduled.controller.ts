@@ -1,7 +1,7 @@
 // @nestjs
 import { Controller, Get } from '@nestjs/common';
 // utils
-import { controllerThrow } from '@utils/response/controller-throw';
+import { ControllerException } from '@utils/response';
 // dtos
 import { ThisMonthScheduleListResponseDto } from './dtos';
 // services
@@ -26,7 +26,7 @@ export class GuildScheduledController {
 
             return thisMonthSchedules.map((schedule) => new ThisMonthScheduleListResponseDto(schedule));
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 }
