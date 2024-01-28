@@ -9,7 +9,7 @@ export class AuthUserDto {
     @Exclude() private readonly _id?: string;
     @Exclude() private readonly _isLogin?: boolean;
 
-    constructor(user: Partial<AuthUser>) {
+    private constructor(user: Partial<AuthUser>) {
         this._id = user?.id;
         this._isLogin = user?.isLogin || false;
     }

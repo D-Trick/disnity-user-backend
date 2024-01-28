@@ -28,7 +28,7 @@ export class AuthDiscordUserDto {
     @Exclude() private readonly _accessToken: string;
     @Exclude() private readonly _refreshToken: string;
 
-    constructor(user: Partial<AuthDiscordUser>) {
+    private constructor(user: Partial<AuthDiscordUser>) {
         this._id = user?.id;
         this._username = user?.username;
         this._avatar = user?.avatar;
