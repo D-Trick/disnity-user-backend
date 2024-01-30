@@ -4,7 +4,7 @@ import type { InsertOptions } from '@databases/types/emoji.type';
 // lib
 import { Repository } from 'typeorm';
 // utils
-import { createInsertQueryBuilder } from '@utils/database/createQueryBuilder';
+import { createInsertQueryBuilder } from '@utils/database/create-query-builder';
 // alias
 import { EMOJI_TABLE_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
 // entities

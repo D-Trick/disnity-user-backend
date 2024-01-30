@@ -3,7 +3,7 @@ import type { CFindOptions } from '@databases/types/user.type';
 // lib
 import { Repository } from 'typeorm';
 // utils
-import { createEntityManager } from '@utils/database/createEntityManager';
+import { createEntityManager } from '@utils/database/create-entity-manager';
 // entities
 import { User } from '@databases/entities/user.entity';
 

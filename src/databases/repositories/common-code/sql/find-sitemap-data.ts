@@ -3,7 +3,7 @@ import type { SqlOptions } from '@common/types/sql-options.type';
 // lib
 import { Repository } from 'typeorm';
 // utils
-import { createSelectQueryBuilder } from '@utils/database/createQueryBuilder';
+import { createSelectQueryBuilder } from '@utils/database/create-query-builder';
 // alias
 import { COMMON_CODE_TABLE_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
 // entities

@@ -5,7 +5,7 @@ import type { UpdateOptions } from '@databases/types/user.type';
 import { Repository } from 'typeorm';
 // utils
 import { isAllEmpty } from '@utils/index';
-import { createUpdateQueryBuilder } from '@utils/database/createQueryBuilder';
+import { createUpdateQueryBuilder } from '@utils/database/create-query-builder';
 // messages
 import { COMMON_ERROR_MESSAGES } from '@common/messages';
 // alias

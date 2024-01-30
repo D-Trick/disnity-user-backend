@@ -3,7 +3,7 @@ import type { CFindOptions } from '@databases/types/tag.type';
 // lib
 import { Repository } from 'typeorm';
 // utils
-import { createEntityManager } from '@utils/database/createEntityManager';
+import { createEntityManager } from '@utils/database/create-entity-manager';
 // entities
 import { Tag } from '@databases/entities/tag.entity';
 

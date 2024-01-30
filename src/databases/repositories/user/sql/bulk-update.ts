@@ -4,7 +4,7 @@ import type { BulkUpdateOptions } from '@databases/types/user.type';
 // lib
 import { Repository } from 'typeorm';
 // utils
-import { bulkUpdateQueryFormat, createUpdateQueryBuilder } from '@utils/database';
+import { generateBulkUpdateQuery, createUpdateQueryBuilder } from '@utils/database';
 // alias
 import { USER_TABLE_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
 // entities
@@ -17,7 +17,7 @@ export async function cBulkUpdate(repository: Repository<User>, options: BulkUpd
     const { IN } = where || {};
     const { ids } = IN || {};
 
-    const { bulkValues, bulkParameters } = bulkUpdateQueryFormat(ids, values);
+    const { bulkValues, bulkParameters } = generateBulkUpdateQuery(ids, values);
 
     const qb = createUpdateQueryBuilder<User>(User, TABLE_ALIAS, {
         repository,

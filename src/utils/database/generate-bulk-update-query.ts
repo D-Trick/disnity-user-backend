@@ -1,23 +1,28 @@
 /**
- * TypeOrm 대량 업데이트를 위한 CASE WHEN 쿼리문 Formatting
+ * CASE WHEN을 사용한 대량 업데이트 쿼리문 생성
  * @param {any[]} ids
  * @param {object[]} values
  */
-export const bulkUpdateQueryFormat = (ids: any[] = [], values: object[] = []) => {
+export const generateBulkUpdateQuery = (ids: any[] = [], values: object[] = []) => {
     const { length: idsLength } = ids;
+    const hasIds = !!idsLength;
     const { length: valuesLength } = values;
+    const hasValues = !!valuesLength;
 
-    if (valuesLength === 0 || idsLength === 0) {
-        throw new Error(`[BulkUpdate] 변경할 데이터 또는 컬럼이 없습니다. (${valuesLength} / ${idsLength})`);
+    if (!hasIds) {
+        throw new Error(`[BulkUpdate] 업데이트시킬 컬럼이 없습니다.`);
+    }
+    if (!hasValues) {
+        throw new Error(`[BulkUpdate] 업데이트시킬 데이터가 없습니다.`);
     }
     if (valuesLength !== idsLength) {
         throw new Error(
-            `[BulkUpdate] 변경할 데이터 수 와 변경할 컬럼에 데이터 수가 같지 않습니다. (${valuesLength} / ${idsLength})`,
+            `[BulkUpdate] 업데이트시킬 데이터와 컬럼의 개수가 같지 않습니다. (${valuesLength} / ${idsLength})`,
         );
     }
 
-    const bulkValues = {};
-    const bulkParameters = {};
+    const bulkValues: { [key: string]: any } = {};
+    const bulkParameters: { [key: string]: any } = {};
 
     for (const column in values[0]) {
         bulkValues[column] = '';
