@@ -4,7 +4,7 @@ import type { TotalSearchGuildsCountOptions } from '@databases/types/guild.type'
 // lib
 import { Repository, Brackets } from 'typeorm';
 // utils
-import { createSelectQueryBuilder } from '@utils/database/createQueryBuilder';
+import { createSelectQueryBuilder } from '@utils/database/create-query-builder';
 // alias
 import { GUILD_TABLE_ALIAS as TABLE_ALIAS } from '@databases/common/table-alias';
 // entities

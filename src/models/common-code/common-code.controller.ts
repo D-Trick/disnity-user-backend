@@ -1,7 +1,7 @@
 // @nestjs
 import { Controller, Get, Param } from '@nestjs/common';
 // utils
-import { controllerThrow } from '@utils/response/controller-throw';
+import { ControllerException } from '@utils/response';
 // dtos
 import { ParamCodeRequestDto } from '@common/dtos';
 import { CommonCodeListResponseDto } from './dtos';
@@ -27,7 +27,7 @@ export class CommonCodeController {
 
             return commonCodes.map((commonCode) => new CommonCodeListResponseDto(commonCode));
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 }

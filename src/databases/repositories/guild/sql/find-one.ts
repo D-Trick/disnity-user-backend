@@ -3,7 +3,7 @@ import type { CFindOneOptions } from '@databases/types/guild.type';
 // lib
 import { Repository } from 'typeorm';
 // utils
-import { createEntityManager } from '@utils/database/createEntityManager';
+import { createEntityManager } from '@utils/database/create-entity-manager';
 // entities
 import { Guild } from '@databases/entities/guild.entity';
 

@@ -1,7 +1,7 @@
 // @nestjs
 import { Controller, Get, UseGuards, Query, Param } from '@nestjs/common';
 // utils
-import { controllerThrow } from '@utils/response/controller-throw';
+import { ControllerException } from '@utils/response';
 // guards
 import { AuthGuardJwt } from '@guards/jwt-auth.guard';
 // docorators
@@ -34,7 +34,7 @@ export class MypageController {
 
             return new MyServerListResponseDto(myServers);
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 
@@ -46,7 +46,7 @@ export class MypageController {
 
             return new MyServerResponseDto(myServer);
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 }

@@ -5,7 +5,7 @@ import type { DeleteOptions } from '@databases/types/guild.type';
 import { Repository } from 'typeorm';
 // utils
 import { isAllEmpty } from '@utils/index';
-import { createDeleteQueryBuilder } from '@utils/database/createQueryBuilder';
+import { createDeleteQueryBuilder } from '@utils/database/create-query-builder';
 // messages
 import { COMMON_ERROR_MESSAGES } from '@common/messages';
 // alias

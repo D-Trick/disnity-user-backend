@@ -3,7 +3,7 @@ import type { CFindOneOptions } from '@databases/types/guild-admin-permission.ty
 // lib
 import { Repository } from 'typeorm';
 // utils
-import { createEntityManager } from '@utils/database/createEntityManager';
+import { createEntityManager } from '@utils/database/create-entity-manager';
 // entities
 import { GuildAdminPermission } from '@databases/entities/guild-admin-permission.entity';
 

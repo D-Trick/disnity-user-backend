@@ -1,10 +1,10 @@
 export * from './n-plus-1';
 
-export * from './createQueryBuilder';
-export * from './createEntityManager';
+export * from './create-query-builder';
+export * from './create-entity-manager';
 
 export * from './connection';
 
-export * from './bulk-update-query-format';
+export * from './generate-bulk-update-query';
 
 export * from './transformers/local-date-time.transformer';

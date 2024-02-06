@@ -1,7 +1,7 @@
 // @nestjs
 import { Controller, Get, Query, Param } from '@nestjs/common';
 // utils
-import { controllerThrow } from '@utils/response/controller-throw';
+import { ControllerException } from '@utils/response';
 // dtos
 import { ParamKeywordRequestDto } from '@common/dtos';
 import { ServerFilterRequestDto } from '@models/servers/dtos';
@@ -28,7 +28,7 @@ export class SearchController {
 
             return new SearchServerListResponseDto(searchServers);
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 }

@@ -3,7 +3,7 @@ import { Controller, Get, Param } from '@nestjs/common';
 // dtos
 import { ParamTypeRequestDto } from '@common/dtos';
 // utils
-import { controllerThrow } from '@utils/response/controller-throw';
+import { ControllerException } from '@utils/response';
 // dtos
 import { MenuListResponseDto } from './dtos';
 // services
@@ -30,7 +30,7 @@ export class MenusController {
 
             return [new MenuListResponseDto(menus)];
         } catch (error: any) {
-            controllerThrow(error);
+            throw new ControllerException(error);
         }
     }
 }
