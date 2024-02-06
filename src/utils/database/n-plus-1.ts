@@ -1,4 +1,5 @@
 // lodash
+import isEmpty from 'lodash/isEmpty';
 import cloneDeep from 'lodash/cloneDeep';
 
 /**************************************************/
@@ -24,35 +25,23 @@ interface DynamicObject {
 /**************************************************/
 
 export class Nplus1<T> {
+    private queryResult: DynamicObject[];
     private primaryColumn: string;
     private joinGroups: JoinGroup[] = [];
     private deleteColumnList: string[] = [];
-    private defaultOutputGroups: DynamicObject = {};
+    private defaultOutputColumns: DynamicObject = {};
 
     /**************************************************
      * Constructor
      **************************************************/
-    constructor(
-        private readonly queryResult: T[],
-        private readonly config: Config,
-    ) {
-        if (!config) throw new Error('config not found');
-        if (!config?.primaryColumn) throw new Error('config.primaryColumn not found');
-        if (!config?.joinGroups) throw new Error('config.joinGroups not found');
+    constructor(queryResult: DynamicObject[], config: Config) {
+        this.queryResult = queryResult;
+        this.primaryColumn = config.primaryColumn;
+        this.joinGroups = config.joinGroups;
 
-        const { primaryColumn, joinGroups } = this.config;
-        this.primaryColumn = primaryColumn;
-        this.joinGroups = joinGroups;
+        this.validate();
 
-        const { length } = this.joinGroups;
-        for (let i = 0; i < length; i++) {
-            const { outputColumn, referenceColumn, selectColumns } = this.joinGroups[i];
-
-            this.defaultOutputGroups[outputColumn] = [];
-
-            const selectOriginalColumns = selectColumns.map((column) => column.originalName);
-            this.deleteColumnList = this.deleteColumnList.concat(referenceColumn, selectOriginalColumns);
-        }
+        this.init();
     }
 
     /**************************************************
@@ -63,31 +52,93 @@ export class Nplus1<T> {
             return undefined;
         }
 
-        const newQueryResult = this.group();
-        const isEmpty = newQueryResult.length === 0;
+        const groupData = this.group();
+        const { length } = groupData;
+        if (length > 1) {
+            throw new Error('그룹화된 데이터가 2개이상 입니다. 현재 그룹화 데이터 또는 쿼리결과 데이터를 확인하세요.');
+        }
 
-        return isEmpty ? undefined : newQueryResult[0];
+        const isEmpty = length === 0;
+        const result = isEmpty ? undefined : groupData[0];
+
+        return result;
     }
     getMany(): T[] {
         if (!this.queryResult || this.queryResult.length === 0) {
             return [];
         }
 
-        const newQueryResult = this.group();
+        const groupData = this.group();
 
-        return newQueryResult;
+        return groupData;
     }
 
     /**************************************************
      * Private Methods
      **************************************************/
     /**
-     * 쿼리 결과에서 join row를 그룹화 시킨다.
+     * options, 비교해야될 컬럼 유효성검사
+     */
+    private validate() {
+        const columns = Object.keys(this.queryResult[0]);
+
+        if (isEmpty(this.primaryColumn)) {
+            throw new Error('config.primaryColumn Option이 없습니다.');
+        }
+        if (isEmpty(this.joinGroups)) {
+            throw new Error('config.joinGroups Option이 없습니다.');
+        }
+        if (this.isColumnNotFound(columns, this.primaryColumn)) {
+            throw new Error(`Column: ${this.primaryColumn}이(가) 없습니다.`);
+        }
+
+        this.joinGroups.map((joinGroup) => {
+            if (this.isColumnNotFound(columns, joinGroup.referenceColumn)) {
+                throw new Error(`Column: ${joinGroup.referenceColumn}이(가) 없습니다.`);
+            }
+
+            if (isEmpty(joinGroup.selectColumns)) {
+                throw new Error('joinGroup.selectColumns Option이 없습니다.');
+            }
+            joinGroup.selectColumns.map((selectColumn) => {
+                if (this.isColumnNotFound(columns, selectColumn.originalName)) {
+                    throw new Error(`Column: ${selectColumn.originalName}이(가) 없습니다.`);
+                }
+            });
+        });
+    }
+
+    /**
+     * 초기화
+     */
+    private init() {
+        const { length } = this.joinGroups;
+        for (let i = 0; i < length; i++) {
+            const { outputColumn, referenceColumn, selectColumns } = this.joinGroups[i];
+
+            this.defaultOutputColumns[outputColumn] = [];
+
+            const selectOriginalColumns = selectColumns.map((column) => column.originalName);
+            this.deleteColumnList = this.deleteColumnList.concat(referenceColumn, selectOriginalColumns);
+        }
+    }
+
+    /**
+     * 컬럼이 존재하는지 검사
+     * @param {string[]} columnsToCompare
+     * @param {string} columnToCheck
+     */
+    private isColumnNotFound(columnsToCompare: string[], columnToCheck: string) {
+        return !columnsToCompare.includes(columnToCheck);
+    }
+
+    /**
+     * N + 1 해결을위해 Join을 사용해 만든 쿼리결과를 그룹화 작업을 한다.
      */
     private group(): T[] {
         const newQueryResult = [];
 
-        let outputGroups = cloneDeep(this.defaultOutputGroups);
+        let outputColumns = cloneDeep(this.defaultOutputColumns);
 
         const { length: queryResultLength } = this.queryResult;
         const lastIndex = queryResultLength - 1;
@@ -99,16 +150,16 @@ export class Nplus1<T> {
             const nextIndex = greaterThanOrEqual ? lastIndex : currentIndex + 1;
             const nextRow = this.queryResult[nextIndex];
 
-            outputGroups = this.joinRowGrouping(currentRow, outputGroups);
+            outputColumns = this.joinRowGrouping(currentRow, outputColumns);
 
             const isLastIndex = currentIndex === lastIndex;
             const isDifferentRow = currentRow[this.primaryColumn] !== nextRow[this.primaryColumn];
             if (isDataOne || isLastIndex || isDifferentRow) {
-                const newCurrentRow = this.filterUnusedColumns(currentRow);
-                const uniqOutputGroups = this.uniqGroupData(outputGroups);
-                outputGroups = cloneDeep(this.defaultOutputGroups);
+                const newCurrentRow = this.deleteUnusedColumns(currentRow);
+                const uniqOutputColumns = this.removeDuplicateGroupData(outputColumns);
+                newQueryResult.push({ ...newCurrentRow, ...uniqOutputColumns });
 
-                newQueryResult.push({ ...newCurrentRow, ...uniqOutputGroups });
+                outputColumns = cloneDeep(this.defaultOutputColumns);
             }
         }
 
@@ -116,54 +167,56 @@ export class Nplus1<T> {
     }
 
     /**
-     * join해서 가져온 row에서 outputColumn을 기준으로 각 column에 그룹화 작업을 한다.
+     * 현재 행에서 Join의 결과를 outputColumns 기준으로 데이터 그룹화 작업을 한다.
      * @param {DynamicObject} row
-     * @param {DynamicObject} outputGroups
+     * @param {DynamicObject} outputColumns
      */
-    private joinRowGrouping(row: DynamicObject, outputGroups: DynamicObject) {
-        const newOutputGroups = { ...outputGroups };
+    private joinRowGrouping(row: DynamicObject, outputColumns: DynamicObject) {
+        const newOutputColumns = cloneDeep(outputColumns);
 
         const { length: joinGroupsLength } = this.joinGroups;
         for (let i = 0; i < joinGroupsLength; i++) {
             const { outputColumn, referenceColumn, selectColumns } = this.joinGroups[i];
 
             if (row[referenceColumn]) {
-                const columns = this.filterSelectColumns(row, selectColumns);
-                newOutputGroups[outputColumn].push(columns);
+                const columns = this.changeSelectColumnNames(row, selectColumns);
+                newOutputColumns[outputColumn].push(columns);
             }
         }
 
-        return newOutputGroups;
+        return newOutputColumns;
     }
 
     /**
-     * join해서 가져온 row에서 selectColumns을 기준으로 필터해서 json key를 지정한다.
+     * 현재 행에서 Join을 통해 가져온 Column의 이름을 변경한다.
      * @param {DynamicObject} row
      * @param {SelectColumns[]} selectColumns
      */
-    private filterSelectColumns(row: DynamicObject, selectColumns: SelectColumns[]) {
-        const filterColumns = {};
+    private changeSelectColumnNames(row: DynamicObject, selectColumns: SelectColumns[]) {
+        const changedColumns = {};
 
         const { length } = selectColumns;
         for (let i = 0; i < length; i++) {
             const column = selectColumns[i];
             const columnName = column.changeName || column.originalName;
 
-            filterColumns[columnName] = row[column.originalName];
+            changedColumns[columnName] = row[column.originalName];
         }
 
-        return filterColumns;
+        return changedColumns;
     }
 
     /**
-     * row에 columns에서 사용하지않는 column은 삭제 한다.
+     * 현재 행에서 사용하지 않는 column을 전부 삭제 한다.
+     * 삭제되는 컬럼: Join할때 사용된 reference column, Join 후 Select의 진짜 컬럼이름
      * @param {DynamicObject} row
      */
-    private filterUnusedColumns(row: DynamicObject) {
+    private deleteUnusedColumns(row: DynamicObject) {
         const currentRow = { ...row };
 
         for (const column in currentRow) {
-            if (this.deleteColumnList.includes(column)) {
+            const isDeleteColumnFound = this.deleteColumnList.includes(column);
+            if (isDeleteColumnFound) {
                 delete currentRow[column];
             }
         }
@@ -172,10 +225,10 @@ export class Nplus1<T> {
     }
 
     /**
-     * 그룹화가 완료된 데이터에서 중복데이터를 제거 한다.
+     * 표시될 그룹 컬럼명(outputColumns)으로 그룹화된 데이터들을 중복제거한다.
      * @param {DynamicObject} groupData
      */
-    private uniqGroupData(groupData: DynamicObject) {
+    private removeDuplicateGroupData(groupData: DynamicObject) {
         const newGroupData = { ...groupData };
 
         for (const column in newGroupData) {
