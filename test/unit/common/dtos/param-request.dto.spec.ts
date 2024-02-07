@@ -4,6 +4,8 @@ import { validate } from 'class-validator';
 import { createFakeString } from 'test/mock/utils/createFakeString';
 // configs
 import { validationPipeConfig } from '@config/validation-pipe.config';
+// messages
+import { HTTP_ERROR_MESSAGES } from '@common/messages';
 // dtos
 import {
     ParamCodeRequestDto,
@@ -18,172 +20,205 @@ import {
 
 // ----------------------------------------------------------------------
 
-describe('Dynamic Param 유효성 검사', () => {
-    describe('Param - id 유효성 검사', () => {
+describe('Param Request DTO', () => {
+    describe('id로 요청한 값 유효성 검사', () => {
         it(`20글자 이하이면 유효성 검사 통과`, async () => {
-            const ERROR_COUNT = 0;
+            // Given
             const dto = new ParamIdStringRequestDto();
             dto.id = createFakeString('1', 20);
 
-            const validateErrors = await validate(dto, validationPipeConfig);
+            // When
+            const errors = await validate(dto, validationPipeConfig);
 
-            expect(validateErrors.length).toBe(ERROR_COUNT);
+            // Than
+            expect(errors.length).toBe(0);
         });
         it(`21글자 이상이면 유효성 검사 실패`, async () => {
-            const ERROR_COUNT = 1;
+            // Given
             const dto = new ParamIdStringRequestDto();
             dto.id = createFakeString('1', 21);
 
-            const validateErrors = await validate(dto, validationPipeConfig);
+            // When
+            const erros = await validate(dto, validationPipeConfig);
 
-            expect(validateErrors.length).toBe(ERROR_COUNT);
+            // Than
+            expect(erros[0].constraints['maxLength']).toBe(HTTP_ERROR_MESSAGES['900']);
         });
 
         it(`숫자이면 유효성 검사 통과`, async () => {
-            const ERROR_COUNT = 0;
+            // Given
             const dto = new ParamIdNumberRequestDto();
             dto.id = 1;
 
-            const validateErrors = await validate(dto, validationPipeConfig);
+            // When
+            const errors = await validate(dto, validationPipeConfig);
 
-            expect(validateErrors.length).toBe(ERROR_COUNT);
+            // Than
+            expect(errors.length).toBe(0);
         });
         it(`숫자가 아니면 유효성 검사 실패`, async () => {
-            const ERROR_COUNT = 1;
+            // Given
             const dto = new ParamIdNumberRequestDto();
             dto.id = 'a' as any;
 
-            const validateErrors = await validate(dto, validationPipeConfig);
+            // When
+            const errors = await validate(dto, validationPipeConfig);
 
-            expect(validateErrors.length).toBe(ERROR_COUNT);
+            // Than
+            expect(errors[0].constraints['isInt']).toBe(HTTP_ERROR_MESSAGES['900']);
         });
     });
 
-    describe('Param - guildId 유효성 검사', () => {
+    describe('guildId로 요청한 값 유효성 검사', () => {
         it(`20글자 이하이면 유효성 검사 통과`, async () => {
-            const ERROR_COUNT = 0;
+            // Given
             const dto = new ParamGuildIdRequestDto();
             dto.guildId = createFakeString('1', 20);
 
-            const validateErrors = await validate(dto, validationPipeConfig);
+            // When
+            const errors = await validate(dto, validationPipeConfig);
 
-            expect(validateErrors.length).toBe(ERROR_COUNT);
+            // Than
+            expect(errors.length).toBe(0);
         });
         it(`21글자 이상이면 유효성 검사 실패`, async () => {
-            const ERROR_COUNT = 1;
+            // Given
             const dto = new ParamGuildIdRequestDto();
             dto.guildId = createFakeString('1', 21);
 
-            const validateErrors = await validate(dto, validationPipeConfig);
+            // When
+            const errors = await validate(dto, validationPipeConfig);
 
-            expect(validateErrors.length).toBe(ERROR_COUNT);
+            // Than
+            expect(errors[0].constraints['maxLength']).toBe(HTTP_ERROR_MESSAGES['900']);
         });
     });
 
-    describe('Param - type 유효성 검사', () => {
+    describe('type으로 요청한 값 유효성 검사', () => {
         it(`20글자 이하이면 유효성 검사 통과`, async () => {
-            const ERROR_COUNT = 0;
+            // Given
             const dto = new ParamTypeRequestDto();
             dto.type = createFakeString('1', 20);
 
-            const validateErrors = await validate(dto, validationPipeConfig);
+            // When
+            const errors = await validate(dto, validationPipeConfig);
 
-            expect(validateErrors.length).toBe(ERROR_COUNT);
+            // Than
+            expect(errors.length).toBe(0);
         });
         it(`21글자 이상이면 유효성 검사 실패`, async () => {
-            const ERROR_COUNT = 1;
+            // Given
             const dto = new ParamTypeRequestDto();
             dto.type = createFakeString('1', 21);
 
-            const validateErrors = await validate(dto, validationPipeConfig);
+            // When
+            const errors = await validate(dto, validationPipeConfig);
 
-            expect(validateErrors.length).toBe(ERROR_COUNT);
+            // Than
+            expect(errors[0].constraints['maxLength']).toBe(HTTP_ERROR_MESSAGES['900']);
         });
     });
 
-    describe('Param - type, guildId 유효성 검사', () => {
-        it(`type이 10글자 / guildId 20글자 이하이면 유효성 검사 통과`, async () => {
-            const ERROR_COUNT = 0;
+    describe('type, guildId로 요청한 값 유효성 검사', () => {
+        it(`요청한 type값이 10글자 이하 이면서 guildId값이 20글자 이하이면 유효성 검사 통과`, async () => {
+            // Given
             const dto = new ParamTypeAndGuildIdRequestDto();
-            dto.type = createFakeString('1', 10);
             dto.guildId = createFakeString('1', 20);
+            dto.type = createFakeString('1', 10);
 
-            const validateErrors = await validate(dto, validationPipeConfig);
+            // When
+            const errors = await validate(dto, validationPipeConfig);
 
-            expect(validateErrors.length).toBe(ERROR_COUNT);
+            // Than
+            expect(errors.length).toBe(0);
         });
-        it(`type이 11글자 / guildId 21글자 이하이면 유효성 검사 실패`, async () => {
-            const ERROR_COUNT = 2;
+        it(`요청한 type값이 11글자 이상 이면서 guildId값이 21글자 이상이면 유효성 검사 실패`, async () => {
+            // Given
             const dto = new ParamTypeAndGuildIdRequestDto();
-            dto.type = createFakeString('1', 11);
             dto.guildId = createFakeString('1', 21);
+            dto.type = createFakeString('1', 11);
 
-            const validateErrors = await validate(dto, validationPipeConfig);
+            // When
+            const errors = await validate(dto, validationPipeConfig);
 
-            expect(validateErrors.length).toBe(ERROR_COUNT);
+            // Than
+            expect(errors[0].constraints['maxLength']).toBe(HTTP_ERROR_MESSAGES['900']);
+            expect(errors[1].constraints['maxLength']).toBe(HTTP_ERROR_MESSAGES['900']);
         });
     });
 
-    describe('Param - name 유효성 검사', () => {
+    describe('name으로 요청한 값 유효성 검사', () => {
         it(`20글자 이하이면 유효성 검사 통과`, async () => {
-            const ERROR_COUNT = 0;
+            // Given
             const dto = new ParamNameRequestDto();
             dto.name = createFakeString('1', 20);
 
-            const validateErrors = await validate(dto, validationPipeConfig);
+            // When
+            const errors = await validate(dto, validationPipeConfig);
 
-            expect(validateErrors.length).toBe(ERROR_COUNT);
+            // Than
+            expect(errors.length).toBe(0);
         });
         it(`21글자 이상이면 유효성 검사 실패`, async () => {
-            const ERROR_COUNT = 1;
+            // Given
             const dto = new ParamNameRequestDto();
             dto.name = createFakeString('1', 21);
 
-            const validateErrors = await validate(dto, validationPipeConfig);
+            // When
+            const errors = await validate(dto, validationPipeConfig);
 
-            expect(validateErrors.length).toBe(ERROR_COUNT);
+            // Than
+            expect(errors[0].constraints['maxLength']).toBe(HTTP_ERROR_MESSAGES['900']);
         });
     });
 
     describe('Param - keyword 유효성 검사', () => {
         it(`50글자 이하이면 유효성 검사 통과`, async () => {
-            const ERROR_COUNT = 0;
+            // Given
             const dto = new ParamKeywordRequestDto();
             dto.keyword = createFakeString('1', 50);
 
-            const validateErrors = await validate(dto, validationPipeConfig);
+            // When
+            const errors = await validate(dto, validationPipeConfig);
 
-            expect(validateErrors.length).toBe(ERROR_COUNT);
+            // Than
+            expect(errors.length).toBe(0);
         });
         it(`51글자 이상이면 유효성 검사 실패`, async () => {
-            const ERROR_COUNT = 1;
+            // Given
             const dto = new ParamKeywordRequestDto();
             dto.keyword = createFakeString('1', 51);
 
-            const validateErrors = await validate(dto, validationPipeConfig);
+            // When
+            const errors = await validate(dto, validationPipeConfig);
 
-            expect(validateErrors.length).toBe(ERROR_COUNT);
+            // Than
+            expect(errors[0].constraints['maxLength']).toBe(HTTP_ERROR_MESSAGES['900']);
         });
     });
 
     describe('Param - code 유효성 검사', () => {
         it(`20글자 이하이면 유효성 검사 통과`, async () => {
-            const ERROR_COUNT = 0;
+            // Given
             const dto = new ParamCodeRequestDto();
             dto.code = createFakeString('1', 20);
 
-            const validateErrors = await validate(dto, validationPipeConfig);
+            // When
+            const errors = await validate(dto, validationPipeConfig);
 
-            expect(validateErrors.length).toBe(ERROR_COUNT);
+            // Than
+            expect(errors.length).toBe(0);
         });
         it(`21글자 이상이면 유효성 검사 실패`, async () => {
-            const ERROR_COUNT = 1;
+            // Given
             const dto = new ParamCodeRequestDto();
             dto.code = createFakeString('1', 21);
 
-            const validateErrors = await validate(dto, validationPipeConfig);
+            // When
+            const errors = await validate(dto, validationPipeConfig);
 
-            expect(validateErrors.length).toBe(ERROR_COUNT);
+            // Than
+            expect(errors[0].constraints['maxLength']).toBe(HTTP_ERROR_MESSAGES['900']);
         });
     });
 });
