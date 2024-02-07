@@ -2,11 +2,12 @@
 import { IsInt, MaxLength, Max, Min, IsOptional } from 'class-validator';
 // messages
 import { HTTP_ERROR_MESSAGES } from '@common/messages';
-import { PaginationDtoRequest } from '@common/dtos';
+// dtos
+import { PaginationRequestDto } from '@common/dtos';
 
 // ----------------------------------------------------------------------
 
-export class ServerFilterRequestDto extends PaginationDtoRequest {
+export class ServerFilterRequestDto extends PaginationRequestDto {
     @MaxLength(10, { message: HTTP_ERROR_MESSAGES['900'] })
     @IsOptional()
     sort?: string;

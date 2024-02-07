@@ -5,7 +5,7 @@ import { HTTP_ERROR_MESSAGES } from '@common/messages';
 
 // ----------------------------------------------------------------------
 
-export class PaginationDtoRequest {
+export class PaginationRequestDto {
     @Max(4200000000, { message: HTTP_ERROR_MESSAGES['900'] })
     @IsInt({ message: HTTP_ERROR_MESSAGES['900'] })
     @IsOptional()
