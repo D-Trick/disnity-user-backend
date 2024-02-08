@@ -13,7 +13,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 // messages
-import { SERVER_ERROR_MESSAGES, HTTP_ERROR_MESSAGES } from '@common/messages';
+import { SERVER_ERROR_MESSAGES } from '@common/messages';
 // dtos
 import { TagsRequestDto } from './tags-request.dto';
 
@@ -57,7 +57,7 @@ export class UpdateRequestDto {
     })
     membershipUrl: string;
 
-    @ValidateNested({ message: HTTP_ERROR_MESSAGES['900'] })
+    @ValidateNested()
     @Type(() => TagsRequestDto)
     tags: TagsRequestDto[];
 
