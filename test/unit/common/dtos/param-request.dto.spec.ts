@@ -20,7 +20,7 @@ import {
 
 // ----------------------------------------------------------------------
 
-describe('Param Request DTO', () => {
+describe('Param Request DTO 유효성 검사', () => {
     describe('id로 요청한 값 유효성 검사', () => {
         it(`20글자 이하이면 유효성 검사 통과`, async () => {
             // Given

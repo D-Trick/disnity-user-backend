@@ -9,7 +9,7 @@ import { PaginationRequestDto } from '@common/dtos';
 
 // ----------------------------------------------------------------------
 
-describe('Pagination Request DTO', () => {
+describe('Pagination Request DTO 유효성 검사', () => {
     it(`페이지 요청 값이 4200000000 이하이면 유효성 검사 통과`, async () => {
         // Given
         const dto = new PaginationRequestDto();
