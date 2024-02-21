@@ -6,8 +6,15 @@
 
 <br/><br/>
 
-**Previous version**  
+### Previous version
+
 [Current Private Repository](https://github.com/D-Trick/disnity-user-backend-old)
+
+---
+
+### Docker로 구성한 개발환경
+
+[Current Private Repository](https://github.com/D-Trick/disnity-dev-docker)
 
 ---
 
@@ -19,11 +26,12 @@
 
 ### ENV File List
 
--   .env.development
--   .env.production
+-   .env.test - 테스트코드에서 사용되는 env
+-   .env.development - 개발환경에서 사용되는 env
+-   .env.production - 운영환경에서 사용되는 env
 
 ---
 
-### Histroy
+### Framework Change History
 
 Express -> Express(Typescript) -> NestJS
