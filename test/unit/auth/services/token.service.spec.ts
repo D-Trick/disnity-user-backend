@@ -22,19 +22,16 @@ describe('AuthTokenService 테스트를 시작합니다.', () => {
         authTokenService = moduleRef.get<AuthTokenService>(AuthTokenService);
     });
 
-    it(`Access Token을 생성한다.`, async () => {
+    it(`token을 생성한다.`, async () => {
+        // given
+        const jwtPattern = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]+$/;
+
         // When
         const accessToken = authTokenService.createJwtToken('access', anyString());
-
-        // Than
-        expect(typeof accessToken).toBe('string');
-    });
-
-    it(`Refresh Token을 생성한다.`, async () => {
-        // When
         const refreshToken = authTokenService.createJwtToken('refresh', anyString());
 
         // Than
-        expect(typeof refreshToken).toBe('string');
+        expect(accessToken).toMatch(jwtPattern);
+        expect(refreshToken).toMatch(jwtPattern);
     });
 });
