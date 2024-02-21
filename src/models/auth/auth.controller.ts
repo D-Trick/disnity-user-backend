@@ -86,11 +86,7 @@ export class AuthController {
     @Get('/check')
     @UseGuards(AuthGuardJwt)
     check(): { result: boolean } {
-        try {
-            return new LoginCheckResponseDto(true);
-        } catch (error: any) {
-            throw new ControllerException(error);
-        }
+        return new LoginCheckResponseDto(true);
     }
 
     @Get('/token/refresh')
