@@ -24,6 +24,7 @@
         "^@common/(.*)$": "<rootDir>/src/common/$1",
         "^@routers/(.*)$": "<rootDir>/src/routers/$1",
         "^@databases/(.*)$": "<rootDir>/src/databases/$1",
+        "^@decorators/(.*)$": "<rootDir>/src/decorators/$1",
         "^@exceptions/(.*)$": "<rootDir>/src/exceptions/$1",
         "^@middlewares/(.*)$": "<rootDir>/src/middlewares/$1"
     }
