@@ -39,6 +39,6 @@ export class CommonCodeService {
      * @param {string} value
      */
     async getCommonCode(code: string, value: string) {
-        return await this.detailService.commonCode(code, value);
+        return await this.detailService.getCommonCode(code, value);
     }
 }

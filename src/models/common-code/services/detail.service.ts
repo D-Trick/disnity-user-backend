@@ -20,7 +20,7 @@ export class CommonCodeDetailService {
      * @param {string} code
      * @param {string} value
      */
-    async commonCode(code: string, value: string) {
+    async getCommonCode(code: string, value: string) {
         const commonCodes = await this.commonCodeRepository.cFind({
             where: {
                 code,
