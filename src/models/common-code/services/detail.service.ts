@@ -21,13 +21,13 @@ export class CommonCodeDetailService {
      * @param {string} value
      */
     async getCommonCode(code: string, value: string) {
-        const commonCodes = await this.commonCodeRepository.cFind({
+        const commonCode = await this.commonCodeRepository.cFindOne({
             where: {
                 code,
                 value,
             },
         });
 
-        return commonCodes;
+        return commonCode;
     }
 }
