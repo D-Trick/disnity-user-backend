@@ -27,7 +27,7 @@ export class ServerFilterRequestDto extends PaginationRequestDto {
     /**
      * DB에 정렬로 사용될 sort를 반환합니다.
      */
-    toServerSort(sort?: 'create' | 'created_at' | 'member'): string {
+    toServerSort(sort?: 'create' | 'refresh_date' | 'member'): string {
         if (!!sort) {
             return sort;
         }
