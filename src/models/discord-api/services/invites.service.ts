@@ -5,10 +5,8 @@ import { Injectable } from '@nestjs/common';
 // utils
 import { DiscordApi } from '@utils/discord/api';
 // configs
-import { discordConfig } from '@config/discord.config';
+import { DISCORD_CONFIG } from '@config/discord.config';
 
-// ----------------------------------------------------------------------
-const { API_URL } = discordConfig;
 // ----------------------------------------------------------------------
 
 @Injectable()
@@ -21,7 +19,7 @@ export class DiscordApiInvitesService {
      * @param {string} guildId
      */
     async detail(inviteCode: string): Promise<Invite> {
-        const URL = `${API_URL}/invites/${inviteCode}`;
+        const URL = `${DISCORD_CONFIG.URLS.API}/invites/${inviteCode}`;
 
         const { data: invite } = await DiscordApi.get(URL, {
             authType: null,

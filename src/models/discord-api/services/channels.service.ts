@@ -5,10 +5,8 @@ import { Injectable } from '@nestjs/common';
 // utils
 import { DiscordApi } from '@utils/discord/api';
 // configs
-import { discordConfig } from '@config/discord.config';
+import { DISCORD_CONFIG } from '@config/discord.config';
 
-// ----------------------------------------------------------------------
-const { API_URL, AUTH_TYPE_BOT, BOT_TOKEN } = discordConfig;
 // ----------------------------------------------------------------------
 
 @Injectable()
@@ -21,14 +19,14 @@ export class DiscordApiChannelsService {
      * @param {string} channelId
      */
     async createInvites(channelId: string): Promise<Invite> {
-        const URL = `${API_URL}/channels/${channelId}/invites`;
+        const URL = `${DISCORD_CONFIG.URLS.API}/channels/${channelId}/invites`;
 
         const body = {
             max_age: 0,
         };
         const { data: invites } = await DiscordApi.post(URL, body, {
-            authType: AUTH_TYPE_BOT,
-            token: BOT_TOKEN,
+            authType: DISCORD_CONFIG.BOT.AUTH_TYPE,
+            token: DISCORD_CONFIG.BOT.TOKEN,
         });
 
         return invites;

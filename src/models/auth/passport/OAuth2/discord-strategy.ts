@@ -2,11 +2,9 @@
 import { InternalOAuthError, Strategy as OAuth2Strategy, StrategyOptions, VerifyFunction } from 'passport-oauth2';
 import { filterAdminGuilds } from '@utils/discord/permission';
 // configs
-import { discordConfig } from '@config/discord.config';
+import { DISCORD_CONFIG } from '@config/discord.config';
 
 // ----------------------------------------------------------------------
-
-const { API_URL } = discordConfig;
 
 /**
  * `Strategy` constructor.
@@ -57,8 +55,8 @@ export class Strategy extends OAuth2Strategy {
      */
     override async userProfile(accessToken: string, done: (err?: Error | null, profile?: any) => void): Promise<void> {
         try {
-            const promise1 = this.oAuth2Get(`${API_URL}/users/@me`, accessToken);
-            const promise2 = this.oAuth2Get(`${API_URL}/users/@me/guilds`, accessToken);
+            const promise1 = this.oAuth2Get(`${DISCORD_CONFIG.URLS.API}/users/@me`, accessToken);
+            const promise2 = this.oAuth2Get(`${DISCORD_CONFIG.URLS.API}/users/@me/guilds`, accessToken);
 
             const [user, guilds] = await Promise.all([promise1, promise2]);
 

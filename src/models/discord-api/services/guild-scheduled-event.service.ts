@@ -5,10 +5,8 @@ import { Injectable } from '@nestjs/common';
 // utils
 import { DiscordApi } from '@utils/discord/api';
 // configs
-import { discordConfig } from '@config/discord.config';
+import { DISCORD_CONFIG } from '@config/discord.config';
 
-// ----------------------------------------------------------------------
-const { API_URL, AUTH_TYPE_BOT, BOT_TOKEN } = discordConfig;
 // ----------------------------------------------------------------------
 
 @Injectable()
@@ -21,11 +19,11 @@ export class DiscordApiGuildScheduledEventService {
      * @param {string} guildId
      */
     async scheduledEvents(guildId: string): Promise<GuildScheduledEvent[]> {
-        const URL = `${API_URL}/guilds/${guildId}/scheduled-events`;
+        const URL = `${DISCORD_CONFIG.URLS.API}/guilds/${guildId}/scheduled-events`;
 
         const { data: guildSchedules } = await DiscordApi.get(URL, {
-            authType: AUTH_TYPE_BOT,
-            token: BOT_TOKEN,
+            authType: DISCORD_CONFIG.BOT.AUTH_TYPE,
+            token: DISCORD_CONFIG.BOT.TOKEN,
         });
 
         return guildSchedules;

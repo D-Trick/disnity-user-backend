@@ -1,7 +1,7 @@
 // lib
 import axios from 'axios';
 // configs
-import { discordConfig } from '@config/discord.config';
+import { DISCORD_CONFIG } from '@config/discord.config';
 
 // ----------------------------------------------------------------------
 export interface User {
@@ -76,7 +76,7 @@ async function login() {
                 'Content-Type': 'application/json',
             },
         };
-        const { data } = await axios.post(`${discordConfig.API_URL}/auth/login`, body, options);
+        const { data } = await axios.post(`${DISCORD_CONFIG.URLS.API}/auth/login`, body, options);
 
         return data;
     } catch (error) {
@@ -92,7 +92,7 @@ async function authorize(token: string) {
                 Authorization: token,
             },
         };
-        const { data } = await axios.get(`${discordConfig.LOGIN_URI}&user_install=false`, options);
+        const { data } = await axios.get(`${DISCORD_CONFIG.LOGIN_URL}&user_install=false`, options);
 
         return data;
     } catch (error) {
@@ -108,7 +108,7 @@ async function me(token: string) {
                 Authorization: token,
             },
         };
-        const { data } = await axios.get(`${discordConfig.API_URL}/users/@me?with_analytics_token=true`, options);
+        const { data } = await axios.get(`${DISCORD_CONFIG.URLS.API}/users/@me?with_analytics_token=true`, options);
 
         return data;
     } catch (error) {
@@ -125,7 +125,7 @@ async function authorize2(token: string) {
                 Authorization: token,
             },
         };
-        const { data } = await axios.post(`${discordConfig.LOGIN_URI}`, body, options);
+        const { data } = await axios.post(`${DISCORD_CONFIG.LOGIN_URL}`, body, options);
 
         return data;
     } catch (error) {
@@ -138,18 +138,18 @@ async function getToken(code: string) {
         const body = {
             grant_type: 'authorization_code',
             code,
-            redirect_uri: discordConfig.LOGIN_REDIRECT_URL,
+            redirect_uri: DISCORD_CONFIG.CALLBACK_URLS.LOGIN,
         };
         const options = {
             auth: {
-                username: discordConfig.CLIENT_ID,
-                password: discordConfig.CLIENT_SECRET,
+                username: DISCORD_CONFIG.APP.CLIENT_ID,
+                password: DISCORD_CONFIG.APP.CLIENT_SECRET,
             },
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
         };
-        const { data } = await axios.post(discordConfig.TOKEN_URL, body, options);
+        const { data } = await axios.post(DISCORD_CONFIG.URLS.TOKEN, body, options);
 
         return { data };
     } catch (error: any) {

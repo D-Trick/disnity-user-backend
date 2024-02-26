@@ -6,24 +6,22 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from '../OAuth2/discord-strategy';
 // configs
-import { discordConfig } from '@config/discord.config';
+import { DISCORD_CONFIG } from '@config/discord.config';
 // dtos
 import { AuthDiscordUserDto } from '@models/auth/dtos/auth-discord-user.dto';
 
-// ----------------------------------------------------------------------
-const { CLIENT_ID, CLIENT_SECRET, SCOPE, AUTH_URL, TOKEN_URL, LOGIN_REDIRECT_URL } = discordConfig;
 // ----------------------------------------------------------------------
 
 @Injectable()
 export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {
     constructor() {
         super({
-            authorizationURL: AUTH_URL,
-            tokenURL: TOKEN_URL,
-            clientID: CLIENT_ID,
-            clientSecret: CLIENT_SECRET,
-            callbackURL: LOGIN_REDIRECT_URL,
-            scope: SCOPE,
+            authorizationURL: DISCORD_CONFIG.URLS.AUTH,
+            tokenURL: DISCORD_CONFIG.URLS.TOKEN,
+            clientID: DISCORD_CONFIG.APP.CLIENT_ID,
+            clientSecret: DISCORD_CONFIG.APP.CLIENT_SECRET,
+            callbackURL: DISCORD_CONFIG.CALLBACK_URLS.LOGIN,
+            scope: DISCORD_CONFIG.APP.SCOPE,
         });
     }
 

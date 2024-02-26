@@ -5,10 +5,8 @@ import { Injectable } from '@nestjs/common';
 // utils
 import { DiscordApi } from '@utils/discord/api';
 // configs
-import { discordConfig } from '@config/discord.config';
+import { DISCORD_CONFIG } from '@config/discord.config';
 
-// ----------------------------------------------------------------------
-const { AUTH_TYPE_BEARER, API_URL } = discordConfig;
 // ----------------------------------------------------------------------
 
 @Injectable()
@@ -21,10 +19,10 @@ export class DiscordApiUsersService {
      * @param {string} token
      */
     async me(token: string): Promise<User> {
-        const URL = `${API_URL}/users/@me`;
+        const URL = `${DISCORD_CONFIG.URLS.API}/users/@me`;
 
         const { data: user } = await DiscordApi.get(URL, {
-            authType: AUTH_TYPE_BEARER,
+            authType: DISCORD_CONFIG.APP.AUTH_TYPE,
             token,
         });
 
@@ -36,10 +34,10 @@ export class DiscordApiUsersService {
      * @param {string} token
      */
     async guilds(token: string): Promise<UserGuild[]> {
-        const URL = `${API_URL}/users/@me/guilds`;
+        const URL = `${DISCORD_CONFIG.URLS.API}/users/@me/guilds`;
 
         const { data: guilds } = await DiscordApi.get(URL, {
-            authType: AUTH_TYPE_BEARER,
+            authType: DISCORD_CONFIG.APP.AUTH_TYPE,
             token,
         });
 
