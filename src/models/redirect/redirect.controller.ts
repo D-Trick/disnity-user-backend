@@ -3,20 +3,18 @@ import type { Response as ExpressResponse } from 'express';
 // @nestjs
 import { Controller, Get, Response, Param, Query, Logger, UseGuards } from '@nestjs/common';
 // configs
-import { discordConfig, DISCORD_INVITE_URL } from '@config/discord.config';
+import { DISCORD_CONFIG } from '@config/discord.config';
 // decorators
 import { AuthUser } from '@decorators/auth-user.decorator';
 // dtos
-import { ParamIdStringRequestDto, ParamTypeAndGuildIdRequestDto } from '@common/dtos';
-import { DiscordCallbackRequestDto } from './dtos/index';
 import { AuthUserDto } from '@models/auth/dtos/auth-user.dto';
+import { DiscordCallbackRequestDto } from './dtos/index';
+import { ParamIdStringRequestDto, ParamTypeAndGuildIdRequestDto } from '@common/dtos';
 // guards
 import { AuthGuardLoginCheck } from '@guards/login-check.guard';
 // repositories
 import { GuildRepository } from '@databases/repositories/guild';
 
-// ----------------------------------------------------------------------
-const { BOT_INVITE_REDIRECT_CREATE_URI, BOT_INVITE_REDIRECT_MYPAGE_URI } = discordConfig;
 // ----------------------------------------------------------------------
 
 @Controller()
@@ -32,15 +30,13 @@ export class RedirectController {
      * Public Methods
      **************************************************/
     @Get('bot-add/:type/:guildId')
-    async botAddTypeGuildId(@Response() res: ExpressResponse, @Param() param: ParamTypeAndGuildIdRequestDto) {
+    async botAdd(@Response() res: ExpressResponse, @Param() param: ParamTypeAndGuildIdRequestDto) {
         const { type, guildId } = param;
 
         switch (type) {
             case 'create':
-                return res.redirect(`${BOT_INVITE_REDIRECT_CREATE_URI}&guild_id=${guildId}`);
-
             case 'mypage':
-                return res.redirect(`${BOT_INVITE_REDIRECT_MYPAGE_URI}&guild_id=${guildId}`);
+                return res.redirect(DISCORD_CONFIG.BOT_INVITE_URL(type, guildId));
 
             default:
                 return res.redirect('back');
@@ -54,16 +50,20 @@ export class RedirectController {
         @Response() res: ExpressResponse,
         @Query() query: DiscordCallbackRequestDto,
     ) {
-        if (!user.isLogin) return res.redirect('/auth/login');
-
         const { redirect, guild_id, error } = query;
+
+        if (!user.isLogin) {
+            return res.redirect('/auth/login');
+        }
 
         switch (redirect) {
             case 'create':
-                const redirectUrl =
-                    error === 'access_denied' ? `/mypage/servers/create` : `/servers/${guild_id}/create?botAdded=true`;
-
-                return res.redirect(redirectUrl);
+                const isAccessDenied = error === 'access_denied';
+                if (isAccessDenied) {
+                    return res.redirect('/mypage/servers/create');
+                } else {
+                    return res.redirect(`/servers/${guild_id}/create?botAdded=true`);
+                }
 
             case 'mypage':
                 try {
@@ -104,7 +104,7 @@ export class RedirectController {
         });
 
         if (server) {
-            return res.redirect(`${DISCORD_INVITE_URL}/${server.invite_code}`);
+            return res.redirect(DISCORD_CONFIG.SERVER_INVITE_URL(server.invite_code));
         }
 
         return res.redirect('back');
