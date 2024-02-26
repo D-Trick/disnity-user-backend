@@ -155,7 +155,7 @@ export interface FindGuildsByIdsOptions extends SqlOptions {
         max?: number;
 
         IN: {
-            ids: number[];
+            ids: Guild['id'][];
         };
     };
 

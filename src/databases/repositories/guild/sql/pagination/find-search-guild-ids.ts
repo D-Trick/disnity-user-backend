@@ -14,7 +14,7 @@ import { Guild } from '@databases/entities/guild.entity';
 export async function findSearchGuildIds(
     repository: Repository<Guild>,
     options: FindSearchGuildIdsOptions,
-): Promise<number[]> {
+): Promise<string[]> {
     const { transaction, where, orderBy, limit, offset } = options || {};
     const { keyword, min, max } = where || {};
     const { sort } = orderBy || {};

@@ -11,7 +11,7 @@ import { Tag } from '@databases/entities/tag.entity';
 
 // ----------------------------------------------------------------------
 
-export async function findTagGuildIds(repository: Repository<Tag>, options: FindTagGuildIdsOptions): Promise<number[]> {
+export async function findTagGuildIds(repository: Repository<Tag>, options: FindTagGuildIdsOptions): Promise<string[]> {
     const { transaction, where, orderBy, limit, offset } = options || {};
     const { tag_name, min, max } = where || {};
     const { sort } = orderBy || {};

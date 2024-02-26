@@ -11,7 +11,7 @@ import { Guild } from '@databases/entities/guild.entity';
 
 // ----------------------------------------------------------------------
 
-export async function findMyGuildIds(repository: Repository<Guild>, options: FindMyGuildIdsOptions): Promise<number[]> {
+export async function findMyGuildIds(repository: Repository<Guild>, options: FindMyGuildIdsOptions): Promise<string[]> {
     const { transaction, where, limit, offset } = options || {};
     const { user_id } = where || {};
 
