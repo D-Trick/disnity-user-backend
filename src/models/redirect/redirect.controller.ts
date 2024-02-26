@@ -91,7 +91,7 @@ export class RedirectController {
     }
 
     @Get('invite/:id')
-    async inviteId(@Response() res: ExpressResponse, @Param() param: ParamIdStringRequestDto) {
+    async serverInvite(@Response() res: ExpressResponse, @Param() param: ParamIdStringRequestDto) {
         const { id } = param;
 
         const server = await this.guildRepository.cFindOne({
