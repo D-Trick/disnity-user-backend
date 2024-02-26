@@ -40,7 +40,7 @@ export class MypageController {
 
     @Get('servers/:id')
     @UseGuards(AuthGuardJwt)
-    async serversId(@AuthUser() user: AuthUserDto, @Param() param: ParamIdStringRequestDto) {
+    async serverDetail(@AuthUser() user: AuthUserDto, @Param() param: ParamIdStringRequestDto) {
         try {
             const myServer = await this.serversService.myServerDetail(param.id, user.id);
 
