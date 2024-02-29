@@ -22,11 +22,11 @@ export class SearchController {
      * Public Methods
      **************************************************/
     @Get(':keyword')
-    async keyword(@Param() param: ParamKeywordRequestDto, @Query() query: ServerFilterRequestDto) {
+    async server(@Param() param: ParamKeywordRequestDto, @Query() query: ServerFilterRequestDto) {
         try {
-            const searchServers = await this.serversService.getSearchServers(param.keyword, query);
+            const searchServer = await this.serversService.getSearchServers(param.keyword, query);
 
-            return new SearchServerListResponseDto(searchServers);
+            return new SearchServerListResponseDto(searchServer);
         } catch (error: any) {
             throw new ControllerException(error);
         }
