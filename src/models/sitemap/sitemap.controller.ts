@@ -3,7 +3,7 @@ import { Controller, Get } from '@nestjs/common';
 // utils
 import { ControllerException } from '@utils/response';
 // dtos
-import { DynamicUrlsResponseDto } from './dtos/dynamic-urls-response.dto';
+import { DisnitySitemapResponseDto } from './dtos/disnity-sitemap-response.dto';
 // services
 import { SitemapService } from './sitemap.service';
 
@@ -20,11 +20,12 @@ export class SitemapController {
      * Public Methods
      **************************************************/
     @Get('/disnity')
-    async dynamicUrl() {
+    async disnitySitemap() {
         try {
-            const dynamicData = await this.sitemapService.getDynamicData();
+            const staticUrls = this.sitemapService.getStaticUrls();
+            const dynamicUrls = await this.sitemapService.getDynamicUrls();
 
-            return new DynamicUrlsResponseDto(dynamicData).urls;
+            return new DisnitySitemapResponseDto(staticUrls, dynamicUrls);
         } catch (error: any) {
             throw new ControllerException(error);
         }

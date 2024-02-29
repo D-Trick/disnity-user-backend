@@ -1,5 +1,7 @@
 // @nestjs
 import { Injectable } from '@nestjs/common';
+// configs
+import { BASE_CONFIG } from '@config/basic.config';
 // repositories
 import { TagRepository } from '@databases/repositories/tag';
 import { GuildRepository } from '@databases/repositories/guild';
@@ -22,9 +24,16 @@ export class SitemapDataService {
      * Public Methods
      **************************************************/
     /**
-     * 동적 Url 목록을 위한 data 가져오기
+     * 정적 Url 목록을 위한 URL 가져오기
      */
-    async getDynamicData() {
+    getStaticUrls() {
+        return [`${BASE_CONFIG.URL}`, `${BASE_CONFIG.URL}/servers/events`, `${BASE_CONFIG.URL}/servers/tags`];
+    }
+
+    /**
+     * 동적 Url 목록을 위한 URL 가져오기
+     */
+    async getDynamicUrls() {
         const promise1 = this.tagRepository.findSitemapData();
         const promise2 = this.guildRepository.findSitemapData();
         const promise3 = this.commonCodeRepository.findSitemapData();
