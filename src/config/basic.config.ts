@@ -3,11 +3,12 @@ import { ENV_CONFIG } from './env.config';
 
 // ----------------------------------------------------------------------
 interface config {
-    url: string;
+    DOMAIN: string;
+    URL: string;
 }
 // ----------------------------------------------------------------------
 
-export const DOMAIN = ENV_CONFIG.DOMAIN;
-export const baseConfig: config = {
-    url: ENV_CONFIG.IS_DEV_MODE ? `http://${DOMAIN}` : `https://${DOMAIN}`,
-};
+export const BASE_CONFIG: config = {
+    DOMAIN: ENV_CONFIG.DOMAIN,
+    URL: ENV_CONFIG.IS_DEV_MODE ? `http://${ENV_CONFIG.DOMAIN}` : `https://${ENV_CONFIG.DOMAIN}`,
+} as const;

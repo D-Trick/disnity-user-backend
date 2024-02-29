@@ -1,6 +1,6 @@
 // configs
 import { ENV_CONFIG } from './env.config';
-import { baseConfig } from './basic.config';
+import { BASE_CONFIG } from './basic.config';
 
 // ----------------------------------------------------------------------
 const APP = {
@@ -17,7 +17,6 @@ const BOT = {
     PERMISSION: 1,
 } as const;
 // ----------------------------------------------------------------------
-const { url } = baseConfig;
 
 const URL = 'https://discord.com' as const;
 const CDN_URL = 'https://cdn.discordapp.com' as const;
@@ -39,8 +38,8 @@ const CDN_URLS = {
 } as const;
 
 const CALLBACK_URLS = {
-    LOGIN: `${url}/auth/login/callback`,
-    BOT_ADD: (type: string) => `${url}/redirect/bot-add/callback?redirect=${type}`,
+    LOGIN: `${BASE_CONFIG.URL}/auth/login/callback`,
+    BOT_ADD: (type: string) => `${BASE_CONFIG.URL}/redirect/bot-add/callback?redirect=${type}`,
 } as const;
 
 const LOGIN_URL =
