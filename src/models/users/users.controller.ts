@@ -49,7 +49,7 @@ export class UsersController {
 
     @Get('/@me/guilds')
     @UseGuards(AuthGuardJwt)
-    async meGuilds(@AuthUser() user: AuthUserDto) {
+    async guildList(@AuthUser() user: AuthUserDto) {
         try {
             const adminGuilds = await this.usersServices.getAdminGuilds(user.id);
 
@@ -61,7 +61,7 @@ export class UsersController {
 
     @Get('/@me/guilds/refresh')
     @UseGuards(AuthGuardJwt)
-    async meGuildsRefresh(@AuthUser() user: AuthUserDto) {
+    async guildListRefresh(@AuthUser() user: AuthUserDto) {
         try {
             const adminGuilds = await this.usersServices.refreshAdminGuilds(user.id);
 
@@ -73,7 +73,7 @@ export class UsersController {
 
     @Get('/@me/guilds/:guildId')
     @UseGuards(AuthGuardJwt)
-    async meGuildsGuildId(@AuthUser() user: AuthUserDto, @Param() param: ParamGuildIdRequestDto) {
+    async guildDetail(@Param() param: ParamGuildIdRequestDto, @AuthUser() user: AuthUserDto) {
         try {
             const { guildId } = param;
 
@@ -92,7 +92,7 @@ export class UsersController {
 
     @Get('/@me/guilds/:guildId/channels')
     @UseGuards(AuthGuardJwt)
-    async meGuildsGuildIdChannels(@AuthUser() user: AuthUserDto, @Param() param: ParamGuildIdRequestDto) {
+    async channelList(@Param() param: ParamGuildIdRequestDto, @AuthUser() user: AuthUserDto) {
         try {
             const { guildId } = param;
 
@@ -106,7 +106,7 @@ export class UsersController {
 
     @Get('/@me/guilds/:guildId/channels/refresh')
     @UseGuards(AuthGuardJwt)
-    async meGuildsGuildIdChannelsRefresh(@AuthUser() user: AuthUserDto, @Param() param: ParamGuildIdRequestDto) {
+    async channelListRefresh(@Param() param: ParamGuildIdRequestDto, @AuthUser() user: AuthUserDto) {
         try {
             const { guildId } = param;
 

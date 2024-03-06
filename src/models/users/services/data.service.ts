@@ -110,9 +110,9 @@ export class UsersDataService {
     async getChannels(guildId: string, userId: string, refresh: boolean): Promise<Channel[]> {
         const discordUser = await this.getDiscordUser(userId);
 
-        let channels = [];
+        let channels: Channel[] = [];
 
-        const adminGuild: any = this.utilHelper.getAdminGuild(guildId, discordUser.admin_guilds);
+        const adminGuild = this.utilHelper.getAdminGuild(guildId, discordUser.admin_guilds);
         if (adminGuild) {
             if (refresh) {
                 channels = [];
