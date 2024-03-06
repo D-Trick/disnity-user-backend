@@ -29,7 +29,7 @@ export class DisnitySitemapResponseDto {
             return `${BASE_CONFIG.URL}/servers/categorys/${category.value}`;
         });
 
-        this._urls = [].concat(staticUrls, categorysUrls, serverUrls, tagUrls);
+        this._urls = [...staticUrls, ...categorysUrls, ...serverUrls, ...tagUrls];
     }
 
     @Expose()
