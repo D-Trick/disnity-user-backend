@@ -1,6 +1,6 @@
 // types
 import type { SqlOptions } from '@common/types/sql-options.type';
-import type { FindNames } from '@databases/types/tag.type';
+import type { FindAllTags } from '@databases/types/tag.type';
 // lib
 import { Repository } from 'typeorm';
 // utils
@@ -12,7 +12,7 @@ import { Tag } from '@databases/entities/tag.entity';
 
 // ----------------------------------------------------------------------
 
-export async function findNames(repository: Repository<Tag>, options: SqlOptions): Promise<FindNames[]> {
+export async function findAllTags(repository: Repository<Tag>, options: SqlOptions): Promise<FindAllTags[]> {
     const { transaction } = options || {};
 
     const qb = createSelectQueryBuilder<Tag>(Tag, TABLE_ALIAS, {

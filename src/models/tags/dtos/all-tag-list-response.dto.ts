@@ -1,15 +1,15 @@
 // types
-import type { FindNames } from '@databases/types/tag.type';
+import type { FindAllTags } from '@databases/types/tag.type';
 // lib
 import { Exclude, Expose } from 'class-transformer';
 
 // ----------------------------------------------------------------------
 
-export class TagNameListResponseDto {
-    @Exclude() private readonly _name: FindNames['name'];
+export class AllTagListResponseDto {
+    @Exclude() private readonly _name: FindAllTags['name'];
     @Exclude() private readonly _total: number;
 
-    constructor(tag: FindNames) {
+    constructor(tag: FindAllTags) {
         this._name = tag.name;
         this._total = parseInt(tag.total || '0');
     }

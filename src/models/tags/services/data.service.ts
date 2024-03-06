@@ -16,9 +16,9 @@ export class TagsDataService {
      * Public Methods
      **************************************************/
     /**
-     * 태그이름(총합계) 목록을 가져온다.
+     * 전체태그(태그명 마다 총 개수) 목록을 가져온다.
      */
-    async getTagNameAndTotalCount() {
-        return await this.tagRepository.findNames();
+    async getAllTags() {
+        return await this.tagRepository.findAllTags();
     }
 }

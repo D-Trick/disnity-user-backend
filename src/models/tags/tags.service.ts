@@ -21,7 +21,7 @@ export class TagsService {
     /**
      * 태그이름(총합계) 목록을 가져온다.
      */
-    async getTagNameAndTotalCount() {
-        return await this.dataServices.getTagNameAndTotalCount();
+    async getAllTags() {
+        return await this.dataServices.getAllTags();
     }
 }

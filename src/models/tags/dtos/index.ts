@@ -1,1 +1,1 @@
-export * from './tag-name-list-response.dto';
+export * from './all-tag-list-response.dto';

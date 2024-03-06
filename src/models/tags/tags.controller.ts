@@ -3,7 +3,7 @@ import { Controller, Get } from '@nestjs/common';
 // utils
 import { ControllerException } from '@utils/response';
 // dtos
-import { TagNameListResponseDto } from './dtos';
+import { AllTagListResponseDto } from './dtos';
 // services
 import { TagsService } from '@models/tags/tags.service';
 
@@ -20,11 +20,11 @@ export class TagsController {
      * Public Methods
      **************************************************/
     @Get()
-    async tagNamesAndTotalCountList() {
+    async allTagList() {
         try {
-            const tags = await this.tagsService.getTagNameAndTotalCount();
+            const allTags = await this.tagsService.getAllTags();
 
-            return tags.map((tag) => new TagNameListResponseDto(tag));
+            return allTags.map((tag) => new AllTagListResponseDto(tag));
         } catch (error: any) {
             throw new ControllerException(error);
         }

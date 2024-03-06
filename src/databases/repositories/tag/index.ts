@@ -21,7 +21,7 @@ import { cFindOne } from './sql/find-one';
 import { findSitemapData } from './sql/find-sitemap-data';
 import { findTagGuildIds } from './sql/pagination/find-tag-guild-ids';
 import { totalTagGuildsCount } from './sql/total-tag-guilds-count';
-import { findNames } from './sql/find-names';
+import { findAllTags } from './sql/find-all-tags';
 import { cInsert } from './sql/insert';
 import { cUpdate } from './sql/update';
 import { cDelete } from './sql/delete';
@@ -55,11 +55,11 @@ export class TagRepository extends Repository<Tag> {
     }
 
     /**
-     * 태그명(총 합계) 형태로 가져온다.
+     * 전체태그(태그명 마다 총 개수) 목록을 가져온다.
      * @param {SqlOptions} options?
      */
-    async findNames(options?: SqlOptions) {
-        return findNames(this, options);
+    async findAllTags(options?: SqlOptions) {
+        return findAllTags(this, options);
     }
 
     /**

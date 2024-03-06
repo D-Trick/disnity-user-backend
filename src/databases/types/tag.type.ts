@@ -18,9 +18,9 @@ export interface CFindOneOptions extends Omit<FindManyOptions<Tag>, 'transaction
 }
 
 /******************************
- * FindNames
+ * FindAllTags
  ******************************/
-export interface FindNames extends Pick<Tag, 'name'> {
+export interface FindAllTags extends Pick<Tag, 'name'> {
     total: string;
 }
 
