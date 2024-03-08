@@ -2,7 +2,7 @@
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 // configs
-import { mysqlConfig } from '@config/database.config';
+import { MYSQL_CONFIG } from '@config/database.config';
 // modules
 import { TypeOrmCutomModule } from './typeorm-custom-repository.module';
 // repositories
@@ -32,7 +32,7 @@ const Repositories = TypeOrmCutomModule.forCustomRepository([
 
 @Global()
 @Module({
-    imports: [TypeOrmModule.forRoot(mysqlConfig), Repositories],
+    imports: [TypeOrmModule.forRoot(MYSQL_CONFIG), Repositories],
     exports: [Repositories],
 })
 export class DatabaseModule {}

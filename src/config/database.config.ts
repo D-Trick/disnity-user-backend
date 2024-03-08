@@ -5,7 +5,7 @@ import { ENV_CONFIG } from './env.config';
 
 // ----------------------------------------------------------------------
 
-export const mysqlConfig: TypeOrmModuleOptions = {
+export const MYSQL_CONFIG: TypeOrmModuleOptions = {
     type: 'mysql',
     host: ENV_CONFIG.DATABASE_HOST,
     port: 3306,
@@ -35,4 +35,4 @@ export const mysqlConfig: TypeOrmModuleOptions = {
      */
     logging: ['error'],
     maxQueryExecutionTime: 1000 * 7, // 7초이상 걸리는 쿼리를 기록한다.
-};
+} as const;

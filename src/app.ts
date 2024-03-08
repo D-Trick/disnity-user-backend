@@ -4,7 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { createLogger } from 'winston';
 // configs
 import { ENV_CONFIG } from '@config/env.config';
-import { prodConfig, devConfig } from '@config/winston.config';
+import { PROD_CONFIG, DEV_CONFIG } from '@config/winston.config';
 // modules
 import { AppModule } from './app.module';
 // loggers
@@ -17,7 +17,7 @@ let isDisableKeepAlive = false;
 // ----------------------------------------------------------------------
 
 async function bootstrap() {
-    const winstonLogger = new WinstonLogger(createLogger(ENV_CONFIG.IS_PROD_MODE ? prodConfig : devConfig));
+    const winstonLogger = new WinstonLogger(createLogger(ENV_CONFIG.IS_PROD_MODE ? PROD_CONFIG : DEV_CONFIG));
 
     const app = await NestFactory.create(AppModule, {
         logger: winstonLogger,

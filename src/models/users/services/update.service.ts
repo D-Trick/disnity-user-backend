@@ -7,7 +7,7 @@ import { filterAdminGuilds } from '@utils/discord/permission';
 // cache
 import { CACHE_KEYS } from '@cache/redis/keys';
 // configs
-import { refreshTokenTTL } from '@config/jwt.config';
+import { REFRESH_TOKEN_TTL } from '@config/jwt.config';
 // helpers
 import { FilterHelper } from '../helper/filter.helper';
 // services
@@ -48,7 +48,7 @@ export class UsersUpdateService {
                 ...discordUser,
                 admin_guilds: discordAdminGuilds,
             },
-            refreshTokenTTL,
+            REFRESH_TOKEN_TTL,
         );
 
         const adminGuilds = this.filterHelper.removeRegisteredGuild(discordAdminGuilds);

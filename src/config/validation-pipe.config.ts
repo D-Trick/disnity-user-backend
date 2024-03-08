@@ -9,7 +9,7 @@ import { COMMON_ERROR_MESSAGES } from '@common/messages';
 
 // ----------------------------------------------------------------------
 
-export const validationPipeConfig: ValidationPipeOptions = {
+export const VALIDATION_PIPE_CONFIG: ValidationPipeOptions = {
     enableDebugMessages: ENV_CONFIG.IS_DEV_MODE ? true : false,
     stopAtFirstError: true,
     transform: true,
@@ -28,7 +28,9 @@ export const validationPipeConfig: ValidationPipeOptions = {
             return error;
         }
     },
-};
+} as const;
+
+// ----------------------------------------------------------------------
 
 /**
  * 유효성 검사에서 실패한 메시지 가져오기

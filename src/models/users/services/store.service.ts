@@ -9,7 +9,7 @@ import { generateSnowflakeId, promiseAllSettled } from '@utils/index';
 // cache
 import { CACHE_KEYS } from '@cache/redis/keys';
 // configs
-import { refreshTokenTTL } from '@config/jwt.config';
+import { REFRESH_TOKEN_TTL } from '@config/jwt.config';
 // dtos
 import { AuthDiscordUserDto } from '@models/auth/dtos/auth-discord-user.dto';
 // services
@@ -120,9 +120,9 @@ export class UsersStoreService {
             promise1 = this.cacheService.set(
                 CACHE_KEYS.DISCORD_USER(discordUser.id),
                 cacheDiscordUser,
-                refreshTokenTTL,
+                REFRESH_TOKEN_TTL,
             );
-            promise2 = this.cacheService.set(CACHE_KEYS.DISNITY_USER(discordUser.id), disnityUser, refreshTokenTTL);
+            promise2 = this.cacheService.set(CACHE_KEYS.DISNITY_USER(discordUser.id), disnityUser, REFRESH_TOKEN_TTL);
             await Promise.all([promise1, promise2]);
 
             return true;

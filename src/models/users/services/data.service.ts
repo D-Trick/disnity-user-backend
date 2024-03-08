@@ -9,7 +9,7 @@ import isEmpty from 'lodash/isEmpty';
 // cache
 import { CACHE_KEYS } from '@cache/redis/keys';
 // configs
-import { refreshTokenTTL } from '@config/jwt.config';
+import { REFRESH_TOKEN_TTL } from '@config/jwt.config';
 // messages
 import { AUTH_ERROR_MESSAGES, DISCORD_ERROR_MESSAGES } from '@common/messages';
 // helpers
@@ -67,7 +67,7 @@ export class UsersDataService {
                 throw new UnauthorizedException(AUTH_ERROR_MESSAGES.LOGIN_PLEASE);
             }
 
-            await this.cacheService.set<CacheUser>(CACHE_KEYS.DISNITY_USER(userId), refreshUser, refreshTokenTTL);
+            await this.cacheService.set<CacheUser>(CACHE_KEYS.DISNITY_USER(userId), refreshUser, REFRESH_TOKEN_TTL);
 
             return refreshUser;
         }
@@ -124,7 +124,7 @@ export class UsersDataService {
                 channels = await this.filterHelper.inviteCodeCreatePermissionChannelsFilter(guildId);
                 adminGuild.channels = channels;
 
-                await this.cacheService.set(CACHE_KEYS.DISCORD_USER(userId), discordUser, refreshTokenTTL);
+                await this.cacheService.set(CACHE_KEYS.DISCORD_USER(userId), discordUser, REFRESH_TOKEN_TTL);
             }
         }
 

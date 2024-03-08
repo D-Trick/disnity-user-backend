@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 // configs
-import { Token, accessTokenConfig, refreshTokenConfig } from '@config/jwt.config';
+import { ACCESS_TOKEN_SIGN_CONFIG, REFRESH_TOKEN_SIGN_CONFIG } from '@config/jwt.config';
 
 // ----------------------------------------------------------------------
 
@@ -22,14 +22,14 @@ export class AuthTokenService {
      * @param {string} userId
      */
     createJwtToken(type: 'access' | 'refresh', userId: string): string {
-        const payload: { id: string } = {
+        const payload = {
             id: userId,
         };
 
-        const tokenConfig: Token = type === 'access' ? accessTokenConfig : refreshTokenConfig;
-
-        const token = this.jwtService.sign(payload, tokenConfig);
-
-        return token;
+        if (type === 'access') {
+            return this.jwtService.sign(payload, ACCESS_TOKEN_SIGN_CONFIG);
+        } else {
+            return this.jwtService.sign(payload, REFRESH_TOKEN_SIGN_CONFIG);
+        }
     }
 }

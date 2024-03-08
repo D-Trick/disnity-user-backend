@@ -25,7 +25,7 @@ const logFormat = (log) => {
     return `[${log?.timestamp}] ${level} ${context} ${message}${stack}`;
 };
 
-export const prodConfig = {
+export const PROD_CONFIG = {
     transports: [
         // error 레벨 로그를 저장할 파일 설정
         new winstonDaily({
@@ -53,7 +53,7 @@ export const prodConfig = {
     ],
 };
 
-export const devConfig = {
+export const DEV_CONFIG = {
     format: combine(colorize(), simple()),
     transports: [
         new winston.transports.Console({

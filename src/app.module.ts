@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 
 import { CacheModule } from '@nestjs/cache-manager';
 // configs
-import { cacheConfig } from '@config/redis.config';
+import { REDIS_CONFIG } from '@config/redis.config';
 
 // global modules
 import { RouterModule } from '@routers/router.module';
@@ -26,7 +26,7 @@ import { GuildScheduledModule } from '@models/guild-scheduled/guild-scheduled.mo
 @Module({
     imports: [
         RouterModule,
-        CacheModule.registerAsync(cacheConfig),
+        CacheModule.registerAsync(REDIS_CONFIG),
 
         // Global
         DatabaseModule,

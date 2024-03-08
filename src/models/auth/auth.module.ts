@@ -6,7 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { DiscordStrategy } from '@models/auth/passport/strategys/discord.strategy';
 import { JwtStrategy } from '@models/auth/passport/strategys/jwt.strategy';
 // configs
-import { jwtConfig } from '@config/jwt.config';
+import { JWT_MODULE_CONFIG } from '@config/jwt.config';
 // modules
 import { UsersModule } from '@models/users/users.module';
 // controllers
@@ -18,7 +18,7 @@ import { AuthTokenService } from './services/token.service';
 // ----------------------------------------------------------------------
 
 @Module({
-    imports: [JwtModule.register(jwtConfig), PassportModule, UsersModule],
+    imports: [JwtModule.register(JWT_MODULE_CONFIG), PassportModule, UsersModule],
     controllers: [AuthController],
     providers: [JwtStrategy, DiscordStrategy, AuthService, AuthTokenService],
     exports: [AuthService],
