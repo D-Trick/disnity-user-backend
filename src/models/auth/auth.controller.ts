@@ -54,12 +54,11 @@ export class AuthController {
         try {
             const accessToken = this.authService.createJwtToken('access', discordUser.id);
             const refreshToken = this.authService.createJwtToken('refresh', discordUser.id);
+            const cookieExpires = dayjs().add(1, 'day').toDate();
+            res.cookie('token', accessToken, cookieOptions(cookieExpires));
+            res.cookie('refreshToken', refreshToken, cookieOptions(cookieExpires));
 
-            await this.usersService.saveLoginUser(discordUser, requestIp.getClientIp(req));
-
-            const expires = dayjs().add(1, 'day').toDate();
-            res.cookie('token', accessToken, cookieOptions(expires));
-            res.cookie('refreshToken', refreshToken, cookieOptions(expires));
+            await this.usersService.loginUserStore(discordUser, requestIp.getClientIp(req));
 
             res.redirect('/login');
         } catch (error: any) {
@@ -85,7 +84,7 @@ export class AuthController {
 
     @Get('/check')
     @UseGuards(AuthGuardJwt)
-    check(): { result: boolean } {
+    check() {
         return new LoginCheckResponseDto(true);
     }
 
@@ -93,11 +92,11 @@ export class AuthController {
     @UseGuards(AuthGuardJwt)
     async tokenRefresh(@AuthUser() user: AuthUserDto, @Response({ passthrough: true }) res: ExpressResponse) {
         try {
-            const expires = dayjs().add(1, 'day').toDate();
             const accessToken = this.authService.createJwtToken('access', user.id);
             const refreshToken = this.authService.createJwtToken('refresh', user.id);
-            res.cookie('token', accessToken, cookieOptions(expires));
-            res.cookie('refreshToken', refreshToken, cookieOptions(expires));
+            const cookieExpires = dayjs().add(1, 'day').toDate();
+            res.cookie('token', accessToken, cookieOptions(cookieExpires));
+            res.cookie('refreshToken', refreshToken, cookieOptions(cookieExpires));
 
             return new TokenResponseDto(accessToken, refreshToken);
         } catch (error: any) {

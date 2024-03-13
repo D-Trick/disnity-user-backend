@@ -1,7 +1,7 @@
 // @nestjs
 import { Module } from '@nestjs/common';
 // modules
-import { CacheModule } from '@cache/redis/cache.module';
+import { CacheModule } from '@cache/cache.module';
 // controllers
 import { MenusController } from './menus.controller';
 // services

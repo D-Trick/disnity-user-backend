@@ -1,5 +1,5 @@
 // types
-import type { UserGuild } from '@models/discord-api/types/discordApi.type';
+import type { UserGuild, User as DiscordUser } from '@models/discord-api/types/discordApi.type';
 import type { AdminGuild } from '@models/users/types/users.type';
 import type { MenuTree } from '@models/menus/helpers/format-menu-tree';
 // entities
@@ -27,5 +27,18 @@ export type CacheDiscordUser = CacheUser & {
     access_token: string;
     refresh_token: string;
 };
+
+export interface CacheGuildAdmin {
+    is_owner: boolean;
+    id: DiscordUser['id'];
+    bot: boolean;
+    system: boolean;
+    flags: DiscordUser['flags'];
+    username: DiscordUser['username'];
+    globalName: DiscordUser['global_name'];
+    discriminator: DiscordUser['discriminator'];
+    avatar: DiscordUser['avatar'];
+    avatarDecoration: DiscordUser['avatar_decoration_data'];
+}
 
 export type CacheMenus = MenuTree;

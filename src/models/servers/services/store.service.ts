@@ -1,4 +1,5 @@
 // types
+import type { CacheGuildAdmin } from '@cache/types';
 import type { SaveValues } from '../types/save.type';
 import type { Emoji, Guild, GuildScheduledEvent } from '@models/discord-api/types/discordApi.type';
 // @nestjs
@@ -13,12 +14,10 @@ import { DataSource, In, QueryRunner } from 'typeorm';
 import dayjs from '@lib/dayjs';
 // utils
 import { generateSnowflakeId, promiseAllSettled } from '@utils/index';
-// cache
-import { CACHE_KEYS } from '@cache/redis/keys';
 // messages
 import { SERVER_ERROR_MESSAGES } from '@common/messages';
 // services
-import { CacheService } from '@cache/redis/cache.service';
+import { CacheDataService } from '@cache/cache-data.service';
 import { DiscordApiService } from '@models/discord-api/discordApi.service';
 // repositories
 import { TagRepository } from '@databases/repositories/tag';
@@ -38,7 +37,7 @@ export class ServersStoreService {
     constructor(
         private readonly dataSource: DataSource,
 
-        private readonly cacheService: CacheService,
+        private readonly cacheDataService: CacheDataService,
         private readonly discordApiService: DiscordApiService,
 
         private readonly tagRepository: TagRepository,
@@ -102,7 +101,7 @@ export class ServersStoreService {
             }
 
             // 관리자 권한 목록 저장 / 관리자 권한있는 유저 목록 저장 또는 수정
-            const cacheAdmins = await this.cacheService.get(CACHE_KEYS.DISNITY_BOT_ADMINS(id));
+            const cacheAdmins = await this.cacheDataService.getGuildAdminsByGuildId(id);
             if (!isEmpty(cacheAdmins)) {
                 promise4 = this.adminPermissionsInsert(queryRunner, discordGuild.id, cacheAdmins);
                 promise5 = this.adminsInsertOrUpdate(queryRunner, cacheAdmins);
@@ -261,7 +260,7 @@ export class ServersStoreService {
      * @param {QueryRunner} transaction
      * @param {any[]} admins
      */
-    private async adminsInsertOrUpdate(transaction: QueryRunner, admins: any[]) {
+    private async adminsInsertOrUpdate(transaction: QueryRunner, admins: CacheGuildAdmin[]) {
         const adminList = [...admins];
 
         const adminIds = [];

@@ -4,14 +4,10 @@ import type { AdminGuild } from '../types/users.type';
 import { Injectable } from '@nestjs/common';
 //uitls
 import { filterAdminGuilds } from '@utils/discord/permission';
-// cache
-import { CACHE_KEYS } from '@cache/redis/keys';
-// configs
-import { REFRESH_TOKEN_TTL } from '@config/jwt.config';
 // helpers
 import { FilterHelper } from '../helper/filter.helper';
 // services
-import { CacheService } from '@cache/redis/cache.service';
+import { CacheDataService } from '@cache/cache-data.service';
 import { UsersDataService } from './data.service';
 import { DiscordApiService } from '@models/discord-api/discordApi.service';
 
@@ -25,8 +21,8 @@ export class UsersUpdateService {
     constructor(
         private readonly filterHelper: FilterHelper,
 
-        private readonly cacheService: CacheService,
         private readonly dataService: UsersDataService,
+        private readonly cacheDataService: CacheDataService,
         private readonly discordApiService: DiscordApiService,
     ) {}
 
@@ -42,14 +38,10 @@ export class UsersUpdateService {
         const discordGuilds = await this.discordApiService.users().guilds(discordUser.access_token);
         const discordAdminGuilds = filterAdminGuilds(discordGuilds);
 
-        await this.cacheService.set(
-            CACHE_KEYS.DISCORD_USER(userId),
-            {
-                ...discordUser,
-                admin_guilds: discordAdminGuilds,
-            },
-            REFRESH_TOKEN_TTL,
-        );
+        await this.cacheDataService.setDiscordUser({
+            ...discordUser,
+            admin_guilds: discordAdminGuilds,
+        });
 
         const adminGuilds = this.filterHelper.removeRegisteredGuild(discordAdminGuilds);
 

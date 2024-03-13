@@ -1,22 +1,17 @@
 // types
-import type { CacheUser } from '@cache/types';
 import type { AdminGuild } from '../types/users.type';
 import type { Channel } from '@models/discord-api/types/discordApi.type';
 // @nestjs
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 // lodash
 import isEmpty from 'lodash/isEmpty';
-// cache
-import { CACHE_KEYS } from '@cache/redis/keys';
-// configs
-import { REFRESH_TOKEN_TTL } from '@config/jwt.config';
 // messages
 import { AUTH_ERROR_MESSAGES, DISCORD_ERROR_MESSAGES } from '@common/messages';
 // helpers
 import { UtilHelper } from '../helper/util.helper';
 import { FilterHelper } from '../helper/filter.helper';
 // services
-import { CacheService } from '@cache/redis/cache.service';
+import { CacheDataService } from '@cache/cache-data.service';
 // repositories
 import { UserRepository } from '@databases/repositories/user';
 
@@ -31,7 +26,7 @@ export class UsersDataService {
         private readonly utilHelper: UtilHelper,
         private readonly filterHelper: FilterHelper,
 
-        private readonly cacheService: CacheService,
+        private readonly cacheDataService: CacheDataService,
 
         private readonly userRepository: UserRepository,
     ) {}
@@ -44,7 +39,7 @@ export class UsersDataService {
      * @param {string} userId
      */
     async getUser(userId: string) {
-        const cacheUser = await this.cacheService.getUser(userId);
+        const cacheUser = await this.cacheDataService.getUserById(userId);
         if (!cacheUser) {
             const refreshUser = await this.userRepository.cFindOne({
                 select: {
@@ -67,7 +62,7 @@ export class UsersDataService {
                 throw new UnauthorizedException(AUTH_ERROR_MESSAGES.LOGIN_PLEASE);
             }
 
-            await this.cacheService.set<CacheUser>(CACHE_KEYS.DISNITY_USER(userId), refreshUser, REFRESH_TOKEN_TTL);
+            await this.cacheDataService.setUser(refreshUser);
 
             return refreshUser;
         }
@@ -80,7 +75,7 @@ export class UsersDataService {
      * @param {string} userId
      */
     async getDiscordUser(userId: string) {
-        const cacheDiscordUser = await this.cacheService.getDiscordUser(userId);
+        const cacheDiscordUser = await this.cacheDataService.getDiscordUserById(userId);
 
         if (!cacheDiscordUser || !cacheDiscordUser?.access_token) {
             throw new UnauthorizedException(DISCORD_ERROR_MESSAGES.LOGIN_PLEASE);
@@ -124,7 +119,7 @@ export class UsersDataService {
                 channels = await this.filterHelper.inviteCodeCreatePermissionChannelsFilter(guildId);
                 adminGuild.channels = channels;
 
-                await this.cacheService.set(CACHE_KEYS.DISCORD_USER(userId), discordUser, REFRESH_TOKEN_TTL);
+                await this.cacheDataService.setDiscordUser(discordUser);
             }
         }
 

@@ -3,7 +3,7 @@ import { HttpModule } from '@nestjs/axios';
 // lib
 import { Module } from '@nestjs/common';
 // modules
-import { CacheModule } from '@cache/redis/cache.module';
+import { CacheModule } from '@cache/cache.module';
 import { UsersModule } from '@models/users/users.module';
 import { DiscordApiModule } from '@models/discord-api/discordApi.module';
 import { ServersPaginationModule } from '@models/pagination/servers/servers-pagination.module';

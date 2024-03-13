@@ -6,14 +6,10 @@ import isEmpty from 'lodash/isEmpty';
 import { DataSource } from 'typeorm';
 // uitls
 import { generateSnowflakeId, promiseAllSettled } from '@utils/index';
-// cache
-import { CACHE_KEYS } from '@cache/redis/keys';
-// configs
-import { REFRESH_TOKEN_TTL } from '@config/jwt.config';
 // dtos
 import { AuthDiscordUserDto } from '@models/auth/dtos/auth-discord-user.dto';
 // services
-import { CacheService } from '@cache/redis/cache.service';
+import { CacheDataService } from '@cache/cache-data.service';
 // repositories
 import { UserRepository } from '@databases/repositories/user';
 import { AccessLogRepository } from '@databases/repositories/access-log';
@@ -28,7 +24,7 @@ export class UsersStoreService {
     constructor(
         private readonly dataSource: DataSource,
 
-        private readonly cacheService: CacheService,
+        private readonly cacheDataService: CacheDataService,
 
         private readonly userRepository: UserRepository,
         private readonly accessLogRepository: AccessLogRepository,
@@ -42,9 +38,9 @@ export class UsersStoreService {
      * 로그인 유저 정보 저장
      * @param user
      */
-    async saveLoginUser(discordUser: AuthDiscordUserDto, ip: string) {
-        let promise1 = undefined;
-        let promise2 = undefined;
+    async loginUser(discordUser: AuthDiscordUserDto, accessIp: string) {
+        const promiseList1 = [undefined, undefined];
+        const promiseList2 = [undefined, undefined];
 
         const queryRunner = this.dataSource.createQueryRunner();
         try {
@@ -56,7 +52,7 @@ export class UsersStoreService {
 
             await queryRunner.startTransaction();
             if (isEmpty(user)) {
-                promise1 = this.userRepository.cInsert({
+                promiseList1[0] = this.userRepository.cInsert({
                     transaction: queryRunner,
                     values: {
                         id: discordUser.id,
@@ -73,7 +69,7 @@ export class UsersStoreService {
                     },
                 });
             } else {
-                promise1 = this.userRepository.cUpdate({
+                promiseList1[0] = this.userRepository.cUpdate({
                     transaction: queryRunner,
                     values: {
                         global_name: discordUser.globalName,
@@ -93,16 +89,15 @@ export class UsersStoreService {
                     },
                 });
             }
-            promise2 = this.accessLogRepository.cInsert({
+            promiseList1[1] = this.accessLogRepository.cInsert({
                 transaction: queryRunner,
                 values: {
                     id: generateSnowflakeId(),
                     user_id: discordUser.id,
-                    ip,
+                    ip: accessIp,
                 },
             });
-            await promiseAllSettled([promise1, promise2]);
-
+            await promiseAllSettled(promiseList1);
             await queryRunner.commitTransaction();
 
             const disnityUser = await this.userRepository.cFindOne({
@@ -117,13 +112,9 @@ export class UsersStoreService {
                 access_token: discordUser.access_token,
                 refresh_token: discordUser.refresh_token,
             };
-            promise1 = this.cacheService.set(
-                CACHE_KEYS.DISCORD_USER(discordUser.id),
-                cacheDiscordUser,
-                REFRESH_TOKEN_TTL,
-            );
-            promise2 = this.cacheService.set(CACHE_KEYS.DISNITY_USER(discordUser.id), disnityUser, REFRESH_TOKEN_TTL);
-            await Promise.all([promise1, promise2]);
+            promiseList2[0] = this.cacheDataService.setDiscordUser(cacheDiscordUser);
+            promiseList2[1] = this.cacheDataService.setUser(disnityUser);
+            await Promise.all(promiseList2);
 
             return true;
         } catch (error) {
