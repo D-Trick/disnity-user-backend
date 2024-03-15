@@ -108,9 +108,9 @@ export class UsersStoreService {
             const cacheDiscordUser = {
                 ...disnityUser,
                 guilds: discordUser.guilds,
-                admin_guilds: discordUser.admin_guilds,
-                access_token: discordUser.access_token,
-                refresh_token: discordUser.refresh_token,
+                admin_guilds: discordUser.adminAuilds,
+                access_token: discordUser.accessToken,
+                refresh_token: discordUser.refreshToken,
             };
             promiseList2[0] = this.cacheDataService.setDiscordUser(cacheDiscordUser);
             promiseList2[1] = this.cacheDataService.setUser(disnityUser);

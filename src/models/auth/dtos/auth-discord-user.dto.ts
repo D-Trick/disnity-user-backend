@@ -106,7 +106,7 @@ export class AuthDiscordUserDto {
     }
 
     @Expose()
-    get avatar_decoration_data() {
+    get avatarDecorationData() {
         return this._avatarDecorationData;
     }
 
@@ -116,7 +116,7 @@ export class AuthDiscordUserDto {
     }
 
     @Expose()
-    get mfa_enabled() {
+    get mfaEnabled() {
         return this._mfaEnabled;
     }
 
@@ -141,17 +141,17 @@ export class AuthDiscordUserDto {
     }
 
     @Expose()
-    get admin_guilds() {
+    get adminAuilds() {
         return this._adminGuilds;
     }
 
     @Expose()
-    get access_token() {
+    get accessToken() {
         return this._accessToken;
     }
 
     @Expose()
-    get refresh_token() {
+    get refreshToken() {
         return this._refreshToken;
     }
 }
