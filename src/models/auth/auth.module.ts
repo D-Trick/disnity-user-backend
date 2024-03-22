@@ -12,7 +12,6 @@ import { UsersModule } from '@models/users/users.module';
 // controllers
 import { AuthController } from './auth.controller';
 // services
-import { AuthService } from './auth.service';
 import { AuthTokenService } from './services/token.service';
 
 // ----------------------------------------------------------------------
@@ -20,7 +19,7 @@ import { AuthTokenService } from './services/token.service';
 @Module({
     imports: [JwtModule.register(JWT_MODULE_CONFIG), PassportModule, UsersModule],
     controllers: [AuthController],
-    providers: [JwtStrategy, DiscordStrategy, AuthService, AuthTokenService],
-    exports: [AuthService],
+    providers: [JwtStrategy, DiscordStrategy, AuthTokenService],
+    exports: [AuthTokenService],
 })
 export class AuthModule {}

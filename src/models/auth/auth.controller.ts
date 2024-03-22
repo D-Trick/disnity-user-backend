@@ -3,12 +3,13 @@ import type { Request as ExpressRequest, Response as ExpressResponse } from 'exp
 // @nestjs
 import { Controller, Get, Logger, Request, Response, UseGuards } from '@nestjs/common';
 // lib
-import requestIp from 'request-ip';
 import dayjs from '@lib/dayjs';
+import requestIp from 'request-ip';
 // utils
 import { ControllerException } from '@utils/response';
 // configs
 import { cookieOptions } from '@config/cookie.config';
+import { DISCORD_CONFIG } from '@config/discord.config';
 // guards
 import { AuthGuardJwt } from '@guards/jwt-auth.guard';
 import { AuthGuardDiscord } from '@guards/discord-auth.guard';
@@ -18,8 +19,8 @@ import { AuthDiscordUser } from '@decorators/auth-discord-user.decorator';
 // dtos
 import { AuthUserDto, AuthDiscordUserDto, TokenResponseDto, LoginCheckResponseDto } from './dtos';
 // services
-import { AuthService } from '@models/auth/auth.service';
 import { UsersService } from '@models/users/users.service';
+import { AuthTokenService } from '@models/auth/services/token.service';
 
 // ----------------------------------------------------------------------
 
@@ -31,17 +32,16 @@ export class AuthController {
      * Constructor
      **************************************************/
     constructor(
-        private readonly authService: AuthService,
         private readonly usersService: UsersService,
+        private readonly authTokenService: AuthTokenService,
     ) {}
 
     /**************************************************
      * Public Methods
      **************************************************/
     @Get('/login')
-    @UseGuards(AuthGuardDiscord)
-    login() {
-        return 'Discord Login Redirect...';
+    login(@Response() res: ExpressResponse) {
+        res.redirect(DISCORD_CONFIG.LOGIN_URL);
     }
 
     @Get('/login/callback')
@@ -52,8 +52,8 @@ export class AuthController {
         @AuthDiscordUser() discordUser: AuthDiscordUserDto,
     ) {
         try {
-            const accessToken = this.authService.createJwtToken('access', discordUser.id);
-            const refreshToken = this.authService.createJwtToken('refresh', discordUser.id);
+            const accessToken = this.authTokenService.createJwt('access', discordUser.id);
+            const refreshToken = this.authTokenService.createJwt('refresh', discordUser.id);
             const cookieExpires = dayjs().add(1, 'day').toDate();
             res.cookie('token', accessToken, cookieOptions(cookieExpires));
             res.cookie('refreshToken', refreshToken, cookieOptions(cookieExpires));
@@ -92,8 +92,8 @@ export class AuthController {
     @UseGuards(AuthGuardJwt)
     async tokenRefresh(@AuthUser() user: AuthUserDto, @Response({ passthrough: true }) res: ExpressResponse) {
         try {
-            const accessToken = this.authService.createJwtToken('access', user.id);
-            const refreshToken = this.authService.createJwtToken('refresh', user.id);
+            const accessToken = this.authTokenService.createJwt('access', user.id);
+            const refreshToken = this.authTokenService.createJwt('refresh', user.id);
             const cookieExpires = dayjs().add(1, 'day').toDate();
             res.cookie('token', accessToken, cookieOptions(cookieExpires));
             res.cookie('refreshToken', refreshToken, cookieOptions(cookieExpires));

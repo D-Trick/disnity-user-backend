@@ -1,6 +1,6 @@
 // @nestjs
-import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Injectable } from '@nestjs/common';
 // configs
 import { ACCESS_TOKEN_SIGN_CONFIG, REFRESH_TOKEN_SIGN_CONFIG } from '@config/jwt.config';
 
@@ -21,7 +21,7 @@ export class AuthTokenService {
      * @param {'access' | 'refresh'} type
      * @param {string} userId
      */
-    createJwtToken(type: 'access' | 'refresh', userId: string): string {
+    createJwt(type: 'access' | 'refresh', userId: string): string {
         const payload = {
             id: userId,
         };
