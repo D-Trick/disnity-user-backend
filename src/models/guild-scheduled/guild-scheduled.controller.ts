@@ -5,7 +5,7 @@ import { ControllerException } from '@utils/response';
 // dtos
 import { ThisMonthScheduleListResponseDto } from './dtos';
 // services
-import { GuildScheduledService } from '@models/guild-scheduled/guild-scheduled.service';
+import { GuildScheduledListService } from '@models/guild-scheduled/services/list.service';
 
 // ----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ export class GuildScheduledController {
     /**************************************************
      * Constructor
      **************************************************/
-    constructor(private readonly guildScheduledService: GuildScheduledService) {}
+    constructor(private readonly guildScheduledListService: GuildScheduledListService) {}
 
     /**************************************************
      * Public Methods
@@ -22,7 +22,7 @@ export class GuildScheduledController {
     @Get()
     async thisMonthSchedules() {
         try {
-            const thisMonthSchedules = await this.guildScheduledService.getThisMonthSchedules();
+            const thisMonthSchedules = await this.guildScheduledListService.getThisMonthSchedules();
 
             return thisMonthSchedules.map((schedule) => new ThisMonthScheduleListResponseDto(schedule));
         } catch (error: any) {

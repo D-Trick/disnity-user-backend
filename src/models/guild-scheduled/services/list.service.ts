@@ -6,7 +6,7 @@ import { GuildScheduledRepository } from '@databases/repositories/guild-schedule
 // ----------------------------------------------------------------------
 
 @Injectable()
-export class GuildScheduledDataService {
+export class GuildScheduledListService {
     /**************************************************
      * Constructor
      **************************************************/

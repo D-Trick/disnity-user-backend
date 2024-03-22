@@ -3,14 +3,13 @@ import { Module } from '@nestjs/common';
 // controllers
 import { GuildScheduledController } from './guild-scheduled.controller';
 // services
-import { GuildScheduledService } from './guild-scheduled.service';
-import { GuildScheduledDataService } from './services/data.service';
+import { GuildScheduledListService } from './services/list.service';
 
 // ----------------------------------------------------------------------
 
 @Module({
     controllers: [GuildScheduledController],
-    providers: [GuildScheduledService, GuildScheduledDataService],
-    exports: [GuildScheduledService],
+    providers: [GuildScheduledListService],
+    exports: [GuildScheduledListService],
 })
 export class GuildScheduledModule {}
