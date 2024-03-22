@@ -43,7 +43,7 @@ const CALLBACK_URLS = {
 } as const;
 
 const LOGIN_URL =
-    `${URLS.AUTH}?redirect_uri=${CALLBACK_URLS.LOGIN}&client_id=${APP.CLIENT_ID}&scope=${BOT.SCOPE}&response_type=code` as const;
+    `${URLS.AUTH}?redirect_uri=${CALLBACK_URLS.LOGIN}&client_id=${APP.CLIENT_ID}&scope=${APP.SCOPE}&response_type=code` as const;
 
 const BOT_INVITE_URL = (type: string, guildId: string) => {
     let URL = URLS.AUTH;
