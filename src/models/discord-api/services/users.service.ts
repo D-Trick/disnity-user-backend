@@ -1,5 +1,5 @@
 // types
-import type { User, UserGuild } from '@models/discord-api/types/discordApi.type';
+import type { User, UserGuild } from '@models/discord-api/types/discord-api.type';
 // @nestjs
 import { Injectable } from '@nestjs/common';
 // utils

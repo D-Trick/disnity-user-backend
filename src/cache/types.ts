@@ -1,5 +1,5 @@
 // types
-import type { UserGuild, User as DiscordUser } from '@models/discord-api/types/discordApi.type';
+import type { UserGuild, User as DiscordUser } from '@models/discord-api/types/discord-api.type';
 import type { AdminGuild } from '@models/users/types/users.type';
 import type { MenuTree } from '@models/menus/helpers/format-menu-tree';
 // entities

@@ -1,7 +1,7 @@
 // types
 import type { CacheGuildAdmin } from '@cache/types';
 import type { SaveValues } from '../types/save.type';
-import type { Emoji, Guild, GuildScheduledEvent } from '@models/discord-api/types/discordApi.type';
+import type { Emoji, Guild, GuildScheduledEvent } from '@models/discord-api/types/discord-api.type';
 // @nestjs
 import { Injectable, BadRequestException } from '@nestjs/common';
 // lodash
@@ -18,7 +18,10 @@ import { generateSnowflakeId, promiseAllSettled } from '@utils/index';
 import { SERVER_ERROR_MESSAGES } from '@common/messages';
 // services
 import { CacheDataService } from '@cache/cache-data.service';
-import { DiscordApiService } from '@models/discord-api/discordApi.service';
+import { DiscordApiGuildsService } from '@models/discord-api/services/guilds.service';
+import { DiscordApiInvitesService } from '@models/discord-api/services/invites.service';
+import { DiscordApiChannelsService } from '@models/discord-api/services/channels.service';
+import { DiscordApiGuildScheduledEventService } from '@models/discord-api/services/guild-scheduled-event.service';
 // repositories
 import { TagRepository } from '@databases/repositories/tag';
 import { UserRepository } from '@databases/repositories/user';
@@ -38,7 +41,10 @@ export class ServersStoreService {
         private readonly dataSource: DataSource,
 
         private readonly cacheDataService: CacheDataService,
-        private readonly discordApiService: DiscordApiService,
+        private readonly discordApiGuildsService: DiscordApiGuildsService,
+        private readonly discordApiInvitesService: DiscordApiInvitesService,
+        private readonly discordApiChannelsService: DiscordApiChannelsService,
+        private readonly discordApiGuildScheduledEventService: DiscordApiGuildScheduledEventService,
 
         private readonly tagRepository: TagRepository,
         private readonly userRepository: UserRepository,
@@ -81,7 +87,7 @@ export class ServersStoreService {
                 throw new BadRequestException(SERVER_ERROR_MESSAGES.SERVER_EXISTE);
             }
 
-            const discordGuild = await this.discordApiService.guilds().detail(id);
+            const discordGuild = await this.discordApiGuildsService.detail(id);
 
             await queryRunner.startTransaction();
 
@@ -108,7 +114,7 @@ export class ServersStoreService {
             }
 
             // 길드 이벤트(일정) 목록 저장 / 길드 이벤트 생성자 유저 목록 저장 또는 수정
-            const guildSchedules = await this.discordApiService.guildScheduledEvents().scheduledEvents(discordGuild.id);
+            const guildSchedules = await this.discordApiGuildScheduledEventService.scheduledEvents(discordGuild.id);
             if (!isEmpty(guildSchedules)) {
                 promise6 = this.guildSchedulesInsert(queryRunner, guildSchedules);
                 promise7 = this.creatorsInsertOrUpdate(queryRunner, guildSchedules);
@@ -156,13 +162,13 @@ export class ServersStoreService {
         let newInviteCode = inviteCode;
         if (linkType === 'invite') {
             if (inviteAuto === 'auto') {
-                const invites = await this.discordApiService.channels().createInvites(channelId);
+                const invites = await this.discordApiChannelsService.createInvites(channelId);
 
                 newInviteCode = invites.code;
             }
 
             // 초대코드가 유효하지 않으면 예외를 던진다.
-            await this.discordApiService.invites().detail(newInviteCode);
+            await this.discordApiInvitesService.detail(newInviteCode);
         }
 
         return this.guildRepository.cInsert({

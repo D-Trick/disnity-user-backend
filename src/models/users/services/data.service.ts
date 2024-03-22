@@ -1,6 +1,6 @@
 // types
 import type { AdminGuild } from '../types/users.type';
-import type { Channel } from '@models/discord-api/types/discordApi.type';
+import type { Channel } from '@models/discord-api/types/discord-api.type';
 // @nestjs
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 // lodash

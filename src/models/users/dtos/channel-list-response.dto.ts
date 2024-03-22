@@ -1,5 +1,5 @@
 // types
-import type { Channel } from '@models/discord-api/types/discordApi.type';
+import type { Channel } from '@models/discord-api/types/discord-api.type';
 // lib
 import { Exclude, Expose } from 'class-transformer';
 

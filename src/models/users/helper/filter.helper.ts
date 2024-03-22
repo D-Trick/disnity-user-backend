@@ -1,6 +1,6 @@
 // types
 import type { AdminGuild } from '../types/users.type';
-import type { Channel } from '@models/discord-api/types/discordApi.type';
+import type { Channel } from '@models/discord-api/types/discord-api.type';
 // @nestjs
 import { Injectable } from '@nestjs/common';
 // lodash
@@ -10,7 +10,7 @@ import { In } from 'typeorm';
 // flags
 import { permissionFlags } from '@utils/discord/flags/permission.flag';
 // services
-import { DiscordApiService } from '@models/discord-api/discordApi.service';
+import { DiscordApiGuildsService } from '@models/discord-api/services/guilds.service';
 // repositories
 import { GuildRepository } from '@databases/repositories/guild';
 
@@ -22,7 +22,7 @@ export class FilterHelper {
      * Constructor
      **************************************************/
     constructor(
-        private readonly discordApiService: DiscordApiService,
+        private readonly discordApiGuildsService: DiscordApiGuildsService,
 
         private readonly guildRepository: GuildRepository,
     ) {}
@@ -62,7 +62,7 @@ export class FilterHelper {
     async inviteCodeCreatePermissionChannelsFilter(guildId: string): Promise<Channel[]> {
         const channels = [];
 
-        const guildChannels = await this.discordApiService.guilds().channels(guildId);
+        const guildChannels = await this.discordApiGuildsService.channels(guildId);
 
         const length = guildChannels.length;
         for (let i = 0; i < length; i++) {

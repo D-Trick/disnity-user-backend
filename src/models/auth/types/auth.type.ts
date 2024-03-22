@@ -1,5 +1,5 @@
 // types
-import { User, UserGuild } from '@models/discord-api/types/discordApi.type';
+import { User, UserGuild } from '@models/discord-api/types/discord-api.type';
 
 // ----------------------------------------------------------------------
 

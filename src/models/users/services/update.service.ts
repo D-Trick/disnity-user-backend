@@ -9,7 +9,7 @@ import { FilterHelper } from '../helper/filter.helper';
 // services
 import { CacheDataService } from '@cache/cache-data.service';
 import { UsersDataService } from './data.service';
-import { DiscordApiService } from '@models/discord-api/discordApi.service';
+import { DiscordApiUsersService } from '@models/discord-api/services/users.service';
 
 // ----------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ export class UsersUpdateService {
 
         private readonly dataService: UsersDataService,
         private readonly cacheDataService: CacheDataService,
-        private readonly discordApiService: DiscordApiService,
+        private readonly discordApiUsersService: DiscordApiUsersService,
     ) {}
 
     /**************************************************
@@ -35,7 +35,7 @@ export class UsersUpdateService {
      */
     async refreshAdminGuilds(userId: string): Promise<AdminGuild[]> {
         const discordUser = await this.dataService.getDiscordUser(userId);
-        const discordGuilds = await this.discordApiService.users().guilds(discordUser.access_token);
+        const discordGuilds = await this.discordApiUsersService.guilds(discordUser.access_token);
         const discordAdminGuilds = filterAdminGuilds(discordGuilds);
 
         await this.cacheDataService.setDiscordUser({

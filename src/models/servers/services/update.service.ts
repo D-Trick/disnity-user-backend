@@ -13,7 +13,9 @@ import { DiscordApiException } from '@exceptions/discord-api.exception';
 // messages
 import { DISCORD_ERROR_MESSAGES, SERVER_ERROR_MESSAGES } from '@common/messages';
 // services
-import { DiscordApiService } from '@models/discord-api/discordApi.service';
+import { DiscordApiGuildsService } from '@models/discord-api/services/guilds.service';
+import { DiscordApiInvitesService } from '@models/discord-api/services/invites.service';
+import { DiscordApiChannelsService } from '@models/discord-api/services/channels.service';
 // repositories
 import { TagRepository } from '@databases/repositories/tag';
 import { GuildRepository } from '@databases/repositories/guild';
@@ -28,7 +30,9 @@ export class ServersUpdateService {
     constructor(
         private readonly dataSource: DataSource,
 
-        private readonly discordApiService: DiscordApiService,
+        private readonly discordApiGuildsService: DiscordApiGuildsService,
+        private readonly discordApiInvitesService: DiscordApiInvitesService,
+        private readonly discordApiChannelsService: DiscordApiChannelsService,
 
         private readonly tagRepository: TagRepository,
         private readonly guildRepository: GuildRepository,
@@ -108,7 +112,7 @@ export class ServersUpdateService {
                 throw new BadRequestException(`${timeRemainningText} 후 다시 시도해주세요.`);
             }
 
-            const discordGuild = await this.discordApiService.guilds().detail(guildId);
+            const discordGuild = await this.discordApiGuildsService.detail(guildId);
 
             await this.guildRepository.cUpdate({
                 values: {
@@ -174,13 +178,13 @@ export class ServersUpdateService {
         let newInviteCode = inviteCode;
         if (linkType === 'invite') {
             if (inviteAuto === 'auto') {
-                const invites = await this.discordApiService.channels().createInvites(channelId);
+                const invites = await this.discordApiChannelsService.createInvites(channelId);
 
                 newInviteCode = invites.code;
             }
 
             // 초대코드가 유효하지 않으면 예외를 던진다.
-            await this.discordApiService.invites().detail(newInviteCode);
+            await this.discordApiInvitesService.detail(newInviteCode);
         }
 
         await this.guildRepository.cUpdate({

@@ -1,5 +1,5 @@
 // types
-import type { Channel, UserGuild } from '@models/discord-api/types/discordApi.type';
+import type { Channel, UserGuild } from '@models/discord-api/types/discord-api.type';
 // dtos
 import { AuthDiscordUserDto } from '@models/auth/dtos';
 

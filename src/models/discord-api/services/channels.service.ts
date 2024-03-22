@@ -1,5 +1,5 @@
 // types
-import type { Invite } from '../types/discordApi.type';
+import type { Invite } from '../types/discord-api.type';
 // @nestjs
 import { Injectable } from '@nestjs/common';
 // utils

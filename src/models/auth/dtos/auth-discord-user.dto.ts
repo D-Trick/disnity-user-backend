@@ -1,6 +1,6 @@
 // types
 import type { AuthDiscordUser } from '../types/auth.type';
-import type { UserGuild, discordString, snowflake } from '@models/discord-api/types/discordApi.type';
+import type { UserGuild, discordString, snowflake } from '@models/discord-api/types/discord-api.type';
 // lib
 import { Exclude, Expose } from 'class-transformer';
 

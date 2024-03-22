@@ -5,7 +5,7 @@ import { UtilHelper } from './helper/util.helper';
 import { FilterHelper } from './helper/filter.helper';
 // modules
 import { CacheModule } from '@cache/cache.module';
-import { DiscordApiModule } from '@models/discord-api/discordApi.module';
+import { DiscordApiModule } from '@models/discord-api/discord-api.module';
 // controllers
 import { UsersController } from './users.controller';
 // services

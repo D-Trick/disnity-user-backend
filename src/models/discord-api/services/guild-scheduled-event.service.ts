@@ -1,5 +1,5 @@
 // types
-import type { GuildScheduledEvent } from '../types/discordApi.type';
+import type { GuildScheduledEvent } from '../types/discord-api.type';
 // @nestjs
 import { Injectable } from '@nestjs/common';
 // utils

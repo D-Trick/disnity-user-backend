@@ -1,5 +1,5 @@
 // types
-import type { Guild, Channel } from '../types/discordApi.type';
+import type { Guild, Channel } from '../types/discord-api.type';
 // @nestjs
 import { Injectable } from '@nestjs/common';
 // utils
