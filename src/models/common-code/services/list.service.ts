@@ -6,7 +6,7 @@ import { CommonCodeRepository } from '@databases/repositories/common-code';
 // ----------------------------------------------------------------------
 
 @Injectable()
-export class CommonCodeDataService {
+export class CommonCodeListService {
     /**************************************************
      * Constructor
      **************************************************/

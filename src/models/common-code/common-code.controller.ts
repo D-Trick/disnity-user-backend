@@ -6,7 +6,7 @@ import { ControllerException } from '@utils/response';
 import { ParamCodeRequestDto } from '@common/dtos';
 import { CommonCodeListResponseDto } from './dtos';
 // services
-import { CommonCodeService } from './common-code.service';
+import { CommonCodeListService } from './services/list.service';
 
 // ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ export class CommonCodeController {
     /**************************************************
      * Constructor
      **************************************************/
-    constructor(private commonCodeService: CommonCodeService) {}
+    constructor(private commonCodeListService: CommonCodeListService) {}
 
     /**************************************************
      * Public Methods
@@ -23,7 +23,7 @@ export class CommonCodeController {
     @Get(':code')
     async commonCodeList(@Param() param: ParamCodeRequestDto) {
         try {
-            const commonCodes = await this.commonCodeService.getCommonCodes(param.code);
+            const commonCodes = await this.commonCodeListService.getCommonCodes(param.code);
 
             return commonCodes.map((commonCode) => new CommonCodeListResponseDto(commonCode));
         } catch (error: any) {
