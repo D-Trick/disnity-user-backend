@@ -11,7 +11,7 @@ import { GuildRepository } from '@databases/repositories/guild';
 // ----------------------------------------------------------------------
 
 @Injectable()
-export class PaginateService {
+export class ServersPaginationService {
     /**************************************************
      * Constructor
      **************************************************/

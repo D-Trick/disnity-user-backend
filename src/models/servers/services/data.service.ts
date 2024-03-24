@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 // dtos
 import { ServerFilterRequestDto } from '../dtos';
 // services
-import { ServersPaginationService } from '@models/pagination/servers/servers-pagination.service';
+import { ServersPaginationService } from '@models/pagination/services/servers-pagination.service';
 // repositories
 import { CommonCodeRepository } from '@databases/repositories/common-code';
 
