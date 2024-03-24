@@ -12,7 +12,7 @@ import { MenuRepository } from '@databases/repositories/menu';
 // ----------------------------------------------------------------------
 
 @Injectable()
-export class MenusDataService {
+export class MenusListService {
     /**************************************************
      * Constructor
      **************************************************/
