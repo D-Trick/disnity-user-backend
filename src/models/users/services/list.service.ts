@@ -18,7 +18,7 @@ import { UserRepository } from '@databases/repositories/user';
 // ----------------------------------------------------------------------
 
 @Injectable()
-export class UsersDataService {
+export class UsersListService {
     /**************************************************
      * Constructor
      **************************************************/

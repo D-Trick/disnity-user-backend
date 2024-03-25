@@ -19,8 +19,8 @@ import { AuthDiscordUser } from '@decorators/auth-discord-user.decorator';
 // dtos
 import { AuthUserDto, AuthDiscordUserDto, TokenResponseDto, LoginCheckResponseDto } from './dtos';
 // services
-import { UsersService } from '@models/users/users.service';
 import { AuthTokenService } from '@models/auth/services/token.service';
+import { UsersStoreService } from '@models/users/services/store.service';
 
 // ----------------------------------------------------------------------
 
@@ -32,8 +32,8 @@ export class AuthController {
      * Constructor
      **************************************************/
     constructor(
-        private readonly usersService: UsersService,
         private readonly authTokenService: AuthTokenService,
+        private readonly usersStoreService: UsersStoreService,
     ) {}
 
     /**************************************************
@@ -58,7 +58,7 @@ export class AuthController {
             res.cookie('token', accessToken, cookieOptions(cookieExpires));
             res.cookie('refreshToken', refreshToken, cookieOptions(cookieExpires));
 
-            await this.usersService.loginUserStore(discordUser, requestIp.getClientIp(req));
+            await this.usersStoreService.loginUser(discordUser, requestIp.getClientIp(req));
 
             res.redirect('/login');
         } catch (error: any) {

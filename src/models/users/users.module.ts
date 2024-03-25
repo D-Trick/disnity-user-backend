@@ -9,8 +9,7 @@ import { DiscordApiModule } from '@models/discord-api/discord-api.module';
 // controllers
 import { UsersController } from './users.controller';
 // services
-import { UsersService } from './users.service';
-import { UsersDataService } from './services/data.service';
+import { UsersListService } from './services/list.service';
 import { UsersStoreService } from './services/store.service';
 import { UsersUpdateService } from './services/update.service';
 
@@ -19,7 +18,7 @@ import { UsersUpdateService } from './services/update.service';
 @Module({
     imports: [CacheModule, DiscordApiModule],
     controllers: [UsersController],
-    providers: [UtilHelper, FilterHelper, UsersService, UsersDataService, UsersStoreService, UsersUpdateService],
-    exports: [UsersService],
+    providers: [UtilHelper, FilterHelper, UsersListService, UsersStoreService, UsersUpdateService],
+    exports: [UsersListService, UsersStoreService, UsersUpdateService],
 })
 export class UsersModule {}

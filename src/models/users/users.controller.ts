@@ -17,7 +17,8 @@ import { AuthUser } from '@decorators/auth-user.decorator';
 // dtos
 import { AuthUserDto } from '@models/auth/dtos/auth-user.dto';
 // services
-import { UsersService } from './users.service';
+import { UsersListService } from './services/list.service';
+import { UsersUpdateService } from './services/update.service';
 
 // ----------------------------------------------------------------------
 
@@ -29,7 +30,8 @@ export class UsersController {
     constructor(
         private readonly utilHelper: UtilHelper,
 
-        private readonly usersServices: UsersService,
+        private readonly usersListServices: UsersListService,
+        private readonly usersUpdateServices: UsersUpdateService,
     ) {}
 
     /**************************************************
@@ -39,7 +41,7 @@ export class UsersController {
     @UseGuards(AuthGuardUserMe)
     async me(@AuthUser() aUser: AuthUserDto) {
         try {
-            const user = await this.usersServices.getUser(aUser.id);
+            const user = await this.usersListServices.getUser(aUser.id);
 
             return new UserResponseDto(user);
         } catch (error: any) {
@@ -51,7 +53,7 @@ export class UsersController {
     @UseGuards(AuthGuardJwt)
     async guildList(@AuthUser() user: AuthUserDto) {
         try {
-            const adminGuilds = await this.usersServices.getAdminGuilds(user.id);
+            const adminGuilds = await this.usersListServices.getAdminGuilds(user.id);
 
             return adminGuilds.map((adminGuild) => new AdminGuildListResponseDto(adminGuild));
         } catch (error: any) {
@@ -63,7 +65,7 @@ export class UsersController {
     @UseGuards(AuthGuardJwt)
     async guildListRefresh(@AuthUser() user: AuthUserDto) {
         try {
-            const adminGuilds = await this.usersServices.refreshAdminGuilds(user.id);
+            const adminGuilds = await this.usersUpdateServices.refreshAdminGuilds(user.id);
 
             return adminGuilds.map((adminGuild) => new AdminGuildListResponseDto(adminGuild));
         } catch (error: any) {
@@ -77,7 +79,7 @@ export class UsersController {
         try {
             const { guildId } = param;
 
-            const adminGuilds = await this.usersServices.getAdminGuilds(user.id);
+            const adminGuilds = await this.usersListServices.getAdminGuilds(user.id);
             const adminGuild = this.utilHelper.getAdminGuild(guildId, adminGuilds);
 
             if (!adminGuild) {
@@ -96,7 +98,7 @@ export class UsersController {
         try {
             const { guildId } = param;
 
-            const channels = await this.usersServices.getChannels(guildId, user.id, false);
+            const channels = await this.usersListServices.getChannels(guildId, user.id, false);
 
             return channels.map((channel) => new ChannelListResponseDto(channel));
         } catch (error: any) {
@@ -110,7 +112,7 @@ export class UsersController {
         try {
             const { guildId } = param;
 
-            const channels = await this.usersServices.getChannels(guildId, user.id, true);
+            const channels = await this.usersListServices.getChannels(guildId, user.id, true);
 
             return channels.map((channel) => new ChannelListResponseDto(channel));
         } catch (error: any) {
