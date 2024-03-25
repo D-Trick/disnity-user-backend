@@ -5,7 +5,7 @@ import { ControllerException } from '@utils/response';
 // dtos
 import { DisnitySitemapResponseDto } from './dtos/disnity-sitemap-response.dto';
 // services
-import { SitemapService } from './sitemap.service';
+import { SitemapListService } from './services/list.service';
 
 // ----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ export class SitemapController {
     /**************************************************
      * Constructor
      **************************************************/
-    constructor(private sitemapService: SitemapService) {}
+    constructor(private sitemapListService: SitemapListService) {}
 
     /**************************************************
      * Public Methods
@@ -22,8 +22,8 @@ export class SitemapController {
     @Get('/disnity')
     async disnitySitemap() {
         try {
-            const staticUrls = this.sitemapService.getStaticUrls();
-            const dynamicUrls = await this.sitemapService.getDynamicUrls();
+            const staticUrls = this.sitemapListService.getStaticUrls();
+            const dynamicUrls = await this.sitemapListService.getDynamicUrls();
 
             return new DisnitySitemapResponseDto(staticUrls, dynamicUrls);
         } catch (error: any) {

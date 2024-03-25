@@ -3,14 +3,13 @@ import { Module } from '@nestjs/common';
 // controllers
 import { SitemapController } from './sitemap.controller';
 // services
-import { SitemapService } from './sitemap.service';
-import { SitemapDataService } from './services/data.service';
+import { SitemapListService } from './services/list.service';
 
 // ----------------------------------------------------------------------
 
 @Module({
     controllers: [SitemapController],
-    providers: [SitemapService, SitemapDataService],
-    exports: [SitemapService],
+    providers: [SitemapListService],
+    exports: [SitemapListService],
 })
 export class SitemapModule {}

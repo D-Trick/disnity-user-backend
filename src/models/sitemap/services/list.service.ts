@@ -10,7 +10,7 @@ import { CommonCodeRepository } from '@databases/repositories/common-code';
 // ----------------------------------------------------------------------
 
 @Injectable()
-export class SitemapDataService {
+export class SitemapListService {
     /**************************************************
      * Constructor
      **************************************************/
