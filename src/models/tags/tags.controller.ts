@@ -5,7 +5,7 @@ import { ControllerException } from '@utils/response';
 // dtos
 import { AllTagListResponseDto } from './dtos';
 // services
-import { TagsService } from '@models/tags/tags.service';
+import { TagsListService } from '@models/tags/services/list.service';
 
 // ----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ export class TagsController {
     /**************************************************
      * Constructor
      **************************************************/
-    constructor(private readonly tagsService: TagsService) {}
+    constructor(private readonly tagsListService: TagsListService) {}
 
     /**************************************************
      * Public Methods
@@ -22,7 +22,7 @@ export class TagsController {
     @Get()
     async allTagList() {
         try {
-            const allTags = await this.tagsService.getAllTags();
+            const allTags = await this.tagsListService.getAllTags();
 
             return allTags.map((tag) => new AllTagListResponseDto(tag));
         } catch (error: any) {

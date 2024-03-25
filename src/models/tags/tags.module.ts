@@ -3,14 +3,13 @@ import { Module } from '@nestjs/common';
 // controllers
 import { TagsController } from './tags.controller';
 // services
-import { TagsService } from './tags.service';
-import { TagsDataService } from './services/data.service';
+import { TagsListService } from './services/list.service';
 
 // ----------------------------------------------------------------------
 
 @Module({
     controllers: [TagsController],
-    providers: [TagsService, TagsDataService],
-    exports: [TagsService],
+    providers: [TagsListService],
+    exports: [TagsListService],
 })
 export class TagsModule {}

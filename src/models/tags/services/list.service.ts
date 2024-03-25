@@ -1,27 +1,24 @@
 // @nestjs
 import { Injectable } from '@nestjs/common';
-// services
-import { TagsDataService } from './services/data.service';
+// repositories
+import { TagRepository } from '@databases/repositories/tag';
 
 // ----------------------------------------------------------------------
 
 @Injectable()
-export class TagsService {
+export class TagsListService {
     /**************************************************
      * Constructor
      **************************************************/
-    constructor(private readonly dataServices: TagsDataService) {}
+    constructor(private readonly tagRepository: TagRepository) {}
 
     /**************************************************
      * Public Methods
      **************************************************/
-    /******************************
-     * dataServices
-     ******************************/
     /**
-     * 태그이름(총합계) 목록을 가져온다.
+     * 전체태그(태그명 마다 총 개수) 목록을 가져온다.
      */
     async getAllTags() {
-        return await this.dataServices.getAllTags();
+        return await this.tagRepository.findAllTags();
     }
 }
