@@ -26,7 +26,11 @@ import {
 } from './dtos';
 import { AuthUserDto } from '@models/auth/dtos/auth-user.dto';
 // services
-import { ServersService } from '@models/servers/servers.service';
+import { ServersListService } from './services/list.service';
+import { ServersStoreService } from './services/store.service';
+import { ServersUpdateService } from './services/update.service';
+import { ServersDeleteService } from './services/delete.service';
+import { ServersDetailService } from './services/detail.service';
 
 // ----------------------------------------------------------------------
 
@@ -35,7 +39,13 @@ export class ServersController {
     /**************************************************
      * Constructor
      **************************************************/
-    constructor(private readonly serversService: ServersService) {}
+    constructor(
+        private readonly serversListService: ServersListService,
+        private readonly serversDetailService: ServersDetailService,
+        private readonly serversStoreService: ServersStoreService,
+        private readonly serversUpdateService: ServersUpdateService,
+        private readonly serversDeleteService: ServersDeleteService,
+    ) {}
 
     /**************************************************
      * Public Methods
@@ -43,7 +53,7 @@ export class ServersController {
     @Get()
     async allServerList(@Query() query: ServerFilterRequestDto) {
         try {
-            const allServers = await this.serversService.getAllServers(query);
+            const allServers = await this.serversListService.getAllServers(query);
 
             return new CategoryServerListResponseDto(allServers);
         } catch (error: any) {
@@ -54,7 +64,7 @@ export class ServersController {
     @Get('category/:id')
     async categoryServerList(@Param() param: ParamIdNumberRequestDto, @Query() query: ServerFilterRequestDto) {
         try {
-            const categoryServers = await this.serversService.getCategoryServers(param.id, query);
+            const categoryServers = await this.serversListService.getCategoryServers(param.id, query);
 
             return new CategoryServerListResponseDto(categoryServers);
         } catch (error: any) {
@@ -65,7 +75,7 @@ export class ServersController {
     @Get('tags/:name')
     async tagServerList(@Param() param: ParamNameRequestDto, @Query() query: ServerFilterRequestDto) {
         try {
-            const tagServers = await this.serversService.getTagServers(param.name, query);
+            const tagServers = await this.serversListService.getTagServers(param.name, query);
 
             return new TagServerListResponseDto(tagServers);
         } catch (error: any) {
@@ -77,7 +87,7 @@ export class ServersController {
     @UseGuards(AuthGuardJwt)
     async refresh(@AuthUser() user: AuthUserDto, @Param() param: ParamGuildIdRequestDto) {
         try {
-            const result = await this.serversService.refresh(param.guildId, user.id);
+            const result = await this.serversUpdateService.refresh(param.guildId, user.id);
 
             return new ResultResponseDto(result);
         } catch (error: any) {
@@ -89,7 +99,7 @@ export class ServersController {
     @UseGuards(AuthGuardLoginCheck)
     async detail(@AuthUser() user: AuthUserDto, @Param() param: ParamIdStringRequestDto) {
         try {
-            const server = await this.serversService.detail(param.id, user.id);
+            const server = await this.serversDetailService.server(param.id, user.id);
 
             return new ServerResponseDto(server);
         } catch (error: any) {
@@ -101,7 +111,7 @@ export class ServersController {
     @UseGuards(AuthGuardJwt)
     async store(@AuthUser() user: AuthUserDto, @Body() body: CreateRequestDto) {
         try {
-            const id = await this.serversService.store(user.id, body);
+            const id = await this.serversStoreService.store(user.id, body);
 
             return new SaveResultResponseDto(id);
         } catch (error: any) {
@@ -117,7 +127,7 @@ export class ServersController {
         @Body() body: UpdateRequestDto,
     ) {
         try {
-            const id = await this.serversService.edit(param.id, user.id, body);
+            const id = await this.serversUpdateService.edit(param.id, user.id, body);
 
             return new SaveResultResponseDto(id);
         } catch (error: any) {
@@ -129,7 +139,7 @@ export class ServersController {
     @UseGuards(AuthGuardJwt)
     async delete(@AuthUser() user: AuthUserDto, @Param() param: ParamIdStringRequestDto) {
         try {
-            const result = await this.serversService.delete(user.id, param.id);
+            const result = await this.serversDeleteService.delete(user.id, param.id);
 
             return new ResultResponseDto(result);
         } catch (error: any) {

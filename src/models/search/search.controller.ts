@@ -7,7 +7,7 @@ import { ParamKeywordRequestDto } from '@common/dtos';
 import { ServerFilterRequestDto } from '@models/servers/dtos';
 import { SearchServerListResponseDto } from './dtos';
 // services
-import { ServersService } from '@models/servers/servers.service';
+import { ServersListService } from '@models/servers/services/list.service';
 
 // ----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ export class SearchController {
     /**************************************************
      * Constructor
      **************************************************/
-    constructor(private readonly serversService: ServersService) {}
+    constructor(private readonly serversListService: ServersListService) {}
 
     /**************************************************
      * Public Methods
@@ -24,7 +24,7 @@ export class SearchController {
     @Get(':keyword')
     async server(@Param() param: ParamKeywordRequestDto, @Query() query: ServerFilterRequestDto) {
         try {
-            const searchServer = await this.serversService.getSearchServers(param.keyword, query);
+            const searchServer = await this.serversListService.getSearchServers(param.keyword, query);
 
             return new SearchServerListResponseDto(searchServer);
         } catch (error: any) {
