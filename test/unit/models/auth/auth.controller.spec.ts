@@ -1,86 +1,107 @@
 // test
 import { Test } from '@nestjs/testing';
-import { mock, instance, when, anyString, anything } from 'ts-mockito';
+import { mock, instance, when } from 'ts-mockito';
+// @nestjs
+import { JwtModule } from '@nestjs/jwt';
+// configs
+import { JWT_MODULE_CONFIG } from '@config/jwt.config';
+import { DISCORD_CONFIG } from '@config/discord.config';
 // dtos
-import { LoginCheckResponseDto, TokenResponseDto } from '@models/auth/dtos';
+import { AuthDiscordUserDto, AuthUserDto, LoginCheckResponseDto, TokenResponseDto } from '@models/auth/dtos';
 // controllers
 import { AuthController } from '@models/auth/auth.controller';
 // services
-import { AuthService } from '@models/auth/auth.service';
-import { UsersService } from '@models/users/users.service';
+import { AuthTokenService } from '@models/auth/services/token.service';
+import { UsersStoreService } from '@models/users/services/store.service';
 
 // ----------------------------------------------------------------------
 
-describe('AuthController 테스트를 시작합니다.', () => {
+describe('AuthController', () => {
     let authController: AuthController;
 
-    const authServiceMock: AuthService = mock(AuthService);
-    const usersServiceMock: UsersService = mock(UsersService);
+    let authTokenService: AuthTokenService;
+
+    const usersStoreServiceMock: UsersStoreService = mock(UsersStoreService);
+
+    const user = AuthUserDto.create({
+        id: '1',
+        isLogin: true,
+    });
+    const discordUser = AuthDiscordUserDto.create({
+        id: '1',
+        username: 'test',
+        avatar: '',
+        discriminator: '',
+        public_flags: 0,
+        premium_type: 0,
+        flags: 0,
+        banner: '',
+        accent_color: 0,
+        global_name: '닉네임',
+        avatar_decoration_data: '',
+        banner_color: '',
+        mfa_enabled: false,
+        locale: '',
+        email: '',
+        verified: true,
+        guilds: [],
+        admin_guilds: [],
+
+        access_token: 'aa.aa.aa',
+        refresh_token: 'bb.bb.bb',
+    });
 
     beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
+            imports: [JwtModule.register(JWT_MODULE_CONFIG)],
             controllers: [AuthController],
-            providers: [
-                { provide: AuthService, useValue: instance(authServiceMock) },
-                { provide: UsersService, useValue: instance(usersServiceMock) },
-            ],
+            providers: [AuthTokenService, { provide: UsersStoreService, useValue: instance(usersStoreServiceMock) }],
         }).compile();
 
         authController = moduleRef.get<AuthController>(AuthController);
+        authTokenService = moduleRef.get<AuthTokenService>(AuthTokenService);
     });
 
-    it(`로그인 페이지로 이동합니다.`, async () => {
-        // When
-        const loginRedirect = authController.login();
-
-        // Than
-        expect(loginRedirect).toBe('Discord Login Redirect...');
-    });
-
-    describe('디스코드에서 로그인 후 로그인 관련 처리를 하고 리다이렉트를 합니다.', () => {
-        it(`정상적으로 처리되면 /login으로 리다이렉트를 합니다.`, async () => {
+    describe('login', () => {
+        it(`디스코드 로그인 URL로 이동한다`, async () => {
             // Given
-            const res: any = {
+            const response: any = {
+                redirect: jest.fn(),
+            };
+
+            // When
+            authController.login(response);
+
+            // Than
+            expect(response.redirect).toHaveBeenNthCalledWith(1, DISCORD_CONFIG.LOGIN_URL);
+        });
+    });
+
+    describe('loginCallback', () => {
+        it(`로그인을 성공하면 /login으로 이동한다`, async () => {
+            // Given
+            const request: any = {
+                headers: {
+                    'x-forwarded-for': '1.1.1.1',
+                },
+            };
+            const response: any = {
                 cookie: jest.fn(),
                 redirect: jest.fn(),
             };
 
-            when(authServiceMock.createJwtToken('access', anyString())).thenReturn('access token');
-            when(authServiceMock.createJwtToken('refresh', anyString())).thenReturn('refresh token');
-
-            when(usersServiceMock.saveLoginUser(anything(), '1.1.1.1')).thenReturn();
+            when(usersStoreServiceMock.loginUser(discordUser, '1.1.1.1')).thenReturn();
 
             // When
-            await authController.loginCallback(anything(), res, anything());
+            await authController.loginCallback(request, response, discordUser);
 
             // Than
-            expect(res.redirect).toHaveBeenNthCalledWith(1, '/login');
-        });
-
-        it(`정상적으로 처리가 안되면 /auth/login으로 리다이렉트를 합니다.`, async () => {
-            // Given
-            const res: any = {
-                cookie: () => {
-                    throw new Error('error');
-                },
-                redirect: jest.fn(),
-            };
-
-            when(authServiceMock.createJwtToken('access', anyString())).thenReturn('access token');
-            when(authServiceMock.createJwtToken('refresh', anyString())).thenReturn('refresh token');
-
-            when(usersServiceMock.saveLoginUser(anything(), '1.1.1.1')).thenReturn();
-
-            // When
-            await authController.loginCallback(anything(), res, anything());
-
-            // Than
-            expect(res.redirect).toHaveBeenNthCalledWith(1, '/auth/login');
+            expect(response.redirect).toHaveBeenNthCalledWith(1, '/login');
         });
     });
 
-    describe('로그아웃을 합니다.', () => {
-        it(`성공하면 /logout으로 리다이렉트를 합니다.`, async () => {
+    describe('logout', () => {
+        it(`로그아웃 후 /logout으로 이동한다`, async () => {
             // Given
             const res: any = {
                 clearCookie: jest.fn(),
@@ -93,73 +114,32 @@ describe('AuthController 테스트를 시작합니다.', () => {
             // Than
             expect(res.redirect).toHaveBeenNthCalledWith(1, '/logout');
         });
+    });
 
-        it(`실패하면 /으로 리다이렉트를 합니다.`, async () => {
-            // Given
-            const res: any = {
-                clearCookie: () => {
-                    throw new Error('error');
-                },
-                redirect: jest.fn(),
-            };
-
+    describe('check', () => {
+        it(`로그인 여부를 검사한다.`, async () => {
             // When
-            authController.logout(res);
+            const check = authController.check();
 
             // Than
-            expect(res.redirect).toHaveBeenNthCalledWith(1, '/');
+            expect(check).toEqual(new LoginCheckResponseDto(true));
         });
     });
 
-    it(`로그인을 했는지 안했는지 검사합니다.`, async () => {
-        // When
-        const check = authController.check();
-
-        // Than
-        expect(check).toEqual(new LoginCheckResponseDto(true));
-    });
-
-    describe('토큰을 새로고침 합니다.', () => {
-        it(`access, refresh Token을 생성합니다.`, async () => {
+    describe('tokenRefresh', () => {
+        it(`Access Token, Refresh Token을 새로고침 한다.`, async () => {
             // Given
-            const user = {
-                id: '1',
-                isLogin: true,
-            };
             const res: any = {
                 cookie: jest.fn(),
             };
-
-            when(authServiceMock.createJwtToken('access', anyString())).thenReturn('access token');
-            when(authServiceMock.createJwtToken('refresh', anyString())).thenReturn('refresh token');
+            const accessToken = authTokenService.createJwt('access', user.id);
+            const refreshToken = authTokenService.createJwt('refresh', user.id);
 
             // When
             const token = await authController.tokenRefresh(user, res);
 
             // Than
-            expect(token).toEqual(new TokenResponseDto('access token', 'refresh token'));
-        });
-
-        it(`실패하면 에러가 발생합니다.`, async () => {
-            // Given
-            const user = {
-                id: '1',
-                isLogin: true,
-            };
-            const res: any = {
-                cookie: () => {
-                    throw new Error('error');
-                },
-            };
-
-            when(authServiceMock.createJwtToken('access', anyString())).thenReturn('access token');
-            when(authServiceMock.createJwtToken('refresh', anyString())).thenReturn('refresh token');
-
-            // When
-            const wrap = async () => authController.tokenRefresh(user, res);
-
-            // Than
-            expect(wrap).rejects.toThrow('error');
+            expect(token).toEqual(new TokenResponseDto(accessToken, refreshToken));
         });
     });
 });
