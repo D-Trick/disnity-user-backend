@@ -5,7 +5,7 @@ import { plainToInstance } from 'class-transformer';
 // utils
 import { createFakeString } from 'test/mock/utils/createFakeString';
 // configs
-import { validationPipeConfig } from '@config/validation-pipe.config';
+import { VALIDATION_PIPE_CONFIG } from '@config/validation-pipe.config';
 // messages
 import { SERVER_ERROR_MESSAGES } from '@common/messages';
 // dtos
@@ -14,7 +14,7 @@ import { CreateRequestDto } from '@models/servers/dtos/create-request.dto';
 
 // ----------------------------------------------------------------------
 
-describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
+describe('CreateRequestDto', () => {
     const dto = new CreateRequestDto();
 
     beforeEach(() => {
@@ -38,7 +38,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.id = createFakeString('1', 22);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -49,7 +49,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.id = createFakeString('a', 22);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isNumberString']).toBe(SERVER_ERROR_MESSAGES.SERVER_NOT_FOUND);
@@ -60,7 +60,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.id = createFakeString('1', 23);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['maxLength']).toBe(SERVER_ERROR_MESSAGES.SERVER_NOT_FOUND);
@@ -73,7 +73,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.serverOpen = 'public';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -84,7 +84,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.serverOpen = 'private';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -95,7 +95,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.serverOpen = 'test' as any;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isIn']).toBe(SERVER_ERROR_MESSAGES.BAD_SERVER_OPEN);
@@ -108,7 +108,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.categoryId = 1;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -119,7 +119,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.categoryId = 65535;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -130,7 +130,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.categoryId = 0;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['min']).toBe(SERVER_ERROR_MESSAGES.CATEGORY_NOT_FOUND);
@@ -141,7 +141,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.categoryId = 65536;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['max']).toBe(SERVER_ERROR_MESSAGES.CATEGORY_NOT_FOUND);
@@ -154,7 +154,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.linkType = 'invite';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -165,7 +165,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.linkType = 'membership';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -176,7 +176,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.linkType = 'test' as any;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isIn']).toBe(SERVER_ERROR_MESSAGES.BAD_LINK_TYPE);
@@ -189,7 +189,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.inviteAuto = 'auto';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -200,7 +200,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.inviteAuto = 'manual';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -211,7 +211,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.inviteAuto = 'test' as any;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isIn']).toBe(SERVER_ERROR_MESSAGES.BAD_INVITE_AUTO);
@@ -226,7 +226,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.inviteCode = createFakeString('a', 15);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -239,7 +239,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.inviteCode = '';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isNotEmpty']).toBe(SERVER_ERROR_MESSAGES.INVITE_EMPTY);
@@ -252,7 +252,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.inviteCode = 1111 as any;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['maxLength']).toBe(SERVER_ERROR_MESSAGES.INVITE_MAX_LENGTH);
@@ -265,7 +265,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.inviteCode = createFakeString('a', 23);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['maxLength']).toBe(SERVER_ERROR_MESSAGES.INVITE_MAX_LENGTH);
@@ -280,7 +280,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.channelId = createFakeString('1', 22);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -293,7 +293,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.channelId = createFakeString('a', 22);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isNumberString']).toBe(SERVER_ERROR_MESSAGES.CHANNEL_NOT_FOUND);
@@ -306,7 +306,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.channelId = createFakeString('a', 23);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isNumberString']).toBe(SERVER_ERROR_MESSAGES.CHANNEL_NOT_FOUND);
@@ -320,7 +320,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.membershipUrl = 'https://naver.com';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -332,7 +332,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.membershipUrl = '';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isNotEmpty']).toBe(SERVER_ERROR_MESSAGES.MEMBERSHIP_URL_EMPTY);
@@ -344,7 +344,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.membershipUrl = 'naver.com';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isUrl']).toBe(SERVER_ERROR_MESSAGES.INVALID_MEMBERSHIP_URL_FORMAT);
@@ -358,7 +358,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.tags = [tag];
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -373,7 +373,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
                 dto.tags = [tag];
 
                 // When
-                const errors = await validate(dto, validationPipeConfig);
+                const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
                 // Than
                 expect(errors[0].children[0].children[0].constraints['matches']).toBe(
@@ -388,7 +388,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.tags = [tag];
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].children[0].children[0].constraints['maxLength']).toBe(
@@ -403,7 +403,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.summary = createFakeString('a', 250);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -414,7 +414,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.summary = createFakeString('a', 251);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['maxLength']).toBe(SERVER_ERROR_MESSAGES.SUMMARY_MAX_LENGTH);
@@ -427,7 +427,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.contentType = 'basic';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -438,7 +438,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.contentType = 'markdown';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -449,7 +449,7 @@ describe('서버 생성(CreateRequestDTO) 유효성 검사를 한다.', () => {
             dto.contentType = 'test' as any;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isIn']).toBe(SERVER_ERROR_MESSAGES.BAD_INVITE_AUTO);

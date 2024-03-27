@@ -3,14 +3,14 @@ import { validate } from 'class-validator';
 // test utils
 import { createFakeString } from 'test/mock/utils/createFakeString';
 // configs
-import { validationPipeConfig } from '@config/validation-pipe.config';
+import { VALIDATION_PIPE_CONFIG } from '@config/validation-pipe.config';
 // dtos
 import { ServerFilterRequestDto } from '@models/servers/dtos';
 
 // ----------------------------------------------------------------------
 
-describe('서버 정렬 및 필터(ServerFilterRequestDTO) 유효성 검사를 한다.', () => {
-    describe('서버 정렬로 요청한 값을 유효성 검사를 한다.', () => {
+describe('ServerFilterRequestDTO', () => {
+    describe('서버 정렬로 요청한 값을 유효성 검사를 한다', () => {
         it(`10글자 이하이면 유효성 검사 통과`, async () => {
             // Given
             const ERROR_COUNT = 0;
@@ -18,7 +18,7 @@ describe('서버 정렬 및 필터(ServerFilterRequestDTO) 유효성 검사를 �
             dto.sort = createFakeString('a', 10);
 
             // When
-            const validateErrors = await validate(dto, validationPipeConfig);
+            const validateErrors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(validateErrors.length).toBe(ERROR_COUNT);
@@ -30,13 +30,13 @@ describe('서버 정렬 및 필터(ServerFilterRequestDTO) 유효성 검사를 �
             dto.sort = createFakeString('a', 11);
 
             // When
-            const validateErrors = await validate(dto, validationPipeConfig);
+            const validateErrors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(validateErrors.length).toBe(ERROR_COUNT);
         });
 
-        it(`sort가 있는 리터럴 객체를 반환한다.`, async () => {
+        it(`sort가 있는 리터럴 객체를 반환한다`, async () => {
             // Given
             const dto1 = new ServerFilterRequestDto();
             const dto2 = new ServerFilterRequestDto();
@@ -57,7 +57,7 @@ describe('서버 정렬 및 필터(ServerFilterRequestDTO) 유효성 검사를 �
         });
     });
 
-    describe('서버 멤버수로 요청한 값을 유효성 검사를 한다.', () => {
+    describe('서버 멤버수로 요청한 값을 유효성 검사를 한다', () => {
         it(`최소 인원수가 5000명 이하이면 유효성 검사 통과`, async () => {
             // Given
             const ERROR_COUNT = 0;
@@ -65,7 +65,7 @@ describe('서버 정렬 및 필터(ServerFilterRequestDTO) 유효성 검사를 �
             dto.min = 5000;
 
             // When
-            const validateErrors = await validate(dto, validationPipeConfig);
+            const validateErrors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(validateErrors.length).toBe(ERROR_COUNT);
@@ -77,7 +77,7 @@ describe('서버 정렬 및 필터(ServerFilterRequestDTO) 유효성 검사를 �
             dto.min = 5001;
 
             // When
-            const validateErrors = await validate(dto, validationPipeConfig);
+            const validateErrors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(validateErrors.length).toBe(ERROR_COUNT);
@@ -90,7 +90,7 @@ describe('서버 정렬 및 필터(ServerFilterRequestDTO) 유효성 검사를 �
             dto.min = 5000;
 
             // When
-            const validateErrors = await validate(dto, validationPipeConfig);
+            const validateErrors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(validateErrors.length).toBe(ERROR_COUNT);
@@ -102,13 +102,13 @@ describe('서버 정렬 및 필터(ServerFilterRequestDTO) 유효성 검사를 �
             dto.min = 5001;
 
             // When
-            const validateErrors = await validate(dto, validationPipeConfig);
+            const validateErrors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(validateErrors.length).toBe(ERROR_COUNT);
         });
 
-        it(`min / max가 있는 리터럴 객체를 반환한다.`, async () => {
+        it(`min / max가 있는 리터럴 객체를 반환한다`, async () => {
             // Given
             const dto = new ServerFilterRequestDto();
             dto.min = 10;

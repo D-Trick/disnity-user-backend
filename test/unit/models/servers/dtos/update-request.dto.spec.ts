@@ -5,7 +5,7 @@ import { plainToInstance } from 'class-transformer';
 // utils
 import { createFakeString } from 'test/mock/utils/createFakeString';
 // configs
-import { validationPipeConfig } from '@config/validation-pipe.config';
+import { VALIDATION_PIPE_CONFIG } from '@config/validation-pipe.config';
 // messages
 import { SERVER_ERROR_MESSAGES } from '@common/messages';
 // dtos
@@ -14,7 +14,7 @@ import { UpdateRequestDto } from '@models/servers/dtos/update-request.dto';
 
 // ----------------------------------------------------------------------
 
-describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
+describe('UpdateRequestDto', () => {
     const dto = new UpdateRequestDto();
 
     beforeEach(() => {
@@ -31,13 +31,13 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
         dto.content = '';
     });
 
-    describe('서버 공개 여부로 요청한 값을 유효성 검사를 한다.', () => {
+    describe('서버 공개 여부로 요청한 값을 유효성 검사를 한다', () => {
         it(`공개 이면 유효성 검사 통과`, async () => {
             // Given
             dto.serverOpen = 'public';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -48,7 +48,7 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.serverOpen = 'private';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -59,20 +59,20 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.serverOpen = 'test' as any;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isIn']).toBe(SERVER_ERROR_MESSAGES.BAD_SERVER_OPEN);
         });
     });
 
-    describe('서버 카테고리 id로 요청한 값을 유효성 검사를 한다.', () => {
+    describe('서버 카테고리 id로 요청한 값을 유효성 검사를 한다', () => {
         it(`정수가 최소 1이면 유효성 검사 통과`, async () => {
             // Given
             dto.categoryId = 1;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -83,7 +83,7 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.categoryId = 65535;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -94,7 +94,7 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.categoryId = 0;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['min']).toBe(SERVER_ERROR_MESSAGES.CATEGORY_NOT_FOUND);
@@ -105,20 +105,20 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.categoryId = 65536;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['max']).toBe(SERVER_ERROR_MESSAGES.CATEGORY_NOT_FOUND);
         });
     });
 
-    describe('서버 링크 유형으로 요청한 값을 유효성 검사를 한다.', () => {
+    describe('서버 링크 유형으로 요청한 값을 유효성 검사를 한다', () => {
         it(`초대 유형이면 유효성 검사 통과`, async () => {
             // Given
             dto.linkType = 'invite';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -129,7 +129,7 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.linkType = 'membership';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -140,20 +140,20 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.linkType = 'test' as any;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isIn']).toBe(SERVER_ERROR_MESSAGES.BAD_LINK_TYPE);
         });
     });
 
-    describe('서버 초대 유형으로 요청한 값을 유효성 검사를 한다.', () => {
+    describe('서버 초대 유형으로 요청한 값을 유효성 검사를 한다', () => {
         it(`자동 이면 유효성 검사 통과`, async () => {
             // Given
             dto.inviteAuto = 'auto';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -164,7 +164,7 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.inviteAuto = 'manual';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -175,14 +175,14 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.inviteAuto = 'test' as any;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isIn']).toBe(SERVER_ERROR_MESSAGES.BAD_INVITE_AUTO);
         });
     });
 
-    describe('서버 초대코드로 요청한 값을 유효성 검사를 한다.', () => {
+    describe('서버 초대코드로 요청한 값을 유효성 검사를 한다', () => {
         it(`초대코드가 있고 문자열이면서 15글자 이하이면 유효성 검사 통과`, async () => {
             // Given
             dto.linkType = 'invite';
@@ -190,7 +190,7 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.inviteCode = createFakeString('a', 15);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -203,7 +203,7 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.inviteCode = '';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isNotEmpty']).toBe(SERVER_ERROR_MESSAGES.INVITE_EMPTY);
@@ -216,7 +216,7 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.inviteCode = 1111 as any;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['maxLength']).toBe(SERVER_ERROR_MESSAGES.INVITE_MAX_LENGTH);
@@ -229,14 +229,14 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.inviteCode = createFakeString('a', 23);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['maxLength']).toBe(SERVER_ERROR_MESSAGES.INVITE_MAX_LENGTH);
         });
     });
 
-    describe('서버 채널 id로 요청한 값을 유효성 검사를 한다.', () => {
+    describe('서버 채널 id로 요청한 값을 유효성 검사를 한다', () => {
         it(`정수이고 22글자 이하이면 유효성 검사 통과`, async () => {
             // Given
             dto.linkType = 'invite';
@@ -244,7 +244,7 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.channelId = createFakeString('1', 22);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -257,7 +257,7 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.channelId = createFakeString('a', 22);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isNumberString']).toBe(SERVER_ERROR_MESSAGES.CHANNEL_NOT_FOUND);
@@ -270,21 +270,21 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.channelId = createFakeString('a', 23);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isNumberString']).toBe(SERVER_ERROR_MESSAGES.CHANNEL_NOT_FOUND);
         });
     });
 
-    describe('서버 가입문의 URL로 요청한 값을 유효성 검사를 한다.', () => {
+    describe('서버 가입문의 URL로 요청한 값을 유효성 검사를 한다', () => {
         it(`URL이 있고 URL(http/https 포함)형식이면 유효성 검사 통과`, async () => {
             // Given
             dto.linkType = 'membership';
             dto.membershipUrl = 'https://naver.com';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -296,7 +296,7 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.membershipUrl = '';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isNotEmpty']).toBe(SERVER_ERROR_MESSAGES.MEMBERSHIP_URL_EMPTY);
@@ -308,21 +308,21 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.membershipUrl = 'naver.com';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isUrl']).toBe(SERVER_ERROR_MESSAGES.INVALID_MEMBERSHIP_URL_FORMAT);
         });
     });
 
-    describe('서버 태그 목록으로 요청한 값을 유효성 검사를 한다.', () => {
+    describe('서버 태그 목록으로 요청한 값을 유효성 검사를 한다', () => {
         it(`[ #, /, &, ?, \, *, @, %, +, 공백 ]이 없고 10글자 이하이면 유효성 검사 통과`, async () => {
             // Given
             const tag = plainToInstance(TagsRequestDto, { name: createFakeString('a', 10) });
             dto.tags = [tag];
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -337,7 +337,7 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
                 dto.tags = [tag];
 
                 // When
-                const errors = await validate(dto, validationPipeConfig);
+                const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
                 // Than
                 expect(errors[0].children[0].children[0].constraints['matches']).toBe(
@@ -352,7 +352,7 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.tags = [tag];
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].children[0].children[0].constraints['maxLength']).toBe(
@@ -361,13 +361,13 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
         });
     });
 
-    describe('서버 요약 설명으로 요청한 값을 유효성 검사를 한다.', () => {
+    describe('서버 요약 설명으로 요청한 값을 유효성 검사를 한다', () => {
         it(`250글자 이하이면 유효성 검사 통과`, async () => {
             // Given
             dto.summary = createFakeString('a', 250);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -378,20 +378,20 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.summary = createFakeString('a', 251);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['maxLength']).toBe(SERVER_ERROR_MESSAGES.SUMMARY_MAX_LENGTH);
         });
     });
 
-    describe('서버 설명 표시 유형으로 요청한 값을 유효성 검사를 한다.', () => {
+    describe('서버 설명 표시 유형으로 요청한 값을 유효성 검사를 한다', () => {
         it(`기본 이면 유효성 검사 통과`, async () => {
             // Given
             dto.contentType = 'basic';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -402,7 +402,7 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.contentType = 'markdown';
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -413,7 +413,7 @@ describe('서버 수정(UpdateRequestDTO) 유효성 검사를 한다.', () => {
             dto.contentType = 'test' as any;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isIn']).toBe(SERVER_ERROR_MESSAGES.BAD_INVITE_AUTO);
