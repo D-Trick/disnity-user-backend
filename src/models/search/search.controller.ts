@@ -22,7 +22,7 @@ export class SearchController {
      * Public Methods
      **************************************************/
     @Get(':keyword')
-    async server(@Param() param: ParamKeywordRequestDto, @Query() query: ServerFilterRequestDto) {
+    async serverList(@Param() param: ParamKeywordRequestDto, @Query() query: ServerFilterRequestDto) {
         try {
             const searchServer = await this.serversListService.getSearchServers(param.keyword, query);
 
