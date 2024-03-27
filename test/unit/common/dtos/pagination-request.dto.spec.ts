@@ -1,7 +1,7 @@
 // lib
 import { validate } from 'class-validator';
 // configs
-import { validationPipeConfig } from '@config/validation-pipe.config';
+import { VALIDATION_PIPE_CONFIG } from '@config/validation-pipe.config';
 // messages
 import { HTTP_ERROR_MESSAGES } from '@common/messages';
 // dtos
@@ -16,7 +16,7 @@ describe('Pagination Request DTO 유효성 검사', () => {
         dto.page = 4200000000;
 
         // When
-        const errors = await validate(dto, validationPipeConfig);
+        const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
         // Than
         expect(errors.length).toBe(0);
@@ -27,7 +27,7 @@ describe('Pagination Request DTO 유효성 검사', () => {
         dto.page = 4200000001;
 
         // When
-        const errors = await validate(dto, validationPipeConfig);
+        const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
         // Than
         expect(errors[0].constraints['max']).toBe(HTTP_ERROR_MESSAGES['900']);
@@ -38,7 +38,7 @@ describe('Pagination Request DTO 유효성 검사', () => {
         dto.page = 4200000000;
 
         // When
-        const errors = await validate(dto, validationPipeConfig);
+        const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
         // Than
         expect(errors.length).toBe(0);
@@ -49,7 +49,7 @@ describe('Pagination Request DTO 유효성 검사', () => {
         dto.page = '1' as any;
 
         // When
-        const errors = await validate(dto, validationPipeConfig);
+        const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
         // Than
         expect(errors[0].constraints['isInt']).toBe(HTTP_ERROR_MESSAGES['900']);
@@ -61,7 +61,7 @@ describe('Pagination Request DTO 유효성 검사', () => {
         dto.itemSize = 4200000000;
 
         // When
-        const errors = await validate(dto, validationPipeConfig);
+        const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
         // Than
         expect(errors.length).toBe(0);
@@ -72,7 +72,7 @@ describe('Pagination Request DTO 유효성 검사', () => {
         dto.itemSize = 4200000001;
 
         // When
-        const errors = await validate(dto, validationPipeConfig);
+        const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
         // Than
         expect(errors[0].constraints['max']).toBe(HTTP_ERROR_MESSAGES['900']);
@@ -83,7 +83,7 @@ describe('Pagination Request DTO 유효성 검사', () => {
         dto.itemSize = 4200000000;
 
         // When
-        const errors = await validate(dto, validationPipeConfig);
+        const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
         // Than
         expect(errors.length).toBe(0);
@@ -94,7 +94,7 @@ describe('Pagination Request DTO 유효성 검사', () => {
         dto.itemSize = '1' as any;
 
         // When
-        const errors = await validate(dto, validationPipeConfig);
+        const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
         // Than
         expect(errors[0].constraints['isInt']).toBe(HTTP_ERROR_MESSAGES['900']);

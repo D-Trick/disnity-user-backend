@@ -3,7 +3,7 @@ import { validate } from 'class-validator';
 // utils
 import { createFakeString } from 'test/mock/utils/createFakeString';
 // configs
-import { validationPipeConfig } from '@config/validation-pipe.config';
+import { VALIDATION_PIPE_CONFIG } from '@config/validation-pipe.config';
 // messages
 import { HTTP_ERROR_MESSAGES } from '@common/messages';
 // dtos
@@ -28,7 +28,7 @@ describe('Param Request DTO 유효성 검사', () => {
             dto.id = createFakeString('1', 20);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -39,7 +39,7 @@ describe('Param Request DTO 유효성 검사', () => {
             dto.id = createFakeString('1', 21);
 
             // When
-            const erros = await validate(dto, validationPipeConfig);
+            const erros = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(erros[0].constraints['maxLength']).toBe(HTTP_ERROR_MESSAGES['900']);
@@ -51,7 +51,7 @@ describe('Param Request DTO 유효성 검사', () => {
             dto.id = 1;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -62,7 +62,7 @@ describe('Param Request DTO 유효성 검사', () => {
             dto.id = 'a' as any;
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['isInt']).toBe(HTTP_ERROR_MESSAGES['900']);
@@ -76,7 +76,7 @@ describe('Param Request DTO 유효성 검사', () => {
             dto.guildId = createFakeString('1', 20);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -87,7 +87,7 @@ describe('Param Request DTO 유효성 검사', () => {
             dto.guildId = createFakeString('1', 21);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['maxLength']).toBe(HTTP_ERROR_MESSAGES['900']);
@@ -101,7 +101,7 @@ describe('Param Request DTO 유효성 검사', () => {
             dto.type = createFakeString('1', 20);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -112,7 +112,7 @@ describe('Param Request DTO 유효성 검사', () => {
             dto.type = createFakeString('1', 21);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['maxLength']).toBe(HTTP_ERROR_MESSAGES['900']);
@@ -127,7 +127,7 @@ describe('Param Request DTO 유효성 검사', () => {
             dto.type = createFakeString('1', 10);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -139,7 +139,7 @@ describe('Param Request DTO 유효성 검사', () => {
             dto.type = createFakeString('1', 11);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['maxLength']).toBe(HTTP_ERROR_MESSAGES['900']);
@@ -154,7 +154,7 @@ describe('Param Request DTO 유효성 검사', () => {
             dto.name = createFakeString('1', 20);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -165,7 +165,7 @@ describe('Param Request DTO 유효성 검사', () => {
             dto.name = createFakeString('1', 21);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['maxLength']).toBe(HTTP_ERROR_MESSAGES['900']);
@@ -179,7 +179,7 @@ describe('Param Request DTO 유효성 검사', () => {
             dto.keyword = createFakeString('1', 50);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -190,7 +190,7 @@ describe('Param Request DTO 유효성 검사', () => {
             dto.keyword = createFakeString('1', 51);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['maxLength']).toBe(HTTP_ERROR_MESSAGES['900']);
@@ -204,7 +204,7 @@ describe('Param Request DTO 유효성 검사', () => {
             dto.code = createFakeString('1', 20);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors.length).toBe(0);
@@ -215,7 +215,7 @@ describe('Param Request DTO 유효성 검사', () => {
             dto.code = createFakeString('1', 21);
 
             // When
-            const errors = await validate(dto, validationPipeConfig);
+            const errors = await validate(dto, VALIDATION_PIPE_CONFIG);
 
             // Than
             expect(errors[0].constraints['maxLength']).toBe(HTTP_ERROR_MESSAGES['900']);
